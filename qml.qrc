@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/pages">
+        <file alias="AuthWindow.qml">qml/pages/AuthWindow.qml</file>
+        <file alias="Login.qml">qml/pages/Login.qml</file>
+        <file alias="Recovery.qml">qml/pages/Recovery.qml</file>
+        <file alias="Registration.qml">qml/pages/Registration.qml</file>
+    </qresource>
+</RCC>

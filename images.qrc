@@ -1,0 +1,13 @@
+<RCC>
+    <qresource prefix="/images">
+        <file alias="AuthWRegistrationMainIcon.png">assets/images/AuthWRegistrationMainIcon.png</file>
+        <file alias="calm.png">assets/images/calm.png</file>
+        <file alias="checkmark.png">assets/images/checkmark.png</file>
+        <file alias="confused.png">assets/images/confused.png</file>
+        <file alias="DataRecovery.png">assets/images/DataRecovery.png</file>
+        <file alias="GoogleIcon.png">assets/images/GoogleIcon.png</file>
+        <file alias="happy.png">assets/images/happy.png</file>
+        <file alias="tear.png">assets/images/tear.png</file>
+        <file alias="upset.png">assets/images/upset.png</file>
+    </qresource>
+</RCC>
