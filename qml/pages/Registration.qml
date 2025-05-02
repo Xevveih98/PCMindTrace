@@ -139,7 +139,7 @@ Rectangle {
                         height: 30
                         font.pixelSize: 6
                         color: "#D9D9D9"
-                        placeholderText: ""
+                        //placeholderText: ""
                         maximumLength: 64
                         wrapMode: Text.NoWrap
                         echoMode: TextInput.Password
