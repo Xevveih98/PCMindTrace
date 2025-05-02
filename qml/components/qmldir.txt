@@ -1,0 +1,3 @@
+module CustomComponents
+CustomCheckbox 1.0 CustomCheckbox.qml
+CustomComponents 1.0 CustomComponents.qml

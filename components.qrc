@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/components">
+        <file alias="CustomCheckbox.qml">qml/components/CustomCheckbox.qml</file>
+        <file alias="CustomComponents.qml">qml/components/CustomComponents.qml</file>
+        <file alias="qmldir.txt">qml/components/qmldir.txt</file>
+    </qresource>
+</RCC>

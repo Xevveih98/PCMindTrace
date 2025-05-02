@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls
+import PCMindTrace 1.0
 
 Rectangle {
     id: pageLogIn
@@ -76,7 +77,7 @@ Rectangle {
                     }
 
                     TextField {
-                        id: tiLoginInput
+                        id: loginInput
                         width: oberInputFieldsEmpty.width
                         height: 30
                         font.pixelSize: 11
@@ -105,7 +106,7 @@ Rectangle {
                     }
 
                     TextField {
-                        id: tiPassInput
+                        id: passInput
                         width: oberInputFieldsEmpty.width
                         height: 30
                         font.pixelSize: 6
@@ -166,7 +167,18 @@ Rectangle {
             anchors.fill: buttAuthCheck
             onClicked: {
                 onClicked: {
-                    console.log("Клик по кнопке сработал");
+                    if (loginInput.text === "" || passInput.text === "") {
+                        console.log("Введите логин и пароль")
+                        return
+                    }
+
+                    const success = AuthViewModel.loginUser(loginInput.text, passInput.text)
+                    if (success) {
+                        console.log("Вход успешен")
+                        AppViewModelBackend.switchToMain()
+                    } else {
+                        console.log("Неверный логин или пароль")
+                    }
                 }
             }
         }

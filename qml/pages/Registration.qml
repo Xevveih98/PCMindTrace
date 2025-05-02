@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls
+import PCMindTrace 1.0
 
 Rectangle {
     id: pageRegistration
@@ -76,7 +77,7 @@ Rectangle {
                     }
 
                     TextField {
-                        id: LoginInput
+                        id: loginInput
                         width: oberInputFieldsEmpty.width
                         height: 30
                         font.pixelSize: 11
@@ -105,7 +106,7 @@ Rectangle {
                     }
 
                     TextField {
-                        id: EmailInput
+                        id: emailInput
                         width: oberInputFieldsEmpty.width
                         height: 30
                         font.pixelSize: 11
@@ -134,7 +135,7 @@ Rectangle {
                     }
 
                     TextField {
-                        id: PassInput
+                        id: passInput
                         width: oberInputFieldsEmpty.width
                         height: 30
                         font.pixelSize: 6
@@ -195,6 +196,22 @@ Rectangle {
             anchors.fill: buttAuthCreateCheck
             onClicked: {
                 console.log("Клик по кнопке сработал");
+               if (loginInput.text === "" || emailInput.text === "" || passInput.text === "") {
+                   console.log("Пожалуйста, заполните все поля");
+                   return;
+               }
+
+               const success = AuthViewModel.registerUser(
+                   loginInput.text,
+                   emailInput.text,
+                   passInput.text
+               )
+
+               if (success) {
+                   console.log("Регистрация успешна")
+               } else {
+                   console.log("Ошибка при регистрации")
+               }
             }
         }
     }

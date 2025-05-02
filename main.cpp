@@ -4,6 +4,9 @@
 #include <QSqlError>
 #include <QDebug>
 #include <QFile>
+#include "src/viewmodels/AuthViewModel.h"
+#include "src/viewmodels/AppViewModel.h"
+#include <QQmlContext>
 
 bool connectToDatabase()
 {
@@ -34,6 +37,12 @@ int main(int argc, char *argv[])
         return -1;
     }
 
+    // Регистрация ViewModel в QML как синглтон
+    qmlRegisterSingletonType<AuthViewModel>("PCMindTrace", 1, 0, "AuthViewModel",
+        [](QQmlEngine*, QJSEngine*) -> QObject* {
+            return new AuthViewModel();
+        });
+
     QQmlApplicationEngine engine;
     QObject::connect(
         &engine,
@@ -41,6 +50,10 @@ int main(int argc, char *argv[])
         &app,
         []() { QCoreApplication::exit(-1); },
         Qt::QueuedConnection);
+
+    AppViewModel appViewModel;
+    engine.rootContext()->setContextProperty("AppViewModelBackend", &appViewModel);
+
     engine.loadFromModule("PCMindTrace", "Main");
 
     return app.exec();

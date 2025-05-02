@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls
+import PCMindTrace 1.0
 
 Window {
     id: mainLoader
@@ -8,17 +9,41 @@ Window {
     visible: true
     color: "darkblue"
 
+    property string currentPage: AuthViewModel.isUserLoggedIn() ? "qrc:/pages/mainContent.qml" : "qrc:/pages/AuthWindow.qml"
+
     Loader {
         id: authWindowLoader
-        anchors.fill: parent  // Занимает всю площадь окна
-        source: "qrc:/pages/AuthWindow.qml"  // Путь к файлу AuthWindow.qml
+        anchors.fill: parent
+        source: currentPage
 
         onLoaded: {
             console.log("📱 width", mainLoader.width)
             console.log("📱 height", mainLoader.height)
         }
     }
+
+    Connections {
+        target: AppViewModelBackend
+        onChangeScreen: {
+            currentPage = newPage
+        }
+    }
+
+    // Функции для переключения страниц, теперь их можно вызвать из ViewModel
+    function switchToAuth() {
+        currentPage = "qrc:/pages/AuthWindow.qml"
+    }
+
+    function switchToMain() {
+        currentPage = "qrc:/pages/mainContent.qml"
+    }
 }
+
+
+
+
+
+
 
 
 // Я разрабатываю декстоп приложение на Qt, используя Qt Creator 6.9.0 с CMake и C++. В качестве базы данных - sqlLite. Я работаю с архитектурой mvvm.
