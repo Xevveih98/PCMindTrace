@@ -77,7 +77,7 @@ Rectangle {
                     }
 
                     TextField {
-                        id: loginInput
+                        id: regLogin
                         width: oberInputFieldsEmpty.width
                         height: 30
                         font.pixelSize: 11
@@ -106,7 +106,7 @@ Rectangle {
                     }
 
                     TextField {
-                        id: emailInput
+                        id: regEmail
                         width: oberInputFieldsEmpty.width
                         height: 30
                         font.pixelSize: 11
@@ -135,7 +135,7 @@ Rectangle {
                     }
 
                     TextField {
-                        id: passInput
+                        id: regPassword
                         width: oberInputFieldsEmpty.width
                         height: 30
                         font.pixelSize: 6
@@ -195,23 +195,7 @@ Rectangle {
         MouseArea {
             anchors.fill: buttAuthCreateCheck
             onClicked: {
-                console.log("Клик по кнопке сработал");
-               if (loginInput.text === "" || emailInput.text === "" || passInput.text === "") {
-                   console.log("Пожалуйста, заполните все поля");
-                   return;
-               }
-
-               const success = AuthViewModel.registerUser(
-                   loginInput.text,
-                   emailInput.text,
-                   passInput.text
-               )
-
-               if (success) {
-                   console.log("Регистрация успешна")
-               } else {
-                   console.log("Ошибка при регистрации")
-               }
+               authUser.registerUser(regLogin.text, regEmail.text, regPassword.text)
             }
         }
     }

@@ -13,6 +13,9 @@ qt_standard_project_setup(REQUIRES 6.8)
 
 qt_add_executable(appPCMindTrace
     main.cpp
+    src/AuthUser.h
+    src/AuthUser.cpp
+
 )
 
 qt_add_qml_module(appPCMindTrace
@@ -37,7 +40,7 @@ target_link_libraries(appPCMindTrace
     PRIVATE Qt6::Quick Qt6::Sql Qt6::Core
 )
 
-target_sources(appPCMindTrace PRIVATE images.qrc qml.qrc #[[components.qrc]])
+target_sources(appPCMindTrace PRIVATE images.qrc qml.qrc components.qrc)
 
 include(GNUInstallDirs)
 install(TARGETS appPCMindTrace

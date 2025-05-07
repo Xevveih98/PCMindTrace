@@ -1,5 +1,12 @@
 <RCC>
-    <qresource prefix="/components">
-        <file alias="CustCheckbox.qml">qml/CustomComponents/CustCheckbox.qml</file>
+    <qresource prefix="/CustomComponents">
+        <file alias="CustButtonSettings.qml">qml/CustomComponents/CustButtonSettings.qml</file>
+        <file alias="CustCheckboxHome.qml">qml/CustomComponents/CustCheckboxHome.qml</file>
+        <file alias="CustProfileHeader.qml">qml/CustomComponents/CustProfileHeader.qml</file>
+        <file alias="CustPageHeader.qml">qml/CustomComponents/CustPageHeader.qml</file>
+        <file alias="CustButtonTurnBack.qml">qml/CustomComponents/CustButtonTurnBack.qml</file>
+        <file alias="CustViewNote.qml">qml/CustomComponents/CustViewNote.qml</file>
+
+        <file alias="qmldir">qml/CustomComponents/qmldir</file>
     </qresource>
 </RCC>

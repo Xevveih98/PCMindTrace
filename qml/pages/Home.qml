@@ -1,7 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import PCMindTrace 1.0
+import CustomComponents 1.0
 
 Rectangle {
     id: pageHomeScreen
@@ -10,10 +10,15 @@ Rectangle {
     ScrollView {
         anchors.fill: parent
 
+
         Column {
             id: colDad
             spacing: 12
             width: parent.width
+
+            CustPageHead {
+                titleText: "Главная"
+            }
 
             Item {
                 width: parent.width
@@ -138,23 +143,23 @@ Rectangle {
                             spacing: 4
                             anchors.horizontalCenter: parent.horizontalCenter
 
-                            // CustomCheckbox {
-                            //     width: parent.width
-                            //     anchors.horizontalCenter: parent.horizontalCenter
-                            //     labelText: "убраться дома"
+                            CustChbxHome {
+                                width: parent.width
+                                anchors.horizontalCenter: parent.horizontalCenter
+                                labelText: "убраться дома"
 
-                            // }
-                            // CustomCheckbox {
-                            //     width: parent.width
-                            //     anchors.horizontalCenter: parent.horizontalCenter
-                            //     labelText: "постирать одежду"
-                            // }
+                            }
+                            CustChbxHome {
+                                width: parent.width
+                                anchors.horizontalCenter: parent.horizontalCenter
+                                labelText: "постирать одежду"
+                            }
 
-                            // CustomCheckbox {
-                            //     width: parent.width
-                            //     anchors.horizontalCenter: parent.horizontalCenter
-                            //     labelText: "зайти в цветочный"
-                            // }
+                            CustChbxHome {
+                                width: parent.width
+                                anchors.horizontalCenter: parent.horizontalCenter
+                                labelText: "зайти в цветочный"
+                            }
                         }
                     }
                 }
@@ -341,135 +346,6 @@ Rectangle {
                 }
             }
 
-            // Text {
-            //     text: "Записей пока что нет..."
-            //     font.pixelSize: 16
-            //     color: "#D9D9D9"
-            //     anchors.horizontalCenter: parent.horizontalCenter
-            // }
-
-            Item {
-                id: note
-                width: parent.width
-                height: childrenRect.height  // Автоматическая высота по содержимому
-
-                Rectangle {
-                    id: backgroundShadow
-                    color: "#9BAA41"
-                    width: parent.width * 0.96
-                    height: 36  // Высота контента + отступы
-                    anchors.top: parent.top
-                    anchors.topMargin: -10
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    radius: 18
-                    z: 1
-                }
-
-                Rectangle {
-                    id: contentWrapper
-                    color: "#2D292C"
-                    width: parent.width
-                    height: childrenRect.height + 40  // Высота контента + отступы
-                    anchors.top: parent.top
-                    radius: 18
-                    z: 2
-
-                    Item {
-                        width: parent.width * 0.88
-                        height: childrenRect.height + 20
-                        anchors.centerIn: parent
-
-                        Row {
-                            spacing: 10
-                            width: parent.width
-
-                            // Иконка
-                            Item {
-                                width: 50
-                                height: width  // Высота как у текстового блока или 50
-                                //anchors.verticalCenter: parent.verticalCenter
-
-                                Image {
-                                    anchors.fill: parent
-                                    source: "qrc:/images/calm.png"
-                                    fillMode: Image.PreserveAspectFit
-                                }
-                            }
-
-                            // Текстовый блок
-                            Column {
-                                id: textContent
-                                width: parent.width - 70  // Ширина родителя минус иконка и отступы
-                                spacing: 10
-
-                                // Заголовок с датой и временем
-                                RowLayout {
-                                    width: parent.width
-                                    height: 30
-
-                                    Text {
-                                        text: "14 апреля 2025"
-                                        font.pixelSize: 11
-                                        color: "#D9D9D9"
-                                        Layout.alignment: Qt.AlignVCenter
-                                    }
-
-                                    Item { Layout.fillWidth: true }
-
-                                    Text {
-                                        text: "18:32"
-                                        font.pixelSize: 12
-                                        color: "#b9b9b9"
-                                        Layout.alignment: Qt.AlignVCenter
-                                    }
-                                }
-
-                                // Основной текст
-                                Text {
-                                    width: parent.width
-                                    text: "Сегодня было спокойно"
-                                    font.pixelSize: 18
-                                    font.bold: true
-                                    color: "#D9D9D9"
-                                    wrapMode: Text.Wrap
-                                }
-
-                                // Описание
-                                Text {
-                                    width: parent.width
-                                    id: textDescription
-                                    text: "Вот бы всегда было спокойно."
-                                    font.pixelSize: 16
-                                    color: "#D9D9D9"
-                                    wrapMode: Text.Wrap
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-
-    StackView {
-        id: stackViewFormManager
-        visible: false
-        enabled: false
-        anchors.centerIn: parent
-        width: parent.width
-        height: parent.height
-        replaceEnter: null
-        replaceExit: null
-        background: Rectangle{
-            color: "#141414"
-            opacity: 0.8
-            MouseArea {
-                anchors.fill: parent
-                onClicked: {
-                    stackViewFormManager.visible = false;
-                }
-            }
         }
     }
 }

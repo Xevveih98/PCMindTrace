@@ -14,7 +14,7 @@ Window {
     Loader {
         id: authWindowLoader
         anchors.fill: parent
-        source: "qrc:/pages/mainContent.qml"
+        source: "qrc:/pages/AuthWindow.qml"
         onLoaded: {
             console.log("📱 width", mainLoader.width)
             console.log("📱 height", mainLoader.height)

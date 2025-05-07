@@ -6,5 +6,6 @@
         <file alias="Registration.qml">qml/pages/Registration.qml</file>
         <file alias="mainContent.qml">qml/pages/mainContent.qml</file>
         <file alias="Home.qml">qml/pages/Home.qml</file>
+        <file alias="Settings.qml">qml/pages/Settings.qml</file>
     </qresource>
 </RCC>
