@@ -1,15 +1,31 @@
 #include "AuthUser.h"
 #include <QDebug>
+#include <QJsonObject>
+#include <QJsonDocument>
+#include <QNetworkRequest>
+#include <QNetworkReply>
 
 AuthUser::AuthUser(QObject *parent)
     : QObject(parent)
 {
-    connect(&m_networkManager, &QNetworkAccessManager::finished,
-            this, &AuthUser::onRegistrationReply);
+    connect(&m_networkManager, &QNetworkAccessManager::finished, this, [=](QNetworkReply *reply) {
+        QUrl endpoint = reply->request().url();
+        qDebug() << "Network reply received from:" << endpoint.toString();
+
+        if (endpoint.path().contains("/register")) {
+            onRegistrationReply(reply);
+        } else if (endpoint.path().contains("/login")) {
+            onLoginReply(reply);
+        } else {
+            qWarning() << "Unhandled endpoint:" << endpoint.toString();
+            reply->deleteLater();
+        }
+    });
 
     qDebug() << "AuthUser initialized and connected to network manager.";
 }
 
+// ----------- Регистрация -----------
 void AuthUser::registerUser(const QString &login, const QString &email, const QString &password)
 {
     qDebug() << "registerUser called with:";
@@ -22,27 +38,9 @@ void AuthUser::registerUser(const QString &login, const QString &email, const QS
     json["email"] = email;
     json["password"] = password;
 
-    qDebug() << "QJsonObject created:" << json;
-
     QJsonDocument jsonDoc(json);
-    qDebug() << "QJsonDocument created:" << jsonDoc.toJson(QJsonDocument::Compact);
-
     QUrl serverUrl("http://192.168.46.184:8080/register");
-    qDebug() << "Sending data to URL:" << serverUrl.toString();
-
     sendToServer(jsonDoc, serverUrl);
-}
-
-void AuthUser::sendToServer(const QJsonDocument &jsonDoc, const QUrl &url)
-{
-    qDebug() << "sendToServer called.";
-    QNetworkRequest request(url);
-    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
-
-    QByteArray data = jsonDoc.toJson();
-    qDebug() << "Request payload:" << data;
-
-    m_networkManager.post(request, data);
 }
 
 void AuthUser::onRegistrationReply(QNetworkReply *reply)
@@ -56,4 +54,58 @@ void AuthUser::onRegistrationReply(QNetworkReply *reply)
         emit registrationFailed(reply->errorString());
     }
     reply->deleteLater();
+}
+
+// ----------- Вход (Login) -----------
+void AuthUser::loginUser(const QString &login, const QString &password)
+{
+    qDebug() << "loginUser called with:";
+    qDebug() << "  login:" << login;
+    qDebug() << "  password:" << password;
+
+    QJsonObject json;
+    json["login"] = login;
+    json["password"] = password;
+
+    QJsonDocument jsonDoc(json);
+    QUrl serverUrl("http://192.168.46.184:8080/login");
+    sendLoginRequest(jsonDoc, serverUrl);
+}
+
+void AuthUser::sendLoginRequest(const QJsonDocument &jsonDoc, const QUrl &url)
+{
+    qDebug() << "sendLoginRequest called.";
+    QNetworkRequest request(url);
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+
+    QByteArray data = jsonDoc.toJson();
+    qDebug() << "Request payload (login):" << data;
+
+    m_networkManager.post(request, data);
+}
+
+void AuthUser::onLoginReply(QNetworkReply *reply)
+{
+    qDebug() << "onLoginReply called.";
+    if (reply->error() == QNetworkReply::NoError) {
+        qDebug() << "Login successful. Server response:" << reply->readAll();
+        emit loginSuccess();
+    } else {
+        qDebug() << "Login failed. Error:" << reply->errorString();
+        emit loginFailed(reply->errorString());
+    }
+    reply->deleteLater();
+}
+
+// ----------- Общий метод отправки (используется для регистрации) -----------
+void AuthUser::sendToServer(const QJsonDocument &jsonDoc, const QUrl &url)
+{
+    qDebug() << "sendToServer called.";
+    QNetworkRequest request(url);
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+
+    QByteArray data = jsonDoc.toJson();
+    qDebug() << "Request payload (register):" << data;
+
+    m_networkManager.post(request, data);
 }
