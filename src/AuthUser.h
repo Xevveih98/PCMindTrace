@@ -18,6 +18,9 @@ public:
     Q_INVOKABLE void registerUser(const QString &login, const QString &email, const QString &password);
     Q_INVOKABLE void loginUser(const QString &login, const QString &password);
     Q_INVOKABLE void changePassword(const QString &email, const QString &newPassword, const QString &newPasswordCheck);
+    Q_INVOKABLE void triggerSendSavedLogin();
+
+
 
 signals:
     void registrationSuccess();
@@ -40,6 +43,7 @@ private:
     void sendToServer(const QJsonDocument &jsonDoc, const QUrl &url);
     void sendLoginRequest(const QJsonDocument &jsonDoc, const QUrl &url);
     void sendPasswordChangeRequest(const QJsonDocument &jsonDoc, const QUrl &url);
+    void sendSavedLoginToServer();
 
     QNetworkAccessManager m_networkManager;
 };

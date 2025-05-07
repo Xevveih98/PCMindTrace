@@ -102,7 +102,7 @@ Rectangle {
                         buttonWidth: itemcore.width
                         buttonText: "Удалить аккаунт"
                         iconSource: "qrc:/images/DataRecovery.png"
-                        popupTarget: settingsPopupDeleteUser
+                        popupTarget: "qrc:/popups/popUserDeleteAdmit.qml"
                     }
                 }
 

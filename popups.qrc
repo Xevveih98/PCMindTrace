@@ -1,7 +1,8 @@
 <RCC>
     <qresource prefix="/popups">
         <file alias="popUserExitAdmit.qml">qml/popups/popUserExitAdmit.qml</file>
-        <!--<file alias="Login.qml">qml/pages/Login.qml</file>
+        <file alias="popUserDeleteAdmit.qml">qml/popups/popUserDeleteAdmit.qml</file>
+        <!--<file alias="popUserDeleteAdmit.qml">qml/popups/popUserDeleteAdmit.qml</file>
         <file alias="Recovery.qml">qml/pages/Recovery.qml</file>
         <file alias="Registration.qml">qml/pages/Registration.qml</file>
         <file alias="mainContent.qml">qml/pages/mainContent.qml</file>

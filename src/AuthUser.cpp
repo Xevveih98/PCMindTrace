@@ -1,4 +1,5 @@
 #include "AuthUser.h"
+#include "AppSave.h"
 #include <QDebug>
 #include <QJsonObject>
 #include <QJsonDocument>
@@ -141,6 +142,31 @@ void AuthUser::onPasswordChangeReply(QNetworkReply *reply)
         emit passwordChangeFailed(reply->errorString());
     }
     reply->deleteLater();
+}
+
+// ----------- Удаление аккаунта -----------
+
+void AuthUser::triggerSendSavedLogin()
+{
+    qDebug() << "triggerSendSavedLogin called.";
+    sendSavedLoginToServer();  // Вызов метода отправки сохраненного логина
+}
+
+void AuthUser::sendSavedLoginToServer()
+{
+    AppSave appSave;  // Создаем объект для работы с QSettings
+    if (appSave.isUserLoggedIn()) {
+        QString savedLogin = appSave.getSavedLogin();  // Получаем сохраненный логин
+
+        QJsonObject json;
+        json["login"] = savedLogin;  // Упаковываем логин в JSON объект
+
+        QJsonDocument jsonDoc(json);  // Создаем JSON документ
+        QUrl serverUrl("http://192.168.46.184:8080/deleteuser");  // Замените на правильный URL
+        sendToServer(jsonDoc, serverUrl);  // Отправляем на сервер
+    } else {
+        qWarning() << "No saved login found.";
+    }
 }
 
 
