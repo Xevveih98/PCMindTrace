@@ -45,11 +45,6 @@ Rectangle {
                             MouseArea {
                                 anchors.fill: buttAddFolder
                                 onClicked: {
-                                    //onClicked: {stackViewFormManager.replace("ManageFolders.qml"); stackViewFormManager.visible = true; stackViewFormManager.enabled = true}
-                                    //console.log("Добавить новую папку");
-
-                                    AuthViewModel.logout()
-                                    AppViewModelBackend.switchToAuth()
 
                                 }
                             }
@@ -126,11 +121,7 @@ Rectangle {
                         MouseArea {
                             anchors.fill: buttAddToDo
                             onClicked: {
-                                // Здесь будет появляться окно добавления новой задачи
-                                console.log("Добавить новую задачу");
-                                stackViewFormManager.replace("ManageToDoos.qml");
-                                stackViewFormManager.visible = true;
-                                stackViewFormManager.enabled = true;
+
                             }
                         }
                     }

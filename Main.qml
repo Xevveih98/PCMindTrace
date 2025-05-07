@@ -9,32 +9,31 @@ Window {
     visible: true
     color: "darkblue"
 
-    property string currentPage: AuthViewModel.isUserLoggedIn() ? "qrc:/pages/mainContent.qml" : "qrc:/pages/AuthWindow.qml"
+    //property string currentPage: AuthViewModel.isUserLoggedIn() ? "qrc:/pages/mainContent.qml" : "qrc:/pages/AuthWindow.qml"
 
     Loader {
         id: authWindowLoader
         anchors.fill: parent
-        source: currentPage
-
+        source: "qrc:/pages/mainContent.qml"
         onLoaded: {
             console.log("📱 width", mainLoader.width)
             console.log("📱 height", mainLoader.height)
         }
     }
 
-    Connections {
-        target: AppViewModelBackend
-        onChangeScreen: {
-            currentPage = newPage
-        }
-    }
+    // Connections {
+    //     target: AppViewModelBackend
+    //     onChangeScreen: {
+    //         currentPage = newPage
+    //     }
+    // }
 
-    // Функции для переключения страниц, теперь их можно вызвать из ViewModel
-    function switchToAuth() {
-        currentPage = "qrc:/pages/AuthWindow.qml"
-    }
+    // // Функции для переключения страниц, теперь их можно вызвать из ViewModel
+    // function switchToAuth() {
+    //     currentPage = "qrc:/pages/AuthWindow.qml"
+    // }
 
-    function switchToMain() {
-        currentPage = "qrc:/pages/mainContent.qml"
-    }
+    // function switchToMain() {
+    //     currentPage = "qrc:/pages/mainContent.qml"
+    // }
 }

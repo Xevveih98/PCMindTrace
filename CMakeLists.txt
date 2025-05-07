@@ -13,12 +13,6 @@ qt_standard_project_setup(REQUIRES 6.8)
 
 qt_add_executable(appPCMindTrace
     main.cpp
-    src/models/UserModel.cpp
-    src/models/UserModel.h
-    src/viewmodels/AuthViewModel.cpp
-    src/viewmodels/AuthViewModel.h
-    src/viewmodels/AppViewModel.h
-
 )
 
 qt_add_qml_module(appPCMindTrace
@@ -26,7 +20,6 @@ qt_add_qml_module(appPCMindTrace
     VERSION 1.0
     QML_FILES
         Main.qml
-        RESOURCES src/db/mindtracedb.db
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
@@ -44,7 +37,7 @@ target_link_libraries(appPCMindTrace
     PRIVATE Qt6::Quick Qt6::Sql Qt6::Core
 )
 
-target_sources(appPCMindTrace PRIVATE images.qrc qml.qrc components.qrc)
+target_sources(appPCMindTrace PRIVATE images.qrc qml.qrc #[[components.qrc]])
 
 include(GNUInstallDirs)
 install(TARGETS appPCMindTrace
