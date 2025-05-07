@@ -10,9 +10,20 @@ Item {
     property int buttonWidth: 120
     property string buttonText: "Button"
     property url iconSource: ""
-    property Item popupTarget: null
+    property url popupTarget: ""
 
     signal clicked()
+
+    Loader {
+        id: popupLoader
+        active: false
+        visible: false
+        asynchronous: true
+        source: popupTarget
+        onLoaded: {
+            if (item && item.open) item.open()
+        }
+    }
 
     Rectangle {
         id: buttonRect
@@ -67,8 +78,9 @@ Item {
         MouseArea {
             anchors.fill: parent
             onClicked: {
-                if (popupTarget) {
-                    popupTarget.open()
+                if (popupTarget !== "") {
+                    popupLoader.active = false
+                    popupLoader.active = true  // перезагрузка при повторных нажатиях
                 }
                 wrapper.clicked()
             }

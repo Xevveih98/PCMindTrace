@@ -5,7 +5,7 @@ import CustomComponents 1.0
 
 Rectangle {
     id: pageHomeScreen
-    color: "transparent"
+    color: "#181718"
 
     ScrollView {
         anchors.fill: parent

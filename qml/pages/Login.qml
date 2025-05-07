@@ -166,8 +166,19 @@ Rectangle {
         MouseArea {
             anchors.fill: buttAuthCheck
             onClicked: {
-                onClicked: {
-                    authUser.loginUser(regLogin.text, regPassword.text)
+                // Входим в систему, передавая логин и пароль
+                authUser.loginUser(regLogin.text, regPassword.text)
+            }
+
+            Connections {
+                target: authUser
+                onLoginSuccess: {
+                    // Сохраняем логин после успешного входа
+                    AppSave.saveLogin(regLogin.text)
+
+                    Qt.callLater(function() {
+                        pageLoader.source = "qrc:/pages/mainContent.qml"
+                    })
                 }
             }
         }

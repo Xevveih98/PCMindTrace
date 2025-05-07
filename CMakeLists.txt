@@ -15,6 +15,8 @@ qt_add_executable(appPCMindTrace
     main.cpp
     src/AuthUser.h
     src/AuthUser.cpp
+    src/AppSave.h
+    src/AppSave.cpp
 
 )
 
@@ -40,7 +42,7 @@ target_link_libraries(appPCMindTrace
     PRIVATE Qt6::Quick Qt6::Sql Qt6::Core
 )
 
-target_sources(appPCMindTrace PRIVATE images.qrc qml.qrc components.qrc)
+target_sources(appPCMindTrace PRIVATE images.qrc qml.qrc components.qrc popups.qrc)
 
 include(GNUInstallDirs)
 install(TARGETS appPCMindTrace

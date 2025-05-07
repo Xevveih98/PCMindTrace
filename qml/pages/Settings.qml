@@ -91,11 +91,12 @@ Rectangle {
                         iconSource: "qrc:/images/DataRecovery.png"
                         popupTarget: settingsPopupChangeEmail
                     }
+
                     CustButtSett {
                         buttonWidth: itemcore.width
                         buttonText: "Выйти из аккаунта"
                         iconSource: "qrc:/images/DataRecovery.png"
-                        popupTarget: settingsPopupExitUser
+                        popupTarget: "qrc:/popups/popUserExitAdmit.qml"
                     }
                     CustButtSett {
                         buttonWidth: itemcore.width
