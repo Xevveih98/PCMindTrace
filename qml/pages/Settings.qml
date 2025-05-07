@@ -82,14 +82,14 @@ Rectangle {
                         buttonWidth: itemcore.width
                         buttonText: "Изменить пароль"
                         iconSource: "qrc:/images/DataRecovery.png"
-                        popupTarget: settingsPopupChangePass
+                        popupTarget: "qrc:/popups/popUserChangePass.qml"
                     }
 
                     CustButtSett {
                         buttonWidth: itemcore.width
                         buttonText: "Изменить почту"
                         iconSource: "qrc:/images/DataRecovery.png"
-                        popupTarget: settingsPopupChangeEmail
+                        popupTarget: "qrc:/popups/popUserChangeEmail.qml"
                     }
 
                     CustButtSett {

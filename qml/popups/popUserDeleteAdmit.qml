@@ -5,14 +5,14 @@ import PCMindTrace 1.0
 Popup {
     id: exitPopup
     width: 250
-    height: 150
+    height: 100
     modal: true
     focus: true
     dim: true  // автоматическое затемнение заднего фона
     closePolicy: Popup.CloseOnPressOutside | Popup.CloseOnEscape
     anchors.centerIn: Overlay.overlay
     Overlay.modeless: Rectangle {
-            color: "#11272de7"
+            color: "#181718e5"
         }
 
     background: Rectangle {
@@ -25,20 +25,39 @@ Popup {
     Column {
         spacing: 16
         anchors.centerIn: parent
+        width: parent.width
         padding: 20
 
         Text {
             text: "Вы уверены, что хотите удалить аккаунт?"
+            width: parent.width
             color: "#D9D9D9"
             font.pixelSize: 14
             wrapMode: Text.Wrap
-            horizontalAlignment: Text.AlignHCenter
+        }
+    }
+
+    Rectangle {
+        id: buttAuthCreateCheck
+        color: "#474448"
+        radius: 8
+        width: parent.width + 15
+        height: 40
+        anchors {
+            top: parent.bottom
+            topMargin: -10
+            horizontalCenter: parent.horizontalCenter
         }
 
-        Button {
+        Text {
             text: "Подтвердить"
-            width: 200
-            anchors.horizontalCenter: parent.horizontalCenter
+            font.pixelSize: 16
+            color: "#D9D9D9"
+            anchors.centerIn: parent
+        }
+
+        MouseArea {
+            anchors.fill: parent
             onClicked: {
                 exitPopup.close();
                 authUser.triggerSendSavedLogin();

@@ -22,6 +22,8 @@ Item {
         width: parent.width * 0.4
         height: parent.height
         edge: Qt.LeftEdge
+        interactive: true
+        dragMargin: 300
 
         ColumnLayout {
             anchors.fill: parent
@@ -55,6 +57,6 @@ Item {
         anchors.fill: parent
         replaceEnter: null
         replaceExit: null
-        initialItem: "qrc:/pages/Home.qml"
+        initialItem: "qrc:/pages/Settings.qml"
     }
 }

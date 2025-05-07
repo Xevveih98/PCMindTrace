@@ -7,7 +7,7 @@ Window {
     width: 411
     height: 914
     visible: true
-    color: "darkblue"
+    color: "#181718"
 
     Loader {
         id: pageLoader

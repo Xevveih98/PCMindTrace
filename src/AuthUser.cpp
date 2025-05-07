@@ -169,6 +169,52 @@ void AuthUser::sendSavedLoginToServer()
     }
 }
 
+// ----------- Изменение почты -----------
+
+void AuthUser::changeEmail(const QString &email)
+{
+    AppSave appSave;
+    QString savedLogin = appSave.getSavedLogin();
+    qDebug() << "changeEmail called with:";
+    qDebug() << "  email:" << email;
+
+    QJsonObject json;
+    json["login"] = savedLogin;
+    json["email"] = email;
+
+    QJsonDocument jsonDoc(json);
+    QUrl serverUrl("http://192.168.46.184:8080/changemail");
+    sendEmailChangeRequest(jsonDoc, serverUrl);
+}
+
+void AuthUser::sendEmailChangeRequest(const QJsonDocument &jsonDoc, const QUrl &url)
+{
+    qDebug() << "sendEmailChangeRequest called.";
+    QNetworkRequest request(url);
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+
+    QByteArray data = jsonDoc.toJson();
+    qDebug() << "Request payload (email change):" << data;
+
+    QNetworkReply *reply = m_networkManager.post(request, data);
+    connect(reply, &QNetworkReply::finished, this, [this, reply]() {
+        onEmailChangeReply(reply);
+    });
+}
+
+void AuthUser::onEmailChangeReply(QNetworkReply *reply)
+{
+    qDebug() << "onEmailChangeReply called.";
+    if (reply->error() == QNetworkReply::NoError) {
+        qDebug() << "Email change successful. Server response:" << reply->readAll();
+        emit emailChangeSuccess();
+    } else {
+        qDebug() << "Email change failed. Error:" << reply->errorString();
+        emit emailChangeFailed(reply->errorString());
+    }
+    reply->deleteLater();
+}
+
 
 // ----------- Общий метод отправки (используется для регистрации) -----------
 void AuthUser::sendToServer(const QJsonDocument &jsonDoc, const QUrl &url)

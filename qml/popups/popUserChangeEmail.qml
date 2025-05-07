@@ -4,17 +4,13 @@ import PCMindTrace 1.0
 
 Popup {
     id: exitPopup
-    width: 250
-    height: 100
+    width: 369
+    height: 120
     modal: true
     focus: true
-    dim: true  // автоматическое затемнение заднего фона
+    dim: true
     closePolicy: Popup.CloseOnPressOutside | Popup.CloseOnEscape
     anchors.centerIn: Overlay.overlay
-    Overlay.modeless: Rectangle {
-            color: "#11272de7"
-        }
-
     background: Rectangle {
         color: "#2D292C"
         radius: 10
@@ -23,18 +19,38 @@ Popup {
     }
 
     Column {
-        spacing: 16
-        anchors.centerIn: parent
-        width: parent.width
-        padding: 20
+        id: columnpop
+        spacing: 4
+        anchors {
+            top: parent.top
+            horizontalCenter: parent.horizontalCenter
+            topMargin: 20
+        }
+        width: parent.width * 0.85
 
         Text {
-            text: "Вы уверены, что хотите выйти?"
+            text: "Почта"
+            font.pixelSize: 12
             color: "#D9D9D9"
-            font.pixelSize: 14
-            wrapMode: Text.Wrap
-            width: parent.width
+        }
 
+        TextField {
+            id: regEmail
+            height: 30
+            font.pixelSize: 11
+            color: "#D9D9D9"
+            placeholderText: ""
+            maximumLength: 120
+            wrapMode: Text.NoWrap
+            horizontalAlignment: TextInput.AlignLeft
+            verticalAlignment: TextInput.AlignVCenter
+            background: Rectangle {
+                color: "#292729"
+                border.color: "#4D4D4D"
+                border.width: 1
+            }
+            anchors.left: parent.left
+            anchors.right: parent.right
         }
     }
 
@@ -60,12 +76,8 @@ Popup {
         MouseArea {
             anchors.fill: parent
             onClicked: {
+                authUser.changeEmail(regEmail.text)
                 exitPopup.close();
-                authUser.triggerSendSavedLogin();
-                AppSave.clearLogin();
-                Qt.callLater(function() {
-                    pageLoader.source = "qrc:/pages/AuthWindow.qml";
-                });
             }
         }
     }
