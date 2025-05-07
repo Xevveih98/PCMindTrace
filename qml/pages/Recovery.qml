@@ -77,7 +77,7 @@ Rectangle {
                     }
 
                     TextField {
-                        id: emailInput
+                        id: regEmail
                         width: oberInputFieldsEmpty.width
                         height: 30
                         font.pixelSize: 11
@@ -105,7 +105,7 @@ Rectangle {
                     }
 
                     TextField {
-                        id: newPassInput
+                        id: regPassword
                         width: oberInputFieldsEmpty.width
                         height: 30
                         font.pixelSize: 6
@@ -134,7 +134,7 @@ Rectangle {
                     }
 
                     TextField {
-                        id: newPassCheckInput
+                        id: regPasswordCheck
                         width: oberInputFieldsEmpty.width
                         height: 30
                         font.pixelSize: 6
@@ -193,28 +193,7 @@ Rectangle {
         MouseArea {
             anchors.fill: buttPassCheck
             onClicked: {
-                console.log("Клик по кнопке сработал");
-                if (emailInput.text === "" || newPassInput.text === "" || newPassCheckInput.text === "") {
-                    console.log("Заполните все поля")
-                    return
-                }
-
-                if (newPassInput.text !== newPassCheckInput.text) {
-                    console.log("Пароли не совпадают")
-                    return
-                }
-
-                const success = AuthViewModel.recoverPassword(
-                    emailInput.text,
-                    newPassInput.text
-                )
-                if (success) {
-                    console.log("Пароль успешно сброшен");
-                    (parent.StackView.view || stackViewAuthWindow).pop()
-
-                } else {
-                    console.log("Ошибка при восстановлении. Проверьте email.")
-                }
+               authUser.changePassword(regEmail.text, regPassword.text, regPasswordCheck.text)
             }
         }
     }

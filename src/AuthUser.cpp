@@ -97,6 +97,53 @@ void AuthUser::onLoginReply(QNetworkReply *reply)
     reply->deleteLater();
 }
 
+// ----------- Смена пароля -----------
+void AuthUser::changePassword(const QString &email, const QString &newPassword, const QString &newPasswordCheck)
+{
+    qDebug() << "changePassword called with:";
+    qDebug() << "  email:" << email;
+    qDebug() << "  newPassword:" << newPassword;
+    qDebug() << "  newPasswordCheck:" << newPasswordCheck;
+
+    QJsonObject json;
+    json["email"] = email;
+    json["password"] = newPassword;
+    json["password_check"] = newPasswordCheck;
+
+    QJsonDocument jsonDoc(json);
+    QUrl serverUrl("http://192.168.46.184:8080/changepassword");
+    sendPasswordChangeRequest(jsonDoc, serverUrl);
+}
+
+void AuthUser::sendPasswordChangeRequest(const QJsonDocument &jsonDoc, const QUrl &url)
+{
+    qDebug() << "sendPasswordChangeRequest called.";
+    QNetworkRequest request(url);
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+
+    QByteArray data = jsonDoc.toJson();
+    qDebug() << "Request payload (password change):" << data;
+
+    QNetworkReply *reply = m_networkManager.post(request, data);
+    connect(reply, &QNetworkReply::finished, this, [this, reply]() {
+        onPasswordChangeReply(reply);
+    });
+}
+
+void AuthUser::onPasswordChangeReply(QNetworkReply *reply)
+{
+    qDebug() << "onPasswordChangeReply called.";
+    if (reply->error() == QNetworkReply::NoError) {
+        qDebug() << "Password change successful. Server response:" << reply->readAll();
+        emit passwordChangeSuccess();
+    } else {
+        qDebug() << "Password change failed. Error:" << reply->errorString();
+        emit passwordChangeFailed(reply->errorString());
+    }
+    reply->deleteLater();
+}
+
+
 // ----------- Общий метод отправки (используется для регистрации) -----------
 void AuthUser::sendToServer(const QJsonDocument &jsonDoc, const QUrl &url)
 {
