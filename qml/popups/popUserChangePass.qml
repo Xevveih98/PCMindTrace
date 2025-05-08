@@ -9,6 +9,7 @@ Popup {
     modal: true
     focus: true
     dim: true
+    padding: 0
     closePolicy: Popup.CloseOnPressOutside | Popup.CloseOnEscape
     anchors.centerIn: Overlay.overlay
     background: Rectangle {
@@ -110,7 +111,7 @@ Popup {
         id: buttAuthCreateCheck
         color: "#474448"
         radius: 8
-        width: parent.width + 15
+        width: parent.width
         height: 40
         anchors {
             top: parent.bottom

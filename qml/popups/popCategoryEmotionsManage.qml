@@ -7,6 +7,7 @@ Popup {
     width: Screen.width * 0.9
     height: Screen.height * 0.5
     modal: true
+    padding: 0
     focus: true
     dim: true  // автоматическое затемнение заднего фона
     closePolicy: Popup.CloseOnPressOutside | Popup.CloseOnEscape

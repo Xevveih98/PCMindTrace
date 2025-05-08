@@ -117,7 +117,7 @@ Popup {
                         placeholderText: "Название активности"
                         placeholderTextColor: "#a9a9a9"
                         wrapMode: Text.NoWrap
-                        maximumLength: 15
+                        maximumLength: 30
                         padding: 10
                         horizontalAlignment: TextInput.AlignLeft
                         verticalAlignment: TextInput.AlignVCenter

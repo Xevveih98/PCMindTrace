@@ -8,6 +8,7 @@ Popup {
     height: Screen.height * 0.12
     modal: true
     focus: true
+    padding: 0
     dim: true  // автоматическое затемнение заднего фона
     closePolicy: Popup.CloseOnPressOutside | Popup.CloseOnEscape
     anchors.centerIn: Overlay.overlay
@@ -42,7 +43,7 @@ Popup {
         id: buttAuthCreateCheck
         color: "#474448"
         radius: 8
-        width: parent.width + 15
+        width: parent.width
         height: 40
         anchors {
             top: parent.bottom
