@@ -2,20 +2,20 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts
+import CustomComponents
 
 Item {
     id: root
 
-    // Делаем ширину и высоту настраиваемыми извне
     property alias text: inputField.text
     property alias placeholderText: inputField.placeholderText
     property alias font: inputField.font
     property alias inputMethodHints: inputField.inputMethodHints
-    property alias tagWidth: inputField.width
-    property alias tagHeight: inputField.height
+    property real customWidth: 0
+    property real customHeight: 0
 
-    width: 200
-    height: 40
+    width: customWidth > 0 ? customWidth : implicitWidth
+    height: customHeight > 0 ? customHeight : implicitHeight
 
     signal tagConfirmed(string tag)
 
@@ -23,54 +23,64 @@ Item {
         id: tagListModel
     }
 
-    ColumnLayout {
-        spacing: 6
-        width: root.width
+    Item {
+        anchors.fill: parent
 
-        Flow {
-            width: parent.width
-            height: implicitHeight  // ⬅️ Добавь это!
-            spacing: 6
-
-            Repeater {
-                model: tagListModel
-                delegate: Button {
-                    text: model.tag
-                    onClicked: {
-                        categoriesUser.deleteTag(model.tag);
-                        tagListModel.remove(index);
-                    }
-                }
-            }
-        }
-
-        // Кастомный TextField в стиле старого кода
         Item {
-            width: 300
-            height: 260
-
-            Rectangle {
-                id: background
-                anchors.fill: parent
-                color: "#292729"
-                border.color: "#4D4D4D"
-                border.width: 1
-                radius: 6
-            }
+            id: contenttype
+            width: parent.width
+            height: 30
 
             TextField {
                 id: inputField
-                width: root.width
-                height: root.height
-                anchors.margins: 8
-                background: null
-                color: "#d9d9d9"
+                anchors.fill: parent
                 font.pixelSize: 12
+                color: "#D9D9D9"
                 placeholderText: "Начните перечислять свои теги"
-                palette.placeholderText: "#a9a9a9"
-                wrapMode: Text.Wrap
-
+                placeholderTextColor: "#a9a9a9"
+                wrapMode: Text.NoWrap
+                maximumLength: 40
+                horizontalAlignment: TextInput.AlignLeft
+                verticalAlignment: TextInput.AlignVCenter
+                background: Rectangle {
+                    color: "#292729"
+                    border.color: "#4D4D4D"
+                    border.width: 1
+                    radius: 6
+                }
+                padding: 10
                 onAccepted: confirmCurrentTag()
+            }
+        }
+
+        Item {
+            anchors.top: contenttype.bottom
+            anchors.topMargin: 15
+            width: parent.width
+            height: parent.height * 0.5
+
+            ScrollView {
+                id: amascroll
+                width: parent.width
+                height: parent.height
+                z: 1
+
+                Flow {
+                    width: amascroll.width   // 💡 Ключевой момент
+                    spacing: 6
+
+                    Repeater {
+                        model: tagListModel
+                        delegate: CustTagButon {
+                            tagText: model.tag
+                            buttonWidth: implicitWidth
+                            onClicked: {
+                                categoriesUser.deleteTag(model.tag);
+                                tagListModel.remove(index);
+                            }
+                        }
+                    }
+                }
             }
         }
     }

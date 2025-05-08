@@ -4,8 +4,8 @@ import PCMindTrace 1.0
 
 Popup {
     id: exitPopup
-    width: 250
-    height: 100
+    width: Screen.width * 0.66
+    height: Screen.height * 0.12
     modal: true
     focus: true
     dim: true  // автоматическое затемнение заднего фона

@@ -4,8 +4,8 @@ import PCMindTrace 1.0
 
 Popup {
     id: exitPopup
-    width: 369
-    height: 120
+    width: Screen.width * 0.9
+    height: Screen.height * 0.16
     modal: true
     focus: true
     dim: true
