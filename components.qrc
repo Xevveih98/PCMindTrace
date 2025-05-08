@@ -6,6 +6,7 @@
         <file alias="CustPageHeader.qml">qml/CustomComponents/CustPageHeader.qml</file>
         <file alias="CustButtonTurnBack.qml">qml/CustomComponents/CustButtonTurnBack.qml</file>
         <file alias="CustViewNote.qml">qml/CustomComponents/CustViewNote.qml</file>
+        <file alias="CustTextField.qml">qml/CustomComponents/CustTextField.qml</file>
 
         <file alias="qmldir">qml/CustomComponents/qmldir</file>
     </qresource>

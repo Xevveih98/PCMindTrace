@@ -17,10 +17,14 @@ AuthUser::AuthUser(QObject *parent)
             onRegistrationReply(reply);
         } else if (endpoint.path().contains("/login")) {
             onLoginReply(reply);
+        } else if (endpoint.path().contains("/changepassword")) {
+            onPasswordChangeReply(reply);
+        } else if (endpoint.path().contains("/changemail")) {
+            onEmailChangeReply(reply);
         } else {
-            qWarning() << "Unhandled endpoint:" << endpoint.toString();
-            reply->deleteLater();
+            qWarning() << "Unhandled endpoint in CategoriesManager:" << endpoint.toString();
         }
+        reply->deleteLater();
     });
 
     qDebug() << "AuthUser initialized and connected to network manager.";

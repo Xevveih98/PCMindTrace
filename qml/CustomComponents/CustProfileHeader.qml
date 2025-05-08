@@ -1,4 +1,5 @@
 import QtQuick
+import PCMindTrace 1.0
 
 Item {
     id: wrapper
@@ -12,8 +13,8 @@ Item {
 
     // Пользовательские данные (заглушки)
     property url avatarSource: "qrc:/images/avatar.png"
-    property string userName: "Имя Пользователя"
-    property string userEmail: "email@example.com"
+    property string userName: userName
+    property string userEmail: userEmail
 
     signal clicked()
 
@@ -92,6 +93,13 @@ Item {
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.right: parent.right
             }
+        }
+    }
+
+    Component.onCompleted: {
+        if (AppSave.isUserLoggedIn()) {
+            userName = AppSave.getSavedLogin()
+            userEmail = AppSave.getSavedEmail()
         }
     }
 }

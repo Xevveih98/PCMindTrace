@@ -5,3 +5,4 @@ CustProfHead 1.0 CustProfileHeader.qml
 CustPageHead 1.0 CustPageHeader.qml
 CustButtTrBk 1.0 CustButtonTurnBack.qml
 CustViewNote 1.0 CustViewNote.qml
+CustTextFild 1.0 CustTextField.qml

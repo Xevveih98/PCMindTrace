@@ -12,7 +12,7 @@ Popup {
     closePolicy: Popup.CloseOnPressOutside | Popup.CloseOnEscape
     anchors.centerIn: Overlay.overlay
     Overlay.modeless: Rectangle {
-            color: "#181718e5"
+            color: "#11272de7"
         }
 
     background: Rectangle {
@@ -29,11 +29,12 @@ Popup {
         padding: 20
 
         Text {
-            text: "Вы уверены, что хотите удалить аккаунт?"
-            width: parent.width
+            text: "Вы уверены, что хотите выйти?"
             color: "#D9D9D9"
             font.pixelSize: 14
             wrapMode: Text.Wrap
+            width: parent.width
+
         }
     }
 
@@ -60,11 +61,7 @@ Popup {
             anchors.fill: parent
             onClicked: {
                 exitPopup.close();
-                authUser.triggerSendSavedLogin();
-                AppSave.clearUser();
-                Qt.callLater(function() {
-                    pageLoader.source = "qrc:/pages/AuthWindow.qml";
-                });
+
             }
         }
     }

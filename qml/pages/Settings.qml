@@ -23,6 +23,7 @@ Rectangle {
 
             Column {
                 spacing: 20
+                width: parent.width
 
                 CustPageHead {
                     titleText: "Настройки"
@@ -33,6 +34,7 @@ Rectangle {
                     spacing: 8
                     anchors.left: parent.left
                     anchors.leftMargin: 10
+                    width: parent.width
 
 
                     Label {
@@ -45,7 +47,7 @@ Rectangle {
                     }
 
                     CustProfHead {
-                        buttonWidth: itemcore.width
+                        buttonWidth: parent.width
                         buttonText: "Открыть профиль"
                         avatarSource: "qrc:/images/calm.png"
                         userName: "Эльвира Тимощенко"
@@ -56,10 +58,10 @@ Rectangle {
                     }
 
                     CustButtSett {
-                        buttonWidth: itemcore.width
+                        buttonWidth: parent.width
                         buttonText: "Посмотреть статистику"
                         iconSource: "qrc:/images/DataRecovery.png"
-                        popupTarget: settingsPopupChangeEmail
+                        //popupTarget: settingsPopupChangeEmail
                     }
                 }
 
@@ -68,6 +70,7 @@ Rectangle {
                     spacing: 8
                     anchors.left: parent.left
                     anchors.leftMargin: 10
+                    width: parent.width
 
                     Label {
                         text: "Аккаунт"
@@ -79,27 +82,27 @@ Rectangle {
                     }
 
                     CustButtSett {
-                        buttonWidth: itemcore.width
+                        buttonWidth: parent.width
                         buttonText: "Изменить пароль"
                         iconSource: "qrc:/images/DataRecovery.png"
                         popupTarget: "qrc:/popups/popUserChangePass.qml"
                     }
 
                     CustButtSett {
-                        buttonWidth: itemcore.width
+                        buttonWidth: parent.width
                         buttonText: "Изменить почту"
                         iconSource: "qrc:/images/DataRecovery.png"
                         popupTarget: "qrc:/popups/popUserChangeEmail.qml"
                     }
 
                     CustButtSett {
-                        buttonWidth: itemcore.width
+                        buttonWidth: parent.width
                         buttonText: "Выйти из аккаунта"
                         iconSource: "qrc:/images/DataRecovery.png"
                         popupTarget: "qrc:/popups/popUserExitAdmit.qml"
                     }
                     CustButtSett {
-                        buttonWidth: itemcore.width
+                        buttonWidth: parent.width
                         buttonText: "Удалить аккаунт"
                         iconSource: "qrc:/images/DataRecovery.png"
                         popupTarget: "qrc:/popups/popUserDeleteAdmit.qml"
@@ -111,6 +114,7 @@ Rectangle {
                     spacing: 8
                     anchors.left: parent.left
                     anchors.leftMargin: 10
+                    width: parent.width
 
                     Label {
                         text: "Приватность"
@@ -122,17 +126,17 @@ Rectangle {
                     }
 
                     CustButtSett {
-                        buttonWidth: itemcore.width
+                        buttonWidth: parent.width
                         buttonText: "Настроить пароль"
                         iconSource: "qrc:/images/DataRecovery.png"
-                        popupTarget: settingsPopupChangePass
+                        //popupTarget: settingsPopupChangePass
                     }
 
                     CustButtSett {
-                        buttonWidth: itemcore.width
+                        buttonWidth: parent.width
                         buttonText: "Настроить PIN-код"
                         iconSource: "qrc:/images/DataRecovery.png"
-                        popupTarget: settingsPopupChangeEmail
+                        //popupTarget: settingsPopupChangeEmail
                     }
                 }
 
@@ -141,6 +145,7 @@ Rectangle {
                     spacing: 8
                     anchors.left: parent.left
                     anchors.leftMargin: 10
+                    width: parent.width
 
                     Label {
                         text: "Управление категориями"
@@ -152,24 +157,24 @@ Rectangle {
                     }
 
                     CustButtSett {
-                        buttonWidth: itemcore.width
+                        buttonWidth: parent.width
                         buttonText: "Редактировать активности"
                         iconSource: "qrc:/images/DataRecovery.png"
-                        popupTarget: settingsPopupChangePass
+                        popupTarget: "qrc:/popups/popCategoryActivitiesManage.qml"
                     }
 
                     CustButtSett {
-                        buttonWidth: itemcore.width
+                        buttonWidth: parent.width
                         buttonText: "Редактировать эмоции"
                         iconSource: "qrc:/images/DataRecovery.png"
-                        popupTarget: settingsPopupChangeEmail
+                        popupTarget: "qrc:/popups/popCategoryEmotionsManage.qml"
                     }
 
                     CustButtSett {
-                        buttonWidth: itemcore.width
+                        buttonWidth: parent.width
                         buttonText: "Редактировать теги"
                         iconSource: "qrc:/images/DataRecovery.png"
-                        popupTarget: settingsPopupChangeEmail
+                        popupTarget: "qrc:/popups/popCategoryTagsManage.qml"
                     }
                 }
             }

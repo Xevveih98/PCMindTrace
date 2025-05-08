@@ -1,19 +1,21 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import PCMindTrace 1.0
+import CustomComponents
 
 Popup {
     id: exitPopup
-    width: 250
-    height: 100
+    width: 369
+    height: 400
     modal: true
     focus: true
-    dim: true  // автоматическое затемнение заднего фона
+    dim: true
     closePolicy: Popup.CloseOnPressOutside | Popup.CloseOnEscape
     anchors.centerIn: Overlay.overlay
+
     Overlay.modeless: Rectangle {
-            color: "#181718e5"
-        }
+        color: "#11272de7"
+    }
 
     background: Rectangle {
         color: "#2D292C"
@@ -25,15 +27,20 @@ Popup {
     Column {
         spacing: 16
         anchors.centerIn: parent
-        width: parent.width
-        padding: 20
+        width: parent.width * 0.92
 
         Text {
-            text: "Вы уверены, что хотите удалить аккаунт?"
-            width: parent.width
+            text: "Выпишите ваши теги через пробел для их дальнейшего удобного добавления в запись."
             color: "#D9D9D9"
             font.pixelSize: 14
             wrapMode: Text.Wrap
+            width: parent.width
+        }
+
+        CustTextFild {
+            id: tagInput
+            width: parent.width
+            height: 290
         }
     }
 
@@ -59,13 +66,27 @@ Popup {
         MouseArea {
             anchors.fill: parent
             onClicked: {
-                exitPopup.close();
-                authUser.triggerSendSavedLogin();
-                AppSave.clearUser();
-                Qt.callLater(function() {
-                    pageLoader.source = "qrc:/pages/AuthWindow.qml";
-                });
+                tagInput.confirmCurrentTag()
+
+                // Оборачиваем в Qt.callLater, чтобы дождаться обновления модели после удаления
+                Qt.callLater(() => {
+                    const tags = tagInput.getTags()
+                    console.log("Final tags for saving:", tags)
+                    categoriesUser.saveTags(tags)
+                    exitPopup.close()
+                })
             }
+        }
+    }
+
+    onOpened: {
+        categoriesUser.loadTags()
+    }
+
+    Connections {
+        target: categoriesUser
+        onTagsLoaded: (tags) => {
+            tagInput.loadTagsFromServer(tags)
         }
     }
 }

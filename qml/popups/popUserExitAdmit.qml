@@ -61,8 +61,7 @@ Popup {
             anchors.fill: parent
             onClicked: {
                 exitPopup.close();
-                authUser.triggerSendSavedLogin();
-                AppSave.clearLogin();
+                AppSave.clearUser();
                 Qt.callLater(function() {
                     pageLoader.source = "qrc:/pages/AuthWindow.qml";
                 });

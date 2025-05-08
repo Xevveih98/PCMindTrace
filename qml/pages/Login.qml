@@ -100,6 +100,35 @@ Rectangle {
                 Column {
                     spacing: 6
                     Text {
+                        text: "Почта"
+                        font.pixelSize: 12
+                        color: "#D9D9D9"
+                    }
+
+                    TextField {
+                        id: regEmail
+                        width: oberInputFieldsEmpty.width
+                        height: 30
+                        font.pixelSize: 11
+                        color: "#D9D9D9"
+                        placeholderText: ""
+                        maximumLength: 120
+                        wrapMode: Text.NoWrap
+                        horizontalAlignment: TextInput.AlignLeft
+                        verticalAlignment: TextInput.AlignVCenter
+                        background: Rectangle {
+                            color: "#292729"
+                            border.color: "#4D4D4D"
+                            border.width: 1
+                            radius: 0
+                        }
+                        padding: 10
+                    }
+                }
+
+                Column {
+                    spacing: 6
+                    Text {
                         text: "Пароль"
                         font.pixelSize: 12
                         color: "#D9D9D9"
@@ -168,13 +197,15 @@ Rectangle {
             onClicked: {
                 // Входим в систему, передавая логин и пароль
                 authUser.loginUser(regLogin.text, regPassword.text)
+
+
             }
 
             Connections {
                 target: authUser
                 onLoginSuccess: {
                     // Сохраняем логин после успешного входа
-                    AppSave.saveLogin(regLogin.text)
+                    AppSave.saveUser(regLogin.text, regEmail.text)
 
                     Qt.callLater(function() {
                         pageLoader.source = "qrc:/pages/mainContent.qml"

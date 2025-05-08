@@ -4,7 +4,10 @@
         <file alias="popUserDeleteAdmit.qml">qml/popups/popUserDeleteAdmit.qml</file>
         <file alias="popUserChangeEmail.qml">qml/popups/popUserChangeEmail.qml</file>
         <file alias="popUserChangePass.qml">qml/popups/popUserChangePass.qml</file>
-        <!--          <file alias="popUserChangePass.qml">qml/popups/popUserChangePass.qml</file>
+        <file alias="popCategoryActivitiesManage.qml">qml/popups/popCategoryActivitiesManage.qml</file>
+        <file alias="popCategoryEmotionsManage.qml">qml/popups/popCategoryEmotionsManage.qml</file>
+        <file alias="popCategoryTagsManage.qml">qml/popups/popCategoryTagsManage.qml</file>
+        <!--          <file alias="popCategoryActivitiesManage.qml">qml/popups/popCategoryActivitiesManage.qml</file>
         <file alias="Recovery.qml">qml/pages/Recovery.qml</file>
         <file alias="Registration.qml">qml/pages/Registration.qml</file>
         <file alias="mainContent.qml">qml/pages/mainContent.qml</file>

@@ -7,6 +7,7 @@
 #include <QQmlContext>
 #include "src/AuthUser.h"
 #include "src/AppSave.h"
+#include "src/CategoriesUser.h"
 
 int main(int argc, char *argv[])
 {
@@ -22,7 +23,9 @@ int main(int argc, char *argv[])
 
     qmlRegisterSingletonInstance("PCMindTrace", 1, 0, "AppSave", new AppSave);
     AuthUser authUser;
+    CategoriesUser categoriesUser;
     engine.rootContext()->setContextProperty("authUser", &authUser);
+    engine.rootContext()->setContextProperty("categoriesUser", &categoriesUser);
 
     engine.addImportPath("qrc:/");
     engine.loadFromModule("PCMindTrace", "Main");
