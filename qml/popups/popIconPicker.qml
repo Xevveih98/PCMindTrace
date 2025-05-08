@@ -3,6 +3,7 @@ import QtQuick.Controls 2.15
 
 Popup {
     id: iconPicker
+    signal iconSelected(string iconId, string iconPath)
     width: 260
     height: 164
     modal: false
@@ -66,6 +67,7 @@ Popup {
                 anchors.fill: parent
                 onClicked: {
                     console.log("Выбрана иконка ID:", model.iconId)
+                    iconPicker.iconSelected(model.iconId, model.path)
                     iconPicker.close()
                 }
 

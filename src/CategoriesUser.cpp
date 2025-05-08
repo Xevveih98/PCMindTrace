@@ -12,6 +12,14 @@ CategoriesUser::CategoriesUser(QObject *parent)
             onTagsSaveReply(reply);
         } else if (endpoint.path().contains("/getusertags")) {
             onUserTagsFetchReply(reply);
+        } else if (endpoint.path().contains("/deletetag")) {
+            onTagDeleteReply(reply);
+        } else if (endpoint.path().contains("/saveactivity")) {
+            onActivitySaveReply(reply);
+        } else if (endpoint.path().contains("/getuseractivity")) {
+            onUserActivitiesFetchReply(reply);
+        } else if (endpoint.path().contains("/deleteactivity")) {
+            onActivityDeleteReply(reply);
         } else {
             qWarning() << "Unhandled endpoint in CategoriesUser:" << endpoint.toString();
             reply->deleteLater();
@@ -171,6 +179,193 @@ void CategoriesUser::onTagDeleteReply(QNetworkReply *reply)
     } else {
         qWarning() << "Tag delete failed. Error:" << reply->errorString();
         emit tagDeletedFailed(reply->errorString());
+    }
+    reply->deleteLater();
+}
+
+// ----------- Добавление активностей -----------
+
+void CategoriesUser::saveActivity(const QString &iconId, const QString &iconlabel)
+{
+    AppSave appSave;
+    QString savedLogin = appSave.getSavedLogin();
+
+    qDebug() << "saveActivity called with login:" << savedLogin;
+    qDebug() << "iconId:" << iconId << ", icon_label:" << iconlabel;
+
+    // Проверка на пустые строки
+    if (savedLogin.isEmpty() || iconId.isEmpty() || iconlabel.isEmpty()) {
+        qWarning() << "Invalid input data: Login, iconId, or iconLabel is empty!";
+        return; // Не отправляем запрос, если данные некорректные
+    }
+
+    QJsonObject json;
+    json["login"] = savedLogin;
+    json["icon_id"] = iconId;
+    json["icon_label"] = iconlabel;
+
+    QJsonDocument jsonDoc(json);
+    QUrl serverUrl("http://192.168.46.184:8080/saveactivity");
+    sendActivitySaveRequest(jsonDoc, serverUrl);
+}
+
+
+void CategoriesUser::sendActivitySaveRequest(const QJsonDocument &jsonDoc, const QUrl &url)
+{
+    qDebug() << "sendActivitySaveRequest called.";
+    QNetworkRequest request(url);
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+
+    QByteArray data = jsonDoc.toJson();
+    qDebug() << "Request payload (save activity):" << data;
+
+    QNetworkReply *reply = m_networkUser.post(request, data);
+    connect(reply, &QNetworkReply::finished, this, [this, reply]() {
+        onActivitySaveReply(reply);
+    });
+}
+
+void CategoriesUser::onActivitySaveReply(QNetworkReply *reply)
+{
+    qDebug() << "onActivitySaveReply called.";
+    if (reply->error() == QNetworkReply::NoError) {
+        qDebug() << "Activity saved successfully. Server response:" << reply->readAll();
+        emit activitySavedSuccess();
+    } else {
+        qWarning() << "Activity save failed. Error:" << reply->errorString();
+        emit activitySavedFailed(reply->errorString());
+    }
+    reply->deleteLater();
+}
+
+// ----------- Выгрузка активностей -----------
+
+void CategoriesUser::loadActivity()
+{
+    AppSave appSave;
+    QString login = appSave.getSavedLogin();
+    qDebug() << "Loading user activity for login:" << login;
+
+
+    QUrl url("http://192.168.46.184:8080/getuseractivity");
+    qDebug() << "Request URL:" << url.toString();
+
+    QUrlQuery query;
+    query.addQueryItem("login", login);
+    url.setQuery(query);
+
+    QNetworkRequest request(url);
+
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+    qDebug() << "Request URL:" << url.toString();
+
+    QNetworkReply *reply = m_networkUser.get(request);
+    connect(reply, &QNetworkReply::finished, this, [this, reply]() {
+        onUserActivitiesFetchReply(reply);
+    });
+}
+
+void CategoriesUser::onUserActivitiesFetchReply(QNetworkReply *reply)
+{
+    qDebug() << "onUserActivitiesFetchReply called.";
+
+    if (reply->error() == QNetworkReply::NoError) {
+        QByteArray response = reply->readAll();
+        qDebug() << "Activity loaded successfully. Server response:" << QString::fromUtf8(response);
+
+        if (response.isEmpty()) {
+            qWarning() << "Empty activity response received.";
+            emit activityLoadedFailed("Empty response from server.");
+            reply->deleteLater();
+            return;
+        }
+
+        QJsonParseError parseError;
+        QJsonDocument doc = QJsonDocument::fromJson(response, &parseError);
+        if (parseError.error != QJsonParseError::NoError) {
+            qWarning() << "JSON parse error:" << parseError.errorString();
+            emit activityLoadedFailed("JSON parse error.");
+            reply->deleteLater();
+            return;
+        }
+
+        if (!doc.isObject()) {
+            qWarning() << "Invalid JSON format: expected object at top level.";
+            emit activityLoadedFailed("Invalid JSON format.");
+            reply->deleteLater();
+            return;
+        }
+
+        QJsonObject root = doc.object();
+        QJsonArray activitiesArray = root.value("activities").toArray();
+
+        QVariantList activityList;
+        for (const QJsonValue &val : activitiesArray) {
+            QJsonObject obj = val.toObject();
+            QVariantMap map;
+            map["activity"] = obj.value("activity").toString();
+            map["iconId"] = obj.value("iconId").toString().toInt();  // <-- теперь корректно
+            activityList.append(map);
+        }
+
+        qDebug() << "Sending activities to QML:" << activityList;
+        emit activityLoadedSuccess(activityList);
+    } else {
+        qWarning() << "Failed to load user activity. Error:" << reply->errorString();
+        emit activityLoadedFailed(reply->errorString());
+    }
+
+    reply->deleteLater();
+}
+
+
+
+
+// ----------- Удаление активностей -----------
+
+void CategoriesUser::deleteActivity(const QString &activity)
+{
+    AppSave appSave;
+    QString savedLogin = appSave.getSavedLogin();
+
+    qDebug() << "deleteActivity called with login:" << savedLogin;
+    qDebug() << "activity:" << activity;
+
+    QJsonObject json;
+    json["login"] = savedLogin;
+    json["activity"] = activity.trimmed();
+
+    QJsonDocument jsonDoc(json);
+    QUrl serverUrl("http://192.168.46.184:8080/deleteactivity");  // Убедись, что сервер принимает этот эндпоинт
+    sendActivityDeleteRequest(jsonDoc, serverUrl);
+}
+
+
+void CategoriesUser::sendActivityDeleteRequest(const QJsonDocument &jsonDoc, const QUrl &url)
+{
+    qDebug() << "sendActivityDeleteRequest called.";
+    QNetworkRequest request(url);
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+
+    QByteArray data = jsonDoc.toJson();
+    qDebug() << "Request payload (delete activity):" << data;
+
+    QNetworkReply *reply = m_networkUser.post(request, data);
+    connect(reply, &QNetworkReply::finished, this, [this, reply]() {
+        onActivityDeleteReply(reply);
+    });
+}
+
+
+void CategoriesUser::onActivityDeleteReply(QNetworkReply *reply)
+{
+    qDebug() << "onActivityDeleteReply called.";
+    if (reply->error() == QNetworkReply::NoError) {
+        qDebug() << "Activity deleted successfully. Server response:" << reply->readAll();
+        emit activityDeletedSuccess();
+    } else {
+        qWarning() << "Activity delete failed. Error:" << reply->errorString();
+        emit activityDeletedFailed(reply->errorString());
     }
     reply->deleteLater();
 }

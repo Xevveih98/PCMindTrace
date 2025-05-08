@@ -7,3 +7,4 @@ CustButtTrBk 1.0 CustButtonTurnBack.qml
 CustViewNote 1.0 CustViewNote.qml
 CustTextFild 1.0 CustTextField.qml
 CustTagButon 1.0 CustTagButton.qml
+CustActvButn 1.0 CustActivityButton.qml
