@@ -34,6 +34,5 @@
         <file alias="watching.png">assets/icons/watching.png</file>
         <file alias="working-hours.png">assets/icons/working-hours.png</file>
         <file alias="add.png">assets/icons/add.png</file>
-        <file alias="addbutt.png">assets/icons/addbutt.png</file>
     </qresource>
 </RCC>

@@ -8,26 +8,25 @@ Rectangle {
     id: pageSettings
     color: "#181718"
 
-    property var stackViewmc: stackViewMainContent
-
     ScrollView {
         anchors.fill: parent
+
+        CustPageHead {
+            id: header
+            headerWidth: parent.width
+            titleText: "Настройки"
+        }
 
         Item {
             id: itemcore
             width: parent.width * 0.82
             height: parent.height
             anchors.horizontalCenter: parent.horizontalCenter
-            anchors.top: parent.top
-            anchors.topMargin: 20
+            anchors.top: header.bottom
 
             Column {
                 spacing: 20
                 width: parent.width
-
-                CustPageHead {
-                    titleText: "Настройки"
-                }
 
                 Column {
                     anchors.margins: 10

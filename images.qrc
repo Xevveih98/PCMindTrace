@@ -9,5 +9,6 @@
         <file alias="happy.png">assets/images/happy.png</file>
         <file alias="tear.png">assets/images/tear.png</file>
         <file alias="upset.png">assets/images/upset.png</file>
+        <file alias="addbuttplus.png">assets/images/addbuttplus.png</file>
     </qresource>
 </RCC>

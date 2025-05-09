@@ -57,6 +57,6 @@ Item {
         anchors.fill: parent
         replaceEnter: null
         replaceExit: null
-        initialItem: "qrc:/pages/Settings.qml"
+        initialItem: "qrc:/pages/Home.qml"
     }
 }

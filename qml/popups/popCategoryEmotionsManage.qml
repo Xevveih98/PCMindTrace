@@ -174,7 +174,7 @@ Popup {
                             anchors.centerIn: parent
                             width: parent.width * 0.8
                             height: parent.height * 0.8
-                            source: "qrc:/icons/addbutt.png"
+                            source: "qrc:/images/addbuttplus.png"
                             fillMode: Image.PreserveAspectFit
                         }
                     }

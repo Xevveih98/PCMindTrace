@@ -27,8 +27,6 @@ qt_add_qml_module(appPCMindTrace
     VERSION 1.0
     QML_FILES
         Main.qml
-        RESOURCES icons.qrc
-        RESOURCES icons2.qrc
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
@@ -46,7 +44,7 @@ target_link_libraries(appPCMindTrace
     PRIVATE Qt6::Quick Qt6::Sql Qt6::Core
 )
 
-target_sources(appPCMindTrace PRIVATE images.qrc qml.qrc components.qrc popups.qrc)
+target_sources(appPCMindTrace PRIVATE images.qrc qml.qrc components.qrc popups.qrc icons2.qrc icons.qrc)
 
 include(GNUInstallDirs)
 install(TARGETS appPCMindTrace

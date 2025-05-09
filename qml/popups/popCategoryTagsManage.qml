@@ -102,7 +102,7 @@ Popup {
                         const tags = tagInput.getTags()
                         console.log("Final tags for saving:", tags)
                         categoriesUser.saveTags(tags)
-                        exitPopup.close()
+                        managerPopup.close()
                     })
                 }
             }

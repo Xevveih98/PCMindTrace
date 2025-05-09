@@ -1,10 +1,10 @@
-import QtQuick
-import QtQuick.Controls
+import QtQuick 2.15
+import QtQuick.Controls 2.15
 
 Item {
     id: wrapper
     width: buttonWidth
-    height: Math.max(buttonRect.implicitHeight, 36)
+    height: 36
 
     // Настраиваемая ширина кнопки
     property int buttonWidth: 120
