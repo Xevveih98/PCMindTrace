@@ -1,5 +1,5 @@
-#ifndef CATEGORIESUSER_H
-#define CATEGORIESUSER_H
+#ifndef FOLDERSUSER_H
+#define FOLDERSUSER_H
 
 #include <QObject>
 #include <QNetworkAccessManager>
@@ -43,4 +43,4 @@ private:
     QNetworkAccessManager m_networkUser;
 };
 
-#endif // CATEGORIESUSER_H
+#endif // FOLDERSUSER_H

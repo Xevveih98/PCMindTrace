@@ -9,3 +9,4 @@ CustTextFild 1.0 CustTextField.qml
 CustTagButon 1.0 CustTagButton.qml
 CustActvButn 1.0 CustActivityButton.qml
 CustEmotButn 1.0 CustEmotionButton.qml
+CustFoldBlok 1.0 CustFolderBlock.qml

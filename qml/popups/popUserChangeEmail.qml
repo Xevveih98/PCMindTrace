@@ -12,6 +12,10 @@ Popup {
     dim: true
     closePolicy: Popup.CloseOnPressOutside | Popup.CloseOnEscape
     anchors.centerIn: Overlay.overlay
+    Overlay.modal: Rectangle {
+        color: "#181718"
+        opacity: 0.9
+    }
     background: Rectangle {
         color: "#2D292C"
         radius: 10

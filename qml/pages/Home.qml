@@ -1,7 +1,8 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import CustomComponents 1.0
+import CustomComponents
+import "../CustomComponents"
 
 Rectangle {
     id: pageHomeScreen
@@ -26,6 +27,8 @@ Rectangle {
             Column {
                 width: parent.width
 
+// ---------------- менеджер папок -----------------
+
                 Item {
                     id: folderTabs
                     width:  parent.width
@@ -40,41 +43,53 @@ Rectangle {
 
                         Item {
                             width: height
-                            height: 20
+                            height: 40
                             anchors.left: parent.left
                             anchors.leftMargin: 16
                             anchors.verticalCenter: parent.verticalCenter
 
-                            Image {
-                                anchors.centerIn: parent
-                                width: parent.width
-                                height: parent.height
-                                source: "qrc:/images/addbuttplus.png"
-                                fillMode: Image.PreserveAspectFit
-                            }
-
                             MouseArea {
                                 anchors.fill: parent
                                 onClicked: {
-                                    console.log("Сохраняется активность с иконкой:", selectedIconId, "и названием:", activityName)
+                                    var component = Qt.createComponent("qrc:/popups/popFoldersManager.qml")
+                                    if (component.status === Component.Ready) {
+                                        var popup = component.createObject(parent)
+                                        popup.open()
+                                    }
+                                }
+
+                                Image {
+                                    anchors.centerIn: parent
+                                    width: 20
+                                    height: 20
+                                    source: "qrc:/images/addbuttplus.png"
+                                    fillMode: Image.PreserveAspectFit
                                 }
                             }
                         }
                     }
                 }
 
+// ---------------- менеджер тудейс ------------------
+
                 Item {
                     id: todayTasksView
 
                 }
 
+// ---------------- менеджер записей ------------------
+
                 Item {
                     id: newEntryPanel
                 }
 
+// ---------------- менеджер фильтрации записей по дате
+
                 Item {
                     id: monthSwitchButton
                 }
+
+// ---------------- менеджер отображения записей ------
 
                 Item {
                     id:entryFeed

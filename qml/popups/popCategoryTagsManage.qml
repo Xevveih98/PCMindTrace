@@ -2,6 +2,7 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import PCMindTrace 1.0
 import CustomComponents
+import "../CustomComponents"
 
 Popup {
     id: managerPopup
@@ -13,8 +14,9 @@ Popup {
     padding: 0
     closePolicy: Popup.CloseOnPressOutside | Popup.CloseOnEscape
     anchors.centerIn: Overlay.overlay
-    Overlay.modeless: Rectangle {
-        color: "#11272de7"
+    Overlay.modal: Rectangle {
+        color: "#181718"
+        opacity: 0.9
     }
     background: Rectangle {
         color: "#2D292C"

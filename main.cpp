@@ -8,6 +8,8 @@
 #include "src/AuthUser.h"
 #include "src/AppSave.h"
 #include "src/CategoriesUser.h"
+#include "src/FoldersUser.h"
+#include "src/CustomComponentsSingleton.h"
 
 int main(int argc, char *argv[])
 {
@@ -22,10 +24,18 @@ int main(int argc, char *argv[])
         Qt::QueuedConnection);
 
     qmlRegisterSingletonInstance("PCMindTrace", 1, 0, "AppSave", new AppSave);
+    qmlRegisterSingletonType<CustomComponentsSingleton>("CustomComponents", 1, 0, "CustomComponents",
+        [](QQmlEngine *, QJSEngine *) -> QObject * {
+            return CustomComponentsSingleton::instance();
+    });
+
     AuthUser authUser;
     CategoriesUser categoriesUser;
+    FoldersUser foldersUser;
+
     engine.rootContext()->setContextProperty("authUser", &authUser);
     engine.rootContext()->setContextProperty("categoriesUser", &categoriesUser);
+    engine.rootContext()->setContextProperty("foldersUser", &foldersUser);
 
     engine.addImportPath("qrc:/");
     engine.loadFromModule("PCMindTrace", "Main");

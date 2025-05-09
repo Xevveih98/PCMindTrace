@@ -21,6 +21,7 @@ qt_add_executable(appPCMindTrace
     src/CategoriesUser.h
     src/FoldersUser.h
     src/FoldersUser.cpp
+    src/CustomComponentsSingleton.h
 )
 
 qt_add_qml_module(appPCMindTrace
