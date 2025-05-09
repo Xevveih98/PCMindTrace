@@ -89,7 +89,7 @@ Popup {
                         anchors.fill: parent
                         onClicked: {
                             console.log("Иконка нажата")
-                            var component = Qt.createComponent("qrc:/popups/popIconPicker.qml")
+                            var component = Qt.createComponent("qrc:/popups/popIconPicker2.qml")
                             if (component.status === Component.Ready) {
                                 var popup = component.createObject(parent, {
                                     x: parent.mapToItem(null, 0, 0).x - 34,
@@ -203,8 +203,8 @@ Popup {
 
                         Repeater {
                             model: emotionListModel
-                            delegate: CustActvButn {
-                                activityText: model.emotion
+                            delegate: CustEmotButn {
+                                emotionText: model.emotion
                                 iconPath: getIconPathById(model.iconId)
                                 buttonWidth: implicitWidth
                                 buttonHeight: 43
@@ -270,7 +270,30 @@ Popup {
 
     ListModel {
         id: iconModel
+        ListElement { iconId: 1; path: "qrc:/icons2/amaze.png" }
+        ListElement { iconId: 2; path: "qrc:/icons2/angry(1).png" }
+        ListElement { iconId: 3; path: "qrc:/icons2/angry.png" }
+        ListElement { iconId: 4; path: "qrc:/icons2/apathy(1).png" }
+        ListElement { iconId: 5; path: "qrc:/icons2/apathy.png" }
+        ListElement { iconId: 6; path: "qrc:/icons2/complain.png" }
+        ListElement { iconId: 7; path: "qrc:/icons2/cool.png" }
+        ListElement { iconId: 8; path: "qrc:/icons2/cry.png" }
+        ListElement { iconId: 9; path: "qrc:/icons2/crying(1).png" }
+        ListElement { iconId: 10; path: "qrc:/icons2/cupid-arrow.png" }
+        ListElement { iconId: 11; path: "qrc:/icons2/dove.png" }
+        ListElement { iconId: 12; path: "qrc:/icons2/freezing.png" }
+        ListElement { iconId: 13; path: "qrc:/icons2/hand.png" }
+        ListElement { iconId: 14; path: "qrc:/icons2/happiness.png" }
+        ListElement { iconId: 15; path: "qrc:/icons2/heart.png" }
+        ListElement { iconId: 16; path: "qrc:/icons2/laugh.png" }
+        ListElement { iconId: 17; path: "qrc:/icons2/love-song.png" }
+        ListElement { iconId: 18; path: "qrc:/icons2/sticker.png" }
+        ListElement { iconId: 19; path: "qrc:/icons2/stress.png" }
+        ListElement { iconId: 20; path: "qrc:/icons2/suspicious.png" }
+        ListElement { iconId: 21; path: "qrc:/icons2/thinking.png" }
+        ListElement { iconId: 22; path: "qrc:/icons2/work-injury.png" }
     }
+
 
     function getIconPathById(iconId) {
         for (let i = 0; i < iconModel.count; ++i) {

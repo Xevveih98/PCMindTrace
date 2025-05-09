@@ -52,7 +52,6 @@ signals:
     void emotionDeletedSuccess();
     void emotionDeletedFailed(const QString &error);
 
-
 private slots:
     void onTagsSaveReply(QNetworkReply *reply);
     void onUserTagsFetchReply(QNetworkReply *reply);
@@ -62,6 +61,10 @@ private slots:
     void onUserActivitiesFetchReply(QNetworkReply *reply);
     void onActivityDeleteReply(QNetworkReply *reply);
 
+    void onEmotionSaveReply(QNetworkReply *reply);
+    void onUserEmotionsFetchReply(QNetworkReply *reply);
+    void onEmotionDeleteReply(QNetworkReply *reply);
+
 private:
     void sendToServer(const QJsonDocument &jsonDoc, const QUrl &url);
 
@@ -70,6 +73,9 @@ private:
 
     void sendActivitySaveRequest(const QJsonDocument &jsonDoc, const QUrl &url);
     void sendActivityDeleteRequest(const QJsonDocument &jsonDoc, const QUrl &url);
+
+    void sendEmotionSaveRequest(const QJsonDocument &jsonDoc, const QUrl &url);
+    void sendEmotionDeleteRequest(const QJsonDocument &jsonDoc, const QUrl &url);
 
     QNetworkAccessManager m_networkUser;
 };

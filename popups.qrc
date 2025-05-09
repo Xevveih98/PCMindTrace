@@ -8,5 +8,6 @@
         <file alias="popCategoryEmotionsManage.qml">qml/popups/popCategoryEmotionsManage.qml</file>
         <file alias="popCategoryTagsManage.qml">qml/popups/popCategoryTagsManage.qml</file>
         <file alias="popIconPicker.qml">qml/popups/popIconPicker.qml</file>
+        <file alias="popIconPicker2.qml">qml/popups/popIconPicker2.qml</file>
     </qresource>
 </RCC>

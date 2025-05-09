@@ -1,0 +1,26 @@
+<RCC>
+    <qresource prefix="/icons2">
+    <file alias="amaze.png">assets/icons2/amaze.png</file>
+    <file alias="angry(1).png">assets/icons2/angry(1).png</file>
+    <file alias="angry.png">assets/icons2/angry.png</file>
+    <file alias="apathy(1).png">assets/icons2/apathy(1).png</file>
+    <file alias="apathy.png">assets/icons2/apathy.png</file>
+    <file alias="complain.png">assets/icons2/complain.png</file>
+    <file alias="cool.png">assets/icons2/cool.png</file>
+    <file alias="cry.png">assets/icons2/cry.png</file>
+    <file alias="crying(1).png">assets/icons2/crying(1).png</file>
+    <file alias="cupid-arrow.png">assets/icons2/cupid-arrow.png</file>
+    <file alias="dove.png">assets/icons2/dove.png</file>
+    <file alias="freezing.png">assets/icons2/freezing.png</file>
+    <file alias="hand.png">assets/icons2/hand.png</file>
+    <file alias="happiness.png">assets/icons2/happiness.png</file>
+    <file alias="heart.png">assets/icons2/heart.png</file>
+    <file alias="laugh.png">assets/icons2/laugh.png</file>
+    <file alias="love-song.png">assets/icons2/love-song.png</file>
+    <file alias="sticker.png">assets/icons2/sticker.png</file>
+    <file alias="stress.png">assets/icons2/stress.png</file>
+    <file alias="suspicious.png">assets/icons2/suspicious.png</file>
+    <file alias="thinking.png">assets/icons2/thinking.png</file>
+    <file alias="work-injury.png">assets/icons2/work-injury.png</file>
+    </qresource>
+</RCC>

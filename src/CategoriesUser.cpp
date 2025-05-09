@@ -370,6 +370,181 @@ void CategoriesUser::onActivityDeleteReply(QNetworkReply *reply)
     reply->deleteLater();
 }
 
+// ----------- Добавление настроения -----------
+
+void CategoriesUser::saveEmotion(const QString &iconId, const QString &iconlabel)
+{
+    AppSave appSave;
+    QString savedLogin = appSave.getSavedLogin();
+
+    qDebug() << "saveEmotion called with login:" << savedLogin;
+    qDebug() << "iconId:" << iconId << ", iconlabel:" << iconlabel;
+
+    if (savedLogin.isEmpty() || iconId.isEmpty() || iconlabel.isEmpty()) {
+        qWarning() << "Invalid input data: Login, iconId, or iconlabel is empty!";
+        return;
+    }
+
+    QJsonObject json;
+    json["login"] = savedLogin;
+    json["icon_id"] = iconId;
+    json["icon_label"] = iconlabel;
+
+    QJsonDocument jsonDoc(json);
+    QUrl serverUrl("http://192.168.46.184:8080/saveemotion");
+    sendEmotionSaveRequest(jsonDoc, serverUrl);
+}
+
+void CategoriesUser::sendEmotionSaveRequest(const QJsonDocument &jsonDoc, const QUrl &url)
+{
+    qDebug() << "sendEmotionSaveRequest called.";
+    QNetworkRequest request(url);
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+
+    QByteArray data = jsonDoc.toJson();
+    qDebug() << "Request payload (save emotion):" << data;
+
+    QNetworkReply *reply = m_networkUser.post(request, data);
+    connect(reply, &QNetworkReply::finished, this, [this, reply]() {
+        onEmotionSaveReply(reply);
+    });
+}
+
+void CategoriesUser::onEmotionSaveReply(QNetworkReply *reply)
+{
+    qDebug() << "onEmotionSaveReply called.";
+    if (reply->error() == QNetworkReply::NoError) {
+        qDebug() << "Emotion saved successfully. Server response:" << reply->readAll();
+        emit emotionSavedSuccess();
+    } else {
+        qWarning() << "Emotion save failed. Error:" << reply->errorString();
+        emit emotionSavedFailed(reply->errorString());
+    }
+    reply->deleteLater();
+}
+
+// ----------- Выгрузка настроения -----------
+
+void CategoriesUser::loadEmotion()
+{
+    AppSave appSave;
+    QString login = appSave.getSavedLogin();
+    qDebug() << "Loading user emotions for login:" << login;
+
+    QUrl url("http://192.168.46.184:8080/getuseremotions");
+    QUrlQuery query;
+    query.addQueryItem("login", login);
+    url.setQuery(query);
+
+    QNetworkRequest request(url);
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+
+    QNetworkReply *reply = m_networkUser.get(request);
+    connect(reply, &QNetworkReply::finished, this, [this, reply]() {
+        onUserEmotionsFetchReply(reply);
+    });
+}
+
+void CategoriesUser::onUserEmotionsFetchReply(QNetworkReply *reply)
+{
+    qDebug() << "onUserEmotionsFetchReply called.";
+
+    if (reply->error() == QNetworkReply::NoError) {
+        QByteArray response = reply->readAll();
+        qDebug() << "Emotions loaded successfully. Server response:" << QString::fromUtf8(response);
+
+        if (response.isEmpty()) {
+            qWarning() << "Empty emotion response received.";
+            emit emotionLoadedFailed("Empty response from server.");
+            reply->deleteLater();
+            return;
+        }
+
+        QJsonParseError parseError;
+        QJsonDocument doc = QJsonDocument::fromJson(response, &parseError);
+        if (parseError.error != QJsonParseError::NoError) {
+            qWarning() << "JSON parse error:" << parseError.errorString();
+            emit emotionLoadedFailed("JSON parse error.");
+            reply->deleteLater();
+            return;
+        }
+
+        if (!doc.isObject()) {
+            qWarning() << "Invalid JSON format: expected object at top level.";
+            emit emotionLoadedFailed("Invalid JSON format.");
+            reply->deleteLater();
+            return;
+        }
+
+        QJsonObject root = doc.object();
+        QJsonArray emotionsArray = root.value("emotions").toArray();
+
+        QVariantList emotionList;
+        for (const QJsonValue &val : emotionsArray) {
+            QJsonObject obj = val.toObject();
+            QVariantMap map;
+            map["emotion"] = obj.value("emotion").toString();
+            map["iconId"] = obj.value("iconId").toString().toInt();
+            emotionList.append(map);
+        }
+
+        qDebug() << "Sending emotions to QML:" << emotionList;
+        emit emotionLoadedSuccess(emotionList);
+    } else {
+        qWarning() << "Failed to load user emotions. Error:" << reply->errorString();
+        emit emotionLoadedFailed(reply->errorString());
+    }
+
+    reply->deleteLater();
+}
+
+
+// ----------- Удаление настроения -----------
+
+void CategoriesUser::deleteEmotion(const QString &emotion)
+{
+    AppSave appSave;
+    QString savedLogin = appSave.getSavedLogin();
+
+    qDebug() << "deleteEmotion called with login:" << savedLogin;
+    qDebug() << "emotion:" << emotion;
+
+    QJsonObject json;
+    json["login"] = savedLogin;
+    json["emotion"] = emotion.trimmed();
+
+    QJsonDocument jsonDoc(json);
+    QUrl serverUrl("http://192.168.46.184:8080/deleteemotion");
+    sendEmotionDeleteRequest(jsonDoc, serverUrl);
+}
+
+void CategoriesUser::sendEmotionDeleteRequest(const QJsonDocument &jsonDoc, const QUrl &url)
+{
+    qDebug() << "sendEmotionDeleteRequest called.";
+    QNetworkRequest request(url);
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+
+    QByteArray data = jsonDoc.toJson();
+    qDebug() << "Request payload (delete emotion):" << data;
+
+    QNetworkReply *reply = m_networkUser.post(request, data);
+    connect(reply, &QNetworkReply::finished, this, [this, reply]() {
+        onEmotionDeleteReply(reply);
+    });
+}
+
+void CategoriesUser::onEmotionDeleteReply(QNetworkReply *reply)
+{
+    qDebug() << "onEmotionDeleteReply called.";
+    if (reply->error() == QNetworkReply::NoError) {
+        qDebug() << "Emotion deleted successfully. Server response:" << reply->readAll();
+        emit emotionDeletedSuccess();
+    } else {
+        qWarning() << "Emotion delete failed. Error:" << reply->errorString();
+        emit emotionDeletedFailed(reply->errorString());
+    }
+    reply->deleteLater();
+}
 
 // ----------- Общий метод отправки (используется для регистрации) -----------
 void CategoriesUser::sendToServer(const QJsonDocument &jsonDoc, const QUrl &url)

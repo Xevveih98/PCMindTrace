@@ -10,5 +10,6 @@
         <file alias="CustTextField.qml">qml/CustomComponents/CustTextField.qml</file>
         <file alias="CustTagButton.qml">qml/CustomComponents/CustTagButton.qml</file>
         <file alias="CustActivityButton.qml">qml/CustomComponents/CustActivityButton.qml</file>
+        <file alias="CustEmotionButton.qml">qml/CustomComponents/CustEmotionButton.qml</file>
     </qresource>
 </RCC>
