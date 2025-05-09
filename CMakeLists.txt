@@ -19,7 +19,8 @@ qt_add_executable(appPCMindTrace
     src/AppSave.cpp
     src/CategoriesUser.cpp
     src/CategoriesUser.h
-
+    src/FoldersUser.h
+    src/FoldersUser.cpp
 )
 
 qt_add_qml_module(appPCMindTrace
