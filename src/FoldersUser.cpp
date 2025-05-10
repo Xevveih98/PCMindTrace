@@ -199,6 +199,7 @@ void FoldersUser::onFolderDeleteReply(QNetworkReply *reply)
     if (reply->error() == QNetworkReply::NoError) {
         qDebug() << "Папка успешно удалена. Ответ сервера:" << reply->readAll();
         emit folderDeletedSuccess();
+        emit clearFolderList();
         FoldersUser::loadFolder();
     } else {
         qWarning() << "Удаление папки не удалось. Ошибка:" << reply->errorString();
