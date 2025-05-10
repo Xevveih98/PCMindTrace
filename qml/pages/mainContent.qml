@@ -23,7 +23,7 @@ Item {
         height: parent.height
         edge: Qt.LeftEdge
         interactive: true
-        dragMargin: 300
+        dragMargin: 120
 
         ColumnLayout {
             anchors.fill: parent

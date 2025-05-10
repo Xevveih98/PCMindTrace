@@ -97,8 +97,8 @@ Popup {
                         onClicked: {
                             const name = folderNameInput.text.trim()
                             if (name.length > 0) {
-                                foldersUser.saveFolder(name) // Сохраняем папку
-                                folderNameInput.text = "" // Очищаем поле
+                                foldersUser.saveFolder(name)
+                                folderNameInput.text = ""
                             }
                         }
 
@@ -136,16 +136,47 @@ Popup {
                     itemCount: model.itemCount
 
                     Component.onCompleted: {
-                        console.log("Загружен делегат с папкой:", model.name, "и количеством элементов:", model.itemCount);
+                        console.log("Загружен в менеджер папок делегат с папкой:", model.name, "и количеством элементов:", model.itemCount);
                     }
 
                     onDeleteClicked: {
-                        console.log("Удалить папку:", model.name);
-                        foldersUser.deleteFolder(name); // Удаляем папку
+                        console.log("Попытка создать компонент qrc:/popups/popFolderDeleteAdmit.qml");
+                        var component = Qt.createComponent("qrc:/popups/popFolderDeleteAdmit.qml");
+                        if (component.status === Component.Ready) {
+                            console.log("Компонент успешно загружен.");
+                            var popup = component.createObject(parent);
+                            if (popup) {
+                                console.log("Попап успешно создан.");
+                                popup.folderName = model.name; // Передаем имя папки в попап
+                                popup.open(); // Открываем попап
+                            } else {
+                                console.error("Не удалось создать объект попапа.");
+                            }
+                        } else if (component.status === Component.Error) {
+                            console.error("Ошибка при загрузке компонента: " + component.errorString());
+                        } else {
+                            console.log("Компонент еще не готов.");
+                        }
                     }
 
                     onEditClicked: {
-                        console.log("Изменить папку:", model.name);
+                        console.log("Попытка создать компонент popFolderChangeName.qml");
+                        var component = Qt.createComponent("qrc:/popups/popFolderChangeName.qml");
+                        if (component.status === Component.Ready) {
+                            console.log("Компонент успешно загружен.");
+                            var popup = component.createObject(parent);
+                            if (popup) {
+                                console.log("Попап успешно создан.");
+                                popup.folderName = model.name; // Передаем имя папки в попап
+                                popup.open(); // Открываем попап
+                            } else {
+                                console.error("Не удалось создать объект попапа.");
+                            }
+                        } else if (component.status === Component.Error) {
+                                console.error("Ошибка при загрузке компонента: " + component.errorString());
+                        } else {
+                                console.log("Компонент еще не готов.");
+                        }
                     }
                 }
             }
@@ -159,25 +190,19 @@ Popup {
     Connections {
         target: foldersUser    
         onFoldersLoadedSuccess: function(folders) {
-            console.log("Данные загружены:", folders);
             foldersListModel.clear();
+            console.log("Данные загружены:", folders);
             for (let i = 0; i < folders.length; ++i) {
                 foldersListModel.append({
                     name: folders[i].name,
                     itemCount: folders[i].itemCount
                 });
-                console.log("Данные загружены:", folders);
             }
         }
 
-        onFolderSavedSuccess: {
-            console.log("Папка успешно сохранена. Перезагрузка папок...");
-            foldersUser.loadFolder(); // После сохранения перезагружаем папки
-        }
-
-        onFolderDeletedSuccess: {
-            console.log("Папка успешно удалена. Перезагрузка папок...");
-            foldersUser.loadFolder(); // После удаления перезагружаем папки
+        onClearFolderList: {
+            console.log("Папка успешно изменена. Перезагрузка папок...");
+            foldersListModel.clear();  // Очищаем модель перед обновлением
         }
     }
 }

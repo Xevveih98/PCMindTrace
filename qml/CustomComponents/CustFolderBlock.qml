@@ -8,7 +8,7 @@ Item {
     property string folderName: ""
     property int itemCount: 0
 
-    signal deleteClicked()
+    signal deleteClicked();
     signal editClicked()
 
     Rectangle {
@@ -53,7 +53,7 @@ Item {
                         MouseArea {
                             anchors.fill: parent
                             onClicked: {
-                                deleteClicked()
+                                deleteClicked();
                                 console.log("Удалить папку")
                             }
                         }

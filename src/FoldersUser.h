@@ -20,6 +20,7 @@ public:
     Q_INVOKABLE void saveFolder(const QString &folder);
     Q_INVOKABLE void loadFolder();
     Q_INVOKABLE void deleteFolder(const QString &folder);
+    Q_INVOKABLE void changeFolder(const QString &newName, const QString &oldName);
 
 signals:
     void folderSavedSuccess();
@@ -28,17 +29,22 @@ signals:
     void folderLoadedFailed(const QString &error);
     void folderDeletedSuccess();
     void folderDeletedFailed(const QString &error);
+    void folderChangedSuccess();
+    void folderChangedFailed(const QString &error);
+    void clearFolderList();
 
 private slots:
     void onFolderSaveReply(QNetworkReply *reply);
     void onUserFolderFetchReply(QNetworkReply *reply);
     void onFolderDeleteReply(QNetworkReply *reply);
+    void onFolderChangeReply(QNetworkReply *reply);
 
 private:
     void sendToServer(const QJsonDocument &jsonDoc, const QUrl &url);
 
     void sendFolderSaveRequest(const QJsonDocument &jsonDoc, const QUrl &url);
     void sendFolderDeleteRequest(const QJsonDocument &jsonDoc, const QUrl &url);
+    void sendFolderChangeRequest(const QJsonDocument &jsonDoc, const QUrl &url);
 
     QNetworkAccessManager m_networkUser;
 };

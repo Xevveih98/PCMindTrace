@@ -1,7 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import CustomComponents
+import CustomComponents 1.0
 import "../CustomComponents"
 
 Rectangle {
@@ -42,6 +42,7 @@ Rectangle {
                         anchors.fill: parent
 
                         Item {
+                            id: plusminifolder
                             width: height
                             height: 40
                             anchors.left: parent.left
@@ -79,6 +80,38 @@ Rectangle {
                                 }
                             }
                         }
+
+                        ListModel {
+                            id: foldersListModel
+                        }
+
+                        Item {
+                            id: sdeeer
+                            anchors.left: plusminifolder.right
+                            width: parent.width * 0.8
+                            height: 40
+                            anchors.verticalCenter: parent.verticalCenter
+
+                            ListView {
+                                anchors.fill: parent
+                                model: foldersListModel
+                                spacing: 6
+                                orientation: ListView.Horizontal
+                                clip: true
+
+                                delegate: CustFoldButn {
+                                    folderName: model.name
+                                    buttonWidth: implicitWidth
+                                    buttonHeight: 40
+
+                                    Component.onCompleted: {
+                                        console.log("Загружен в главное окно делегат с папкой:", model.name);
+                                    }
+                                }
+
+
+                            }
+                        }
                     }
                 }
 
@@ -108,6 +141,28 @@ Rectangle {
                 }
             }
         }
+    }
+
+    Connections {
+        target: foldersUser
+        onFoldersLoadedSuccess: function(folders) {
+            console.log("Данные загружены:", folders);
+            foldersListModel.clear();
+            for (let i = 0; i < folders.length; ++i) {
+                foldersListModel.append({
+                    name: folders[i].name,
+                    itemCount: folders[i].itemCount
+                });
+            }
+        }
+
+        onClearFolderList: {
+            foldersListModel.clear();  // Очищаем старую модель
+        }
+    }
+
+    Component.onCompleted: {
+            foldersUser.loadFolder()
     }
 }
 

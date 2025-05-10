@@ -4,6 +4,7 @@
 FoldersUser::FoldersUser(QObject *parent)
     : QObject(parent)
 {
+    connect(this, &FoldersUser::folderChangedSuccess, this, &FoldersUser::loadFolder);
     connect(&m_networkUser, &QNetworkAccessManager::finished, this, [=](QNetworkReply *reply) {
         QUrl endpoint = reply->request().url();
         qDebug() << "Получен сетевой ответ от:" << endpoint.toString();
@@ -13,6 +14,8 @@ FoldersUser::FoldersUser(QObject *parent)
         } else if (endpoint.path().contains("/getuserfolder")) {
             onUserFolderFetchReply(reply);
         } else if (endpoint.path().contains("/deletefolder")) {
+            onFolderDeleteReply(reply);
+        } else if (endpoint.path().contains("/changefolder")) {
             onFolderDeleteReply(reply);
         } else {
             qWarning() << "Необработанный эндпоинт в FolderUser:" << endpoint.toString();
@@ -62,6 +65,7 @@ void FoldersUser::onFolderSaveReply(QNetworkReply *reply)
     if (reply->error() == QNetworkReply::NoError) {
         qDebug() << "Папки успешно сохранены. Ответ сервера:" << reply->readAll();
         emit folderSavedSuccess();
+        FoldersUser::loadFolder();
     } else {
         qWarning() << "Папки не сохранились. Ответ сервера:" << reply->errorString();
         emit folderSavedFailed(reply->errorString());
@@ -155,7 +159,7 @@ void FoldersUser::onUserFolderFetchReply(QNetworkReply *reply)
 
 
 
-// ----------- Удаление тегов -----------
+// ----------- Удаление папки -----------
 
 void FoldersUser::deleteFolder(const QString &folder)
 {
@@ -195,9 +199,61 @@ void FoldersUser::onFolderDeleteReply(QNetworkReply *reply)
     if (reply->error() == QNetworkReply::NoError) {
         qDebug() << "Папка успешно удалена. Ответ сервера:" << reply->readAll();
         emit folderDeletedSuccess();
+        FoldersUser::loadFolder();
     } else {
         qWarning() << "Удаление папки не удалось. Ошибка:" << reply->errorString();
         emit folderDeletedFailed(reply->errorString());
+    }
+    reply->deleteLater();
+}
+
+// ----------- Изменение папки -----------
+
+void FoldersUser::changeFolder(const QString &newName, const QString &oldName)
+{
+    AppSave appSave;
+    QString savedLogin = appSave.getSavedLogin();
+
+    qDebug() << "ИзменениеПапки вызвано пользователем:" << savedLogin;
+    qDebug() << "Старое название:" << oldName;
+    qDebug() << "Новое название:" << newName;
+
+    QJsonObject json;
+    json["login"] = savedLogin;
+    json["oldName"] = oldName.trimmed();
+    json["newName"] = newName.trimmed();
+
+    QJsonDocument jsonDoc(json);
+    QUrl serverUrl("http://192.168.46.184:8080/changefolder");
+    sendFolderChangeRequest(jsonDoc, serverUrl);
+}
+
+void FoldersUser::sendFolderChangeRequest(const QJsonDocument &jsonDoc, const QUrl &url)
+{
+    qDebug() << "sendFolderChangeRequest вызван.";
+    QNetworkRequest request(url);
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+
+    QByteArray data = jsonDoc.toJson();
+    qDebug() << "Request payload (изменение папки):" << data;
+
+    QNetworkReply *reply = m_networkUser.post(request, data);
+    connect(reply, &QNetworkReply::finished, this, [this, reply]() {
+        onFolderChangeReply(reply);
+    });
+}
+
+void FoldersUser::onFolderChangeReply(QNetworkReply *reply)
+{
+    qDebug() << "onFolderChangeReply вызван.";
+    if (reply->error() == QNetworkReply::NoError) {
+        qDebug() << "Папка успешно изменена. Ответ сервера:" << reply->readAll();
+        emit folderChangedSuccess();
+        emit clearFolderList();
+        FoldersUser::loadFolder();
+    } else {
+        qWarning() << "Изменение папки не удалось. Ошибка:" << reply->errorString();
+        emit folderChangedFailed(reply->errorString());
     }
     reply->deleteLater();
 }
