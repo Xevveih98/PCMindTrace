@@ -51,10 +51,22 @@ Rectangle {
                             MouseArea {
                                 anchors.fill: parent
                                 onClicked: {
-                                    var component = Qt.createComponent("qrc:/popups/popFoldersManager.qml")
+                                    console.log("Попытка создать компонент popFoldersManager.qml");
+                                    var component = Qt.createComponent("qrc:/popups/popFoldersManager.qml");
                                     if (component.status === Component.Ready) {
-                                        var popup = component.createObject(parent)
-                                        popup.open()
+                                        console.log("Компонент успешно загружен.");
+
+                                        var popup = component.createObject(parent);
+                                        if (popup) {
+                                            console.log("Попап успешно создан.");
+                                            popup.open(); // Открываем попап
+                                        } else {
+                                            console.error("Не удалось создать объект попапа.");
+                                        }
+                                    } else if (component.status === Component.Error) {
+                                        console.error("Ошибка при загрузке компонента: " + component.errorString());
+                                    } else {
+                                        console.log("Компонент еще не готов.");
                                     }
                                 }
 

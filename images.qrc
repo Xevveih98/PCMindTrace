@@ -10,5 +10,7 @@
         <file alias="tear.png">assets/images/tear.png</file>
         <file alias="upset.png">assets/images/upset.png</file>
         <file alias="addbuttplus.png">assets/images/addbuttplus.png</file>
+        <file alias="delete.png">assets/images/delete.png</file>
+        <file alias="settings.png">assets/images/settings.png</file>
     </qresource>
 </RCC>

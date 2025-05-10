@@ -196,7 +196,7 @@ Rectangle {
             anchors.fill: buttAuthCheck
             onClicked: {
                 // Входим в систему, передавая логин и пароль
-                authUser.loginUser(regLogin.text, regPassword.text)
+                authUser.loginUser(regLogin.text, regEmail.text, regPassword.text)
 
 
             }

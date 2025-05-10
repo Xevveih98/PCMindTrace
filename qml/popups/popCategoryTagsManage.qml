@@ -98,8 +98,6 @@ Popup {
                 anchors.fill: parent
                 onClicked: {
                     tagInput.confirmCurrentTag()
-
-                    // Оборачиваем в Qt.callLater, чтобы дождаться обновления модели после удаления
                     Qt.callLater(() => {
                         const tags = tagInput.getTags()
                         console.log("Final tags for saving:", tags)

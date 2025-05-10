@@ -34,14 +34,14 @@ AuthUser::AuthUser(QObject *parent)
 void AuthUser::registerUser(const QString &login, const QString &email, const QString &password)
 {
     qDebug() << "registerUser called with:";
-    qDebug() << "  login:" << login;
-    qDebug() << "  email:" << email;
-    qDebug() << "  password:" << password;
+    qDebug() << "  login:" << login.trimmed();
+    qDebug() << "  email:" << email.trimmed();
+    qDebug() << "  password:" << password.trimmed();
 
     QJsonObject json;
-    json["login"] = login;
-    json["email"] = email;
-    json["password"] = password;
+    json["login"] = login.trimmed();
+    json["email"] = email.trimmed();
+    json["password"] = password.trimmed();
 
     QJsonDocument jsonDoc(json);
     QUrl serverUrl("http://192.168.46.184:8080/register");
@@ -62,15 +62,17 @@ void AuthUser::onRegistrationReply(QNetworkReply *reply)
 }
 
 // ----------- Вход (Login) -----------
-void AuthUser::loginUser(const QString &login, const QString &password)
+void AuthUser::loginUser(const QString &login, const QString &email, const QString &password)
 {
     qDebug() << "loginUser called with:";
-    qDebug() << "  login:" << login;
-    qDebug() << "  password:" << password;
+    qDebug() << "  login:" << login.trimmed();
+    qDebug() << "  email:" << email.trimmed();
+    qDebug() << "  password:" << password.trimmed();
 
     QJsonObject json;
-    json["login"] = login;
-    json["password"] = password;
+    json["login"] = login.trimmed();
+    json["email"] = email.trimmed();
+    json["password"] = password.trimmed();
 
     QJsonDocument jsonDoc(json);
     QUrl serverUrl("http://192.168.46.184:8080/login");
@@ -111,9 +113,9 @@ void AuthUser::changePassword(const QString &email, const QString &newPassword, 
     qDebug() << "  newPasswordCheck:" << newPasswordCheck;
 
     QJsonObject json;
-    json["email"] = email;
-    json["password"] = newPassword;
-    json["password_check"] = newPasswordCheck;
+    json["email"] = email.trimmed();
+    json["password"] = newPassword.trimmed();
+    json["password_check"] = newPasswordCheck.trimmed();
 
     QJsonDocument jsonDoc(json);
     QUrl serverUrl("http://192.168.46.184:8080/changepassword");
@@ -184,7 +186,7 @@ void AuthUser::changeEmail(const QString &email)
 
     QJsonObject json;
     json["login"] = savedLogin;
-    json["email"] = email;
+    json["email"] = email.trimmed();
 
     QJsonDocument jsonDoc(json);
     QUrl serverUrl("http://192.168.46.184:8080/changemail");

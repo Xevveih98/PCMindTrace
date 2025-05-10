@@ -214,7 +214,7 @@ Popup {
                                 activityText: model.activity
                                 iconPath: getIconPathById(model.iconId)
                                 buttonWidth: implicitWidth
-                                buttonHeight: 43 // фиксированная высота
+                                buttonHeight: 43
                                 onClicked: {
                                     categoriesUser.deleteActivity(model.activity);
                                     activityListModel.remove(index);
@@ -276,8 +276,6 @@ Popup {
             }
         }
     }
-
-
 
     ListModel {
         id: iconModel

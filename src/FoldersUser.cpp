@@ -16,31 +16,25 @@ FoldersUser::FoldersUser(QObject *parent)
             onFolderDeleteReply(reply);
         } else {
             qWarning() << "Необработанный эндпоинт в FolderUser:" << endpoint.toString();
-            reply->deleteLater();
-        }
+        reply->deleteLater();
+    }
     });
     qDebug() << "FoldersUser инициализирован и вызван.";
 }
 
 // ----------- Сохранение папки -----------
 
-void FoldersUser::saveFolder(const QStringList &folders)
+void FoldersUser::saveFolder(const QString &folder)
 {
     AppSave appSave;
     QString savedLogin = appSave.getSavedLogin();
 
-    qDebug() << "СохранениеПапок вызвано пользователем:" << savedLogin;
-    qDebug() << "Папки:" << folders;
+    qDebug() << "СохранениеПапки вызвано пользователем:" << savedLogin;
+    qDebug() << "Папка:" << folder;
 
     QJsonObject json;
     json["login"] = savedLogin;
-
-    QJsonArray jsonFolders;
-    for (const QString &folder : folders) {
-        if (!folder.trimmed().isEmpty())
-            jsonFolders.append(folder.trimmed());
-    }
-    json["folders"] = jsonFolders;
+    json["folder"] = folder.trimmed();
 
     QJsonDocument jsonDoc(json);
     QUrl serverUrl("http://192.168.46.184:8080/savefolder");
@@ -81,9 +75,9 @@ void FoldersUser::loadFolder()
 {
     AppSave appSave;
     QString login = appSave.getSavedLogin();
-    qDebug() << "Loading tags for login:" << login;
+    qDebug() << "Выгружаем папки для пользователя:" << login;
 
-    QUrl url("http://192.168.46.184:8080/getusertags");
+    QUrl url("http://192.168.46.184:8080/getuserfolders");
     QUrlQuery query;
     query.addQueryItem("login", login);
     url.setQuery(query);
@@ -99,33 +93,67 @@ void FoldersUser::loadFolder()
 
 void FoldersUser::onUserFolderFetchReply(QNetworkReply *reply)
 {
-    qDebug() << "onUserFolderFetchReply вызван.";
+    qDebug() << "onUserFolderFetchReply called.";
 
     if (reply->error() == QNetworkReply::NoError) {
         QByteArray response = reply->readAll();
-        qDebug() << "Папки успешно выгружены. Ответ сервера:" << response;
+        qDebug() << "Folders loaded successfully. Server response:" << QString::fromUtf8(response);
 
         if (response.isEmpty()) {
-            qWarning() << "Получен пустой ответ, пропуск.";
+            qWarning() << "Empty folder response received.";
+            emit folderLoadedFailed("Empty response from server.");
             reply->deleteLater();
             return;
         }
 
-        QJsonDocument doc = QJsonDocument::fromJson(response);
-        QJsonArray array = doc.object().value("folders").toArray();
+        QJsonParseError parseError;
+        QJsonDocument doc = QJsonDocument::fromJson(response, &parseError);
+        if (parseError.error != QJsonParseError::NoError) {
+            qWarning() << "JSON parse error:" << parseError.errorString();
+            emit folderLoadedFailed("JSON parse error.");
+            reply->deleteLater();
+            return;
+        }
 
-        QStringList folders;
-        for (const auto &val : array)
-            folders << val.toString();
+        if (!doc.isObject()) {
+            qWarning() << "Invalid JSON format: expected object at top level.";
+            emit folderLoadedFailed("Invalid JSON format.");
+            reply->deleteLater();
+            return;
+        }
 
-        emit folderLoaded(folders);
+        QJsonObject root = doc.object();
+        QJsonArray foldersArray = root.value("folders").toArray();
+
+        QVariantList foldersList;
+        for (const QJsonValue &val : foldersArray) {
+            QJsonObject obj = val.toObject();
+            QVariantMap map;
+            map["name"] = obj.value("name").toString();
+
+            // Check if itemCount can be converted to an integer, otherwise set it to 0
+            bool ok;
+            int itemCount = obj.value("itemCount").toString().toInt(&ok);
+            if (!ok) {
+                qWarning() << "Invalid itemCount value, setting to 0.";
+                itemCount = 0;
+            }
+            map["itemCount"] = itemCount;
+
+            foldersList.append(map);
+        }
+
+        qDebug() << "Sending emotions to QML:" << foldersList;
+        emit foldersLoadedSuccess(foldersList);
     } else {
-        qWarning() << "Не удалось выгрузить папки. Ошибка:" << reply->errorString();
+        qWarning() << "Failed to load user emotions. Error:" << reply->errorString();
         emit folderLoadedFailed(reply->errorString());
     }
 
     reply->deleteLater();
 }
+
+
 
 // ----------- Удаление тегов -----------
 

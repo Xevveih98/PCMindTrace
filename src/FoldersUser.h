@@ -17,14 +17,14 @@ class FoldersUser : public QObject
 public:
     explicit FoldersUser(QObject *parent = nullptr);
 
-    Q_INVOKABLE void saveFolder(const QStringList &folders);
+    Q_INVOKABLE void saveFolder(const QString &folder);
     Q_INVOKABLE void loadFolder();
     Q_INVOKABLE void deleteFolder(const QString &folder);
 
 signals:
     void folderSavedSuccess();
     void folderSavedFailed(const QString &error);
-    void folderLoaded(const QStringList &folders);
+    void foldersLoadedSuccess(const QVariantList &folders);
     void folderLoadedFailed(const QString &error);
     void folderDeletedSuccess();
     void folderDeletedFailed(const QString &error);

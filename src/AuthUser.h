@@ -16,7 +16,7 @@ public:
     explicit AuthUser(QObject *parent = nullptr);
 
     Q_INVOKABLE void registerUser(const QString &login, const QString &email, const QString &password);
-    Q_INVOKABLE void loginUser(const QString &login, const QString &password);
+    Q_INVOKABLE void loginUser(const QString &login, const QString &email, const QString &password);
 
     Q_INVOKABLE void changePassword(const QString &email, const QString &newPassword, const QString &newPasswordCheck);
     Q_INVOKABLE void changeEmail(const QString &email);

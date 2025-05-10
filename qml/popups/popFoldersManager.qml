@@ -90,14 +90,18 @@ Popup {
                 Item {
                     width: height
                     height: parent.height
-                    anchors.verticalCenter: parent.verticalCenter
-                    Layout.alignment: Qt.AlignHCenter
+                    Layout.alignment: Qt.AlignCenter
 
                     MouseArea {
                         anchors.fill: parent
                         onClicked: {
-                            console.log("Кнопка нажата")
+                            const name = folderNameInput.text.trim()
+                            if (name.length > 0) {
+                                foldersUser.saveFolder(name) // Сохраняем папку
+                                folderNameInput.text = "" // Очищаем поле
+                            }
                         }
+
                         Image {
                             anchors.centerIn: parent
                             width: 20
@@ -119,32 +123,61 @@ Popup {
             width: parent.width
             height: parent.height * 0.77
 
-            Rectangle {
-                anchors.fill: parent
-                color: "red"
-            }
-
             ListView {
-                width: parent.width
-                height: parent.height
+                anchors.fill: parent
                 model: foldersListModel
+                spacing: 6
+                clip: true
 
-                delegate: CustFoldBlock {
+
+                delegate: CustFoldBlok {
                     width: ListView.view.width
-                    height: 43 // фиксированная высота
+                    folderName: model.name
+                    itemCount: model.itemCount
 
-                    CustActvButn {
-                        activityText: model.activity
-                        iconPath: getIconPathById(model.iconId)
-                        buttonWidth: implicitWidth
-                        buttonHeight: 43
-                        onClicked: {
-                            categoriesUser.deleteActivity(model.activity);
-                            foldersListModel.remove(index);
-                        }
+                    Component.onCompleted: {
+                        console.log("Загружен делегат с папкой:", model.name, "и количеством элементов:", model.itemCount);
+                    }
+
+                    onDeleteClicked: {
+                        console.log("Удалить папку:", model.name);
+                        foldersUser.deleteFolder(name); // Удаляем папку
+                    }
+
+                    onEditClicked: {
+                        console.log("Изменить папку:", model.name);
                     }
                 }
             }
+        }
+    }
+
+    onOpened: {
+        foldersUser.loadFolder() // Загружаем папки при открытии попапа
+    }
+
+    Connections {
+        target: foldersUser    
+        onFoldersLoadedSuccess: function(folders) {
+            console.log("Данные загружены:", folders);
+            foldersListModel.clear();
+            for (let i = 0; i < folders.length; ++i) {
+                foldersListModel.append({
+                    name: folders[i].name,
+                    itemCount: folders[i].itemCount
+                });
+                console.log("Данные загружены:", folders);
+            }
+        }
+
+        onFolderSavedSuccess: {
+            console.log("Папка успешно сохранена. Перезагрузка папок...");
+            foldersUser.loadFolder(); // После сохранения перезагружаем папки
+        }
+
+        onFolderDeletedSuccess: {
+            console.log("Папка успешно удалена. Перезагрузка папок...");
+            foldersUser.loadFolder(); // После удаления перезагружаем папки
         }
     }
 }
