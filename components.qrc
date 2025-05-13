@@ -13,5 +13,6 @@
         <file alias="CustEmotionButton.qml">qml/CustomComponents/CustEmotionButton.qml</file>
         <file alias="CustFolderBlock.qml">qml/CustomComponents/CustFolderBlock.qml</file>
         <file alias="CustFolderButton.qml">qml/CustomComponents/CustFolderButton.qml</file>
+        <file alias="CustTodoButton.qml">qml/CustomComponents/CustTodoButton.qml</file>
     </qresource>
 </RCC>

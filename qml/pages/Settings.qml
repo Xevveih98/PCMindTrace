@@ -49,7 +49,7 @@ Rectangle {
                     CustProfHead {
                         buttonWidth: parent.width
                         buttonText: "Открыть профиль"
-                        avatarSource: "qrc:/images/calm.png"
+                        avatarSource: "qrc:/images/ecalm.png"
                         userName: "Эльвира Тимощенко"
                         userEmail: "elvira@example.com"
                         onClicked: {

@@ -13,5 +13,7 @@
         <file alias="popTodoosManager.qml">qml/popups/popTodoosManager.qml</file>
         <file alias="popFolderDeleteAdmit.qml">qml/popups/popFolderDeleteAdmit.qml</file>
         <file alias="popFolderChangeName.qml">qml/popups/popFolderChangeName.qml</file>
+        <file alias="popEntryCreator.qml">qml/popups/popEntryCreator.qml</file>
+        <file alias="popAddEntryTag.qml">qml/popups/popAddEntryTag.qml</file>
     </qresource>
 </RCC>

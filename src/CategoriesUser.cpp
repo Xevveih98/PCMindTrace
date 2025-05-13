@@ -51,7 +51,7 @@ void CategoriesUser::saveTags(const QStringList &tags)
     json["tags"] = jsonTags;
 
     QJsonDocument jsonDoc(json);
-    QUrl serverUrl("http://192.168.46.184:8080/savetags");
+    QUrl serverUrl("http://192.168.30.184:8080/savetags");
     sendTagsSaveRequest(jsonDoc, serverUrl);
 }
 
@@ -91,7 +91,7 @@ void CategoriesUser::loadTags()
     QString login = appSave.getSavedLogin();
     qDebug() << "Loading tags for login:" << login;
     // Создаем URL с параметром login в строке запроса
-    QUrl url("http://192.168.46.184:8080/getusertags");
+    QUrl url("http://192.168.30.184:8080/getusertags");
     QUrlQuery query;
     query.addQueryItem("login", login);  // Добавляем параметр login в запрос
     url.setQuery(query);
@@ -151,7 +151,7 @@ void CategoriesUser::deleteTag(const QString &tag)
     json["tag"] = tag.trimmed();
 
     QJsonDocument jsonDoc(json);
-    QUrl serverUrl("http://192.168.46.184:8080/deletetag");
+    QUrl serverUrl("http://192.168.30.184:8080/deletetag");
     sendTagDeleteRequest(jsonDoc, serverUrl);
 }
 
@@ -205,7 +205,7 @@ void CategoriesUser::saveActivity(const QString &iconId, const QString &iconlabe
     json["icon_label"] = iconlabel;
 
     QJsonDocument jsonDoc(json);
-    QUrl serverUrl("http://192.168.46.184:8080/saveactivity");
+    QUrl serverUrl("http://192.168.30.184:8080/saveactivity");
     sendActivitySaveRequest(jsonDoc, serverUrl);
 }
 
@@ -247,7 +247,7 @@ void CategoriesUser::loadActivity()
     qDebug() << "Loading user activity for login:" << login;
 
 
-    QUrl url("http://192.168.46.184:8080/getuseractivity");
+    QUrl url("http://192.168.30.184:8080/getuseractivity");
     qDebug() << "Request URL:" << url.toString();
 
     QUrlQuery query;
@@ -336,7 +336,7 @@ void CategoriesUser::deleteActivity(const QString &activity)
     json["activity"] = activity.trimmed();
 
     QJsonDocument jsonDoc(json);
-    QUrl serverUrl("http://192.168.46.184:8080/deleteactivity");  // Убедись, что сервер принимает этот эндпоинт
+    QUrl serverUrl("http://192.168.30.184:8080/deleteactivity");  // Убедись, что сервер принимает этот эндпоинт
     sendActivityDeleteRequest(jsonDoc, serverUrl);
 }
 
@@ -391,7 +391,7 @@ void CategoriesUser::saveEmotion(const QString &iconId, const QString &iconlabel
     json["icon_label"] = iconlabel;
 
     QJsonDocument jsonDoc(json);
-    QUrl serverUrl("http://192.168.46.184:8080/saveemotion");
+    QUrl serverUrl("http://192.168.30.184:8080/saveemotion");
     sendEmotionSaveRequest(jsonDoc, serverUrl);
 }
 
@@ -431,7 +431,7 @@ void CategoriesUser::loadEmotion()
     QString login = appSave.getSavedLogin();
     qDebug() << "Loading user emotions for login:" << login;
 
-    QUrl url("http://192.168.46.184:8080/getuseremotions");
+    QUrl url("http://192.168.30.184:8080/getuseremotions");
     QUrlQuery query;
     query.addQueryItem("login", login);
     url.setQuery(query);
@@ -514,7 +514,7 @@ void CategoriesUser::deleteEmotion(const QString &emotion)
     json["emotion"] = emotion.trimmed();
 
     QJsonDocument jsonDoc(json);
-    QUrl serverUrl("http://192.168.46.184:8080/deleteemotion");
+    QUrl serverUrl("http://192.168.30.184:8080/deleteemotion");
     sendEmotionDeleteRequest(jsonDoc, serverUrl);
 }
 

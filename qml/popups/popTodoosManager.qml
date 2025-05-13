@@ -3,13 +3,14 @@ import QtQuick.Controls 2.15
 import PCMindTrace 1.0
 
 Popup {
-    id: managerPopup
-    width: Screen.width * 0.93
-    height: Screen.height * 0.6
+
+    id: exitPopup
+    width: Screen.width * 0.9
+    height: Screen.height * 0.16
     modal: true
+    padding: 0
     focus: true
     dim: true
-    padding: 0
     closePolicy: Popup.CloseOnPressOutside | Popup.CloseOnEscape
     anchors.centerIn: Overlay.overlay
     Overlay.modal: Rectangle {
@@ -23,8 +24,67 @@ Popup {
         border.width: 1
     }
 
-    Item {
-        anchors.fill: parent
-        anchors.centerIn: parent
+    Column {
+        id: columnpop
+        spacing: 4
+        anchors {
+            top: parent.top
+            horizontalCenter: parent.horizontalCenter
+            topMargin: 20
+        }
+        width: parent.width * 0.85
+
+        Text {
+            text: "Введите название задачи"
+            font.pixelSize: 12
+            color: "#D9D9D9"
+        }
+
+        TextField {
+            id: todoName
+            height: 30
+            font.pixelSize: 11
+            color: "#D9D9D9"
+            placeholderText: ""
+            maximumLength: 80
+            wrapMode: Text.NoWrap
+            horizontalAlignment: TextInput.AlignLeft
+            verticalAlignment: TextInput.AlignVCenter
+            background: Rectangle {
+                color: "#292729"
+                border.color: "#4D4D4D"
+                border.width: 1
+            }
+            anchors.left: parent.left
+            anchors.right: parent.right
+        }
+    }
+
+    Rectangle {
+        id: buttAuthCreateCheck
+        color: "#474448"
+        radius: 8
+        width: parent.width
+        height: 40
+        anchors {
+            top: parent.bottom
+            topMargin: -10
+            horizontalCenter: parent.horizontalCenter
+        }
+
+        Text {
+            text: "Подтвердить"
+            font.pixelSize: 16
+            color: "#D9D9D9"
+            anchors.centerIn: parent
+        }
+
+        MouseArea {
+            anchors.fill: parent
+            onClicked: {
+                todoUser.saveTodo(todoName.text);
+                exitPopup.close();
+            }
+        }
     }
 }

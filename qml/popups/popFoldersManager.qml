@@ -132,11 +132,11 @@ Popup {
 
                 delegate: CustFoldBlok {
                     width: ListView.view.width
-                    folderName: model.name
+                    folderName: model.foldername
                     itemCount: model.itemCount
 
                     Component.onCompleted: {
-                        console.log("Загружен в менеджер папок делегат с папкой:", model.name, "и количеством элементов:", model.itemCount);
+                        console.log("Загружен в менеджер папок делегат с папкой:", model.foldername, "и количеством элементов:", model.itemCount);
                     }
 
                     onDeleteClicked: {
@@ -147,7 +147,7 @@ Popup {
                             var popup = component.createObject(parent);
                             if (popup) {
                                 console.log("Попап успешно создан.");
-                                popup.folderName = model.name; // Передаем имя папки в попап
+                                popup.folderName = model.foldername; // Передаем имя папки в попап
                                 popup.open(); // Открываем попап
                             } else {
                                 console.error("Не удалось создать объект попапа.");
@@ -167,7 +167,7 @@ Popup {
                             var popup = component.createObject(parent);
                             if (popup) {
                                 console.log("Попап успешно создан.");
-                                popup.folderName = model.name; // Передаем имя папки в попап
+                                popup.folderName = model.foldername; // Передаем имя папки в попап
                                 popup.open(); // Открываем попап
                             } else {
                                 console.error("Не удалось создать объект попапа.");
@@ -195,7 +195,7 @@ Popup {
             console.log("Данные загружены:", folders);
             for (let i = 0; i < folders.length; ++i) {
                 foldersListModel.append({
-                    name: folders[i].name,
+                    foldername: folders[i].name,
                     itemCount: folders[i].itemCount
                 });
             }

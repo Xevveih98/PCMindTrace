@@ -40,7 +40,7 @@ void FoldersUser::saveFolder(const QString &folder)
     json["folder"] = folder.trimmed();
 
     QJsonDocument jsonDoc(json);
-    QUrl serverUrl("http://192.168.46.184:8080/savefolder");
+    QUrl serverUrl("http://192.168.30.184:8080/savefolder");
     sendFolderSaveRequest(jsonDoc, serverUrl);
 }
 
@@ -81,7 +81,7 @@ void FoldersUser::loadFolder()
     QString login = appSave.getSavedLogin();
     qDebug() << "Выгружаем папки для пользователя:" << login;
 
-    QUrl url("http://192.168.46.184:8080/getuserfolders");
+    QUrl url("http://192.168.30.184:8080/getuserfolders");
     QUrlQuery query;
     query.addQueryItem("login", login);
     url.setQuery(query);
@@ -134,8 +134,6 @@ void FoldersUser::onUserFolderFetchReply(QNetworkReply *reply)
             QJsonObject obj = val.toObject();
             QVariantMap map;
             map["name"] = obj.value("name").toString();
-
-            // Check if itemCount can be converted to an integer, otherwise set it to 0
             bool ok;
             int itemCount = obj.value("itemCount").toString().toInt(&ok);
             if (!ok) {
@@ -174,7 +172,7 @@ void FoldersUser::deleteFolder(const QString &folder)
     json["folder"] = folder.trimmed();
 
     QJsonDocument jsonDoc(json);
-    QUrl serverUrl("http://192.168.46.184:8080/deletefolder");
+    QUrl serverUrl("http://192.168.30.184:8080/deletefolder");
     sendFolderDeleteRequest(jsonDoc, serverUrl);
 }
 
@@ -225,7 +223,7 @@ void FoldersUser::changeFolder(const QString &newName, const QString &oldName)
     json["newName"] = newName.trimmed();
 
     QJsonDocument jsonDoc(json);
-    QUrl serverUrl("http://192.168.46.184:8080/changefolder");
+    QUrl serverUrl("http://192.168.30.184:8080/changefolder");
     sendFolderChangeRequest(jsonDoc, serverUrl);
 }
 
