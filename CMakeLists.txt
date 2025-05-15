@@ -24,13 +24,13 @@ qt_add_executable(appPCMindTrace
     src/CustomComponentsSingleton.h
     src/TodoUser.h
     src/TodoUser.cpp
-    models/entryClass.cpp
-    models/entryClass.h
     src/EntryUser.cpp
     src/EntryUser.h
     AppConfig.h
-    models/EntryModel.h
-    models/EntryModel.cpp
+    src/EntryUserModel.h
+    src/EntryUserModel.cpp
+    src/EntriesUser.h
+    src/EntriesUser.cpp
 )
 
 qt_add_qml_module(appPCMindTrace
@@ -38,7 +38,6 @@ qt_add_qml_module(appPCMindTrace
     VERSION 1.0
     QML_FILES
         Main.qml
-        QML_FILES qml/CustomComponents/Utils.js
 )
 
 set_target_properties(appPCMindTrace PROPERTIES

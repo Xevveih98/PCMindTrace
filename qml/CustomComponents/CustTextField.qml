@@ -59,6 +59,23 @@ Item {
             width: parent.width
             height: parent.height * 0.5
 
+            Rectangle {
+                anchors.centerIn: parent
+                width: parent.width * 1.02
+                height: parent.height * 1.03
+                color: "#262326"
+                radius: 8
+
+                Text {
+                    anchors.centerIn: parent
+                    text: "Добавьте новые теги"
+                    color: "#4d4d4d"
+                    font.pixelSize: 11
+                    font.italic: true
+                    visible: tagListModel.count === 0
+                }
+            }
+
             ScrollView {
                 id: amascroll
                 width: parent.width

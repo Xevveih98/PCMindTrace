@@ -3,7 +3,6 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import PCMindTrace 1.0
 import CustomComponents 1.0
-import "../CustomComponents"
 
 Popup {
     id: managerPopup
@@ -123,13 +122,19 @@ Popup {
             width: parent.width
             height: parent.height * 0.77
 
+            Rectangle {
+                anchors.centerIn: parent
+                width: parent.width * 1.02
+                height: parent.height * 1.03
+                color: "#262326"
+                radius: 8
+            }
+
             ListView {
                 anchors.fill: parent
                 model: foldersListModel
                 spacing: 6
                 clip: true
-
-
                 delegate: CustFoldBlok {
                     width: ListView.view.width
                     folderName: model.foldername

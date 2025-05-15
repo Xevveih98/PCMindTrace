@@ -1,6 +1,7 @@
 <RCC>
     <qresource prefix="/CustomComponents">
         <file alias="qmldir">qml/CustomComponents/qmldir</file>
+        <file alias="Utils.js">qml/CustomComponents/Utils.js</file>
         <file alias="CustButtonSettings.qml">qml/CustomComponents/CustButtonSettings.qml</file>
         <file alias="CustCheckboxHome.qml">qml/CustomComponents/CustCheckboxHome.qml</file>
         <file alias="CustProfileHeader.qml">qml/CustomComponents/CustProfileHeader.qml</file>
@@ -17,6 +18,6 @@
         <file alias="IconModelActivities.qml">qml/CustomComponents/IconModelActivities.qml</file>
         <file alias="IconModelEmotions.qml">qml/CustomComponents/IconModelEmotions.qml</file>
         <file alias="IconModelMood.qml">qml/CustomComponents/IconModelMood.qml</file>
-        <file alias="Utils.js">qml/CustomComponents/Utils.js</file>
+        <file alias="CustFolderVariant.qml">qml/CustomComponents/CustFolderVariant.qml</file>
     </qresource>
 </RCC>

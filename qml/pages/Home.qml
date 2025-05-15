@@ -99,13 +99,13 @@ Rectangle {
                                 spacing: 6
                                 orientation: ListView.Horizontal
                                 clip: true
-                                id: foldersListView  // добавим id
+                                id: foldersListView
 
                                 delegate: CustFoldButn {
                                     folderName: model.foldername
                                     buttonWidth: implicitWidth
                                     buttonHeight: 40
-                                    isSelected: ListView.isCurrentItem  // подсвечивать выбранный
+                                    isSelected: ListView.isCurrentItem
 
                                     Component.onCompleted: {
                                         console.log("Загружен в главное окно делегат с папкой:", model.foldername);

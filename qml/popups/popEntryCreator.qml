@@ -670,6 +670,7 @@ Popup {
                             var popup = component.createObject(parent);
                             if (popup) {
                                 console.log("Попап успешно создан.");
+
                                 popup.open(); // Открываем попап
                             } else {
                                 console.error("Не удалось создать объект попапа.");

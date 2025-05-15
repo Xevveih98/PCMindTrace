@@ -14,5 +14,6 @@
         <file alias="settings.png">assets/images/settings.png</file>
         <file alias="closebutt.png">assets/images/closebutt.png</file>
         <file alias="right-arrow.png">assets/images/right-arrow.png</file>
+        <file alias="foldervar.png">assets/images/foldervar.png</file>
     </qresource>
 </RCC>
