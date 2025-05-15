@@ -14,5 +14,9 @@
         <file alias="CustFolderBlock.qml">qml/CustomComponents/CustFolderBlock.qml</file>
         <file alias="CustFolderButton.qml">qml/CustomComponents/CustFolderButton.qml</file>
         <file alias="CustTodoButton.qml">qml/CustomComponents/CustTodoButton.qml</file>
+        <file alias="IconModelActivities.qml">qml/CustomComponents/IconModelActivities.qml</file>
+        <file alias="IconModelEmotions.qml">qml/CustomComponents/IconModelEmotions.qml</file>
+        <file alias="IconModelMood.qml">qml/CustomComponents/IconModelMood.qml</file>
+        <file alias="Utils.js">qml/CustomComponents/Utils.js</file>
     </qresource>
 </RCC>

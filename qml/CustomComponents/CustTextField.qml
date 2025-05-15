@@ -39,7 +39,7 @@ Item {
                 placeholderText: "Начните перечислять свои теги"
                 placeholderTextColor: "#a9a9a9"
                 wrapMode: Text.NoWrap
-                maximumLength: 40
+                maximumLength: 200
                 horizontalAlignment: TextInput.AlignLeft
                 verticalAlignment: TextInput.AlignVCenter
                 background: Rectangle {

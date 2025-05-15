@@ -1,11 +1,11 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
-import QtQuick.Controls.impl 2.15  // нужно для отключения стилей, если используется
 
 Button {
     id: tagButton
     property alias tagText: label.text
     property alias buttonWidth: tagButton.width
+    property bool selected: false
 
     width: buttonWidth
     height: 40
@@ -15,8 +15,9 @@ Button {
 
     background: Rectangle {
         radius: 18
-        color: "#181718"
-        border.width: 0
+        color: tagButton.selected ? "#221F22" : "#181718"
+        border.width: 1
+        border.color: tagButton.selected ? "#5B5B5B" : "#4D4D4D"
     }
 
     contentItem: Text {
@@ -27,10 +28,5 @@ Button {
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         anchors.fill: parent
-
     }
-
-    // Удаляем анимации нажатия
-    //onPressedChanged: {}  // пустой обработчик
-    onHoveredChanged: {}  // пустой обработчик
 }

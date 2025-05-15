@@ -15,5 +15,8 @@
         <file alias="popFolderChangeName.qml">qml/popups/popFolderChangeName.qml</file>
         <file alias="popEntryCreator.qml">qml/popups/popEntryCreator.qml</file>
         <file alias="popAddEntryTag.qml">qml/popups/popAddEntryTag.qml</file>
+        <file alias="popEntryChooseFolder.qml">qml/popups/popEntryChooseFolder.qml</file>
+        <file alias="popAddEntryActivity.qml">qml/popups/popAddEntryActivity.qml</file>
+        <file alias="popAddEntryEmotion.qml">qml/popups/popAddEntryEmotion.qml</file>
     </qresource>
 </RCC>

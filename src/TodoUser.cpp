@@ -38,7 +38,7 @@ void TodoUser::saveTodo(const QString &todo)
     json["todo"] = todo.trimmed();
 
     QJsonDocument jsonDoc(json);
-    QUrl serverUrl(AppConfig::serverUrl() + "/saveentry");
+    QUrl serverUrl = AppConfig::apiUrl("/savetodo");
 
     sendTodoSaveRequest(jsonDoc, serverUrl);
 }
@@ -80,12 +80,12 @@ void TodoUser::loadTodo()
     QString login = appSave.getSavedLogin();
     qDebug() << "Выгружаем задачи для пользователя:" << login;
 
-    QUrl url("http://192.168.30.184:8080/getusertodoos");
+    QUrl serverUrl = AppConfig::apiUrl("/getusertodoos");
     QUrlQuery query;
     query.addQueryItem("login", login);
-    url.setQuery(query);
+    serverUrl.setQuery(query);
 
-    QNetworkRequest request(url);
+    QNetworkRequest request(serverUrl);
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 
     QNetworkReply *reply = m_networkUser.get(request);
@@ -142,7 +142,7 @@ void TodoUser::deleteTodo(const QString &todo)
     json["todo"] = todo.trimmed();
 
     QJsonDocument jsonDoc(json);
-    QUrl serverUrl("http://192.168.30.184:8080/deletetodo");
+    QUrl serverUrl = AppConfig::apiUrl("/deletetodo");
     sendTodoDeleteRequest(jsonDoc, serverUrl);
 }
 

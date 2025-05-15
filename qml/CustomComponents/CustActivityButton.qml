@@ -1,6 +1,6 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
-import QtQuick.Controls.impl 2.15  // нужно для отключения стилей, если используется
+import QtQuick.Controls.impl 2.15
 
 Button {
     id: activityButton
@@ -8,6 +8,7 @@ Button {
     property string iconPath: ""
     property alias buttonWidth: activityButton.width
     property alias buttonHeight: activityButton.height
+    property bool selected: false
 
     padding: 0
     hoverEnabled: false
@@ -15,9 +16,9 @@ Button {
 
     background: Rectangle {
         radius: 18
-        color: "#221F22"
+        color: activityButton.selected ? "#221F22" : "#181718"
         border.width: 1
-        border.color: "#4D4D4D"
+        border.color: activityButton.selected ? "#5B5B5B" : "#4D4D4D"
     }
 
     contentItem: Row {
@@ -45,5 +46,5 @@ Button {
         }
     }
 
-    onHoveredChanged: {}  // отключаем стилизацию
+    onHoveredChanged: {}
 }

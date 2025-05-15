@@ -2,10 +2,12 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import PCMindTrace 1.0
-import CustomComponents
-import "../CustomComponents"
+import CustomComponents 1.0
+
 
 Popup {
+    property int selectedIconId: -1
+
     id: managerPopup
     width: Screen.width * 0.93
     height: Screen.height * 0.93
@@ -41,13 +43,79 @@ Popup {
                 height: parent.height
                 width: height
 
-                Rectangle {
+                Item {
                     width: 44
                     height: 44
-                    color: "#616161"
-                    radius: 100
                     anchors.left: parent.left
                     anchors.verticalCenter: parent.verticalCenter
+
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: moodPopup.open()
+                    }
+
+                    Image {
+                        anchors.fill: parent
+                        anchors.margins: 4
+                        source: Utils.getIconPathById(iconModelMood, managerPopup.selectedIconId)
+                        fillMode: Image.PreserveAspectFit
+                    }
+                }
+
+                // Мини-попап выбора эмоций
+                Popup {
+                    id: moodPopup
+                    width: 260
+                    height: 60
+                    modal: true
+                    focus: true
+                    dim: true
+                    closePolicy: Popup.CloseOnPressOutside
+                    x: iconemote.x
+                    y: iconemote.y + iconemote.height + 2
+                    Overlay.modal: Rectangle {
+                        color: "#181718"
+                        opacity: 0.3
+                    }
+                    background: Rectangle {
+                        color: "#2D292C"
+                        radius: 8
+                        border.color: "#474448"
+                        border.width: 1
+                    }
+
+                    Item {
+                        anchors.centerIn: parent
+                        width: parent.width * 0.92
+                        height: parent.height * 0.94
+
+                        Row {
+                            anchors.fill: parent
+                            spacing: 10
+
+                            Repeater {
+                                model: iconModelMood
+                                delegate: Item {
+                                    width: 36
+                                    height: 36
+
+                                    MouseArea {
+                                        anchors.fill: parent
+                                        onClicked: {
+                                            managerPopup.selectedIconId = model.iconId;
+                                            moodPopup.close();
+                                        }
+
+                                        Image {
+                                            anchors.fill: parent
+                                            source: model.path
+                                            fillMode: Image.PreserveAspectFit
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
 
@@ -95,7 +163,7 @@ Popup {
         Item{
             id: deckheadpart
             width: parent.width
-            height: parent.height * 0.5
+            height: parent.height * 0.53
             anchors.top: headermaininfo.bottom
             anchors.topMargin: 8
 
@@ -164,7 +232,7 @@ Popup {
         Item {
             id: tegheaderaw
             width: parent.width
-            height: 60
+            height: 70
             anchors.top: deckheadpart.bottom
             anchors.topMargin: 14
 
@@ -193,6 +261,36 @@ Popup {
                         source: "qrc:/images/addbuttplus.png"
                         fillMode: Image.PreserveAspectFit
                     }
+
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: {
+                            console.log("Попытка создать компонент popAddEntryTag.qml");
+                            var component = Qt.createComponent("qrc:/popups/popAddEntryTag.qml");
+                            if (component.status === Component.Ready) {
+                                console.log("Компонент успешно загружен.");
+                                var popup = component.createObject(parent);
+                                if (popup) {
+                                    console.log("Попап успешно создан.");
+
+                                    // Подключаемся к сигналу
+                                    popup.tagsConfirmed.connect(function(selectedTags) {
+                                        console.log("Получены теги из попапа:", selectedTags);
+                                        tagviewma.setSelectedTags(selectedTags); // <- загружаем их в модель
+                                    });
+
+                                    popup.open();
+                                } else {
+                                    console.error("Не удалось создать объект попапа.");
+                                }
+                            } else if (component.status === Component.Error) {
+                                console.error("Ошибка при загрузке компонента: " + component.errorString());
+                            } else {
+                                console.log("Компонент еще не готов.");
+                            }
+                        }
+                    }
+
                 }
             }
 
@@ -201,28 +299,69 @@ Popup {
                 anchors.top: headegeatag.bottom
                 anchors.topMargin: 1
                 width: parent.width
-                height: 30
+                height: 40
+
+                property var selectedTags: []
+
+                ListModel {
+                    id: tagsListModel
+                }
 
                 Rectangle {
                     anchors.fill: parent
-                    color: "red"
+                    color: "#262326"
+                    radius: 8
+
+                    Text {
+                        anchors.centerIn: parent
+                        text: "Список тегов пустует.."
+                        color: "#4d4d4d"
+                        font.pixelSize: 11
+                        font.italic: true
+                        visible: tagsListModel.count === 0
+                    }
+
+                    ListView {
+                        anchors.fill: parent
+                        model: tagsListModel
+                        spacing: 6
+                        orientation: ListView.Horizontal
+                        clip: true
+
+                        delegate: CustTagButon {
+                            tagText: model.tag
+                            buttonWidth: implicitWidth
+                            Component.onCompleted: {
+                                console.log("Загружен в главное окно делегат с тегом:", model.tag);
+                            }
+                        }
+                    }
+                }
+
+                function setSelectedTags(tagArray) {
+                    tagsListModel.clear()
+                    for (let i = 0; i < tagArray.length; ++i) {
+                        tagsListModel.append({ tag: tagArray[i] })
+                    }
                 }
             }
+
+
         }
 
         Item {
             id: headeractivitiew
             width: parent.width
-            height: 90
+            height: 70
             anchors.top: tegheaderaw.bottom
             anchors.topMargin: 14
 
-            Item{
+            Item {
                 id: headegacri
                 width: parent.width
                 height: 30
 
-                Text{
+                Text {
                     id: acitw
                     text: "Активности"
                     font.pixelSize: 15
@@ -242,6 +381,28 @@ Popup {
                         source: "qrc:/images/addbuttplus.png"
                         fillMode: Image.PreserveAspectFit
                     }
+
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: {
+                            console.log("Попытка создать компонент popAddEntryActivity.qml");
+                            var component = Qt.createComponent("qrc:/popups/popAddEntryActivity.qml");
+                            if (component.status === Component.Ready) {
+                                var popup = component.createObject(parent);
+                                if (popup) {
+                                    popup.activitiesConfirmed.connect(function(selectedActivities) {
+                                        console.log("Получены активности из попапа:", selectedActivities);
+                                        tagviwma.setSelectedActivities(selectedActivities);
+                                    });
+                                    popup.open();
+                                } else {
+                                    console.error("Не удалось создать объект попапа.");
+                                }
+                            } else if (component.status === Component.Error) {
+                                console.error("Ошибка при загрузке компонента: " + component.errorString());
+                            }
+                        }
+                    }
                 }
             }
 
@@ -250,11 +411,56 @@ Popup {
                 anchors.top: headegacri.bottom
                 anchors.topMargin: 1
                 width: parent.width
-                height: 60
+                height: 40
+
+                property var selectedActivities: []
+
+                ListModel {
+                    id: activitiesListModel
+                }
 
                 Rectangle {
                     anchors.fill: parent
-                    color: "red"
+                    color: "#262326"
+                    radius: 8
+
+                    Text {
+                        anchors.centerIn: parent
+                        text: "Список активностей пустует.."
+                        color: "#4d4d4d"
+                        font.pixelSize: 11
+                        font.italic: true
+                        visible: activitiesListModel.count === 0
+                    }
+                }
+
+                ListView {
+                    anchors.fill: parent
+                    model: activitiesListModel
+                    spacing: 6
+                    orientation: ListView.Horizontal
+                    clip: true
+
+                    delegate: CustActvButn {
+                        activityText: model.activity
+                        iconPath: model.iconPath
+                        buttonWidth: implicitWidth
+                        buttonHeight: 43
+                        Component.onCompleted: {
+                            console.log("Загружен в главное окно делегат с активностью:", model.activity);
+                        }
+                    }
+                }
+
+                function setSelectedActivities(activityArray) {
+                    activitiesListModel.clear()
+                    for (let i = 0; i < activityArray.length; ++i) {
+                        activitiesListModel.append({
+                            activity: activityArray[i].activity,
+                            iconPath: activityArray[i].iconPath
+                        })
+                    }
+                    selectedActivities = activityArray
                 }
             }
         }
@@ -262,7 +468,7 @@ Popup {
         Item {
             id: headeremot
             width: parent.width
-            height: 90
+            height: 70
             anchors.top: headeractivitiew.bottom
             anchors.topMargin: 14
 
@@ -291,6 +497,28 @@ Popup {
                         source: "qrc:/images/addbuttplus.png"
                         fillMode: Image.PreserveAspectFit
                     }
+
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: {
+                            console.log("Попытка создать компонент popAddEntryEmotions.qml");
+                            var component = Qt.createComponent("qrc:/popups/popAddEntryEmotion.qml");
+                            if (component.status === Component.Ready) {
+                                var popup = component.createObject(parent);
+                                if (popup) {
+                                    popup.emotionsConfirmed.connect(function(selectedEmotions) {
+                                        console.log("Получены активности из попапа:", selectedEmotions);
+                                        wmro.setSelectedEmotions(selectedEmotions);
+                                    });
+                                    popup.open();
+                                } else {
+                                    console.error("Не удалось создать объект попапа.");
+                                }
+                            } else if (component.status === Component.Error) {
+                                console.error("Ошибка при загрузке компонента: " + component.errorString());
+                            }
+                        }
+                    }
                 }
             }
 
@@ -299,11 +527,56 @@ Popup {
                 anchors.top: headega32.bottom
                 anchors.topMargin: 1
                 width: parent.width
-                height: 60
+                height: 40
+
+                property var selectedEmotions: []
+
+                ListModel {
+                    id: emotionsListModel
+                }
 
                 Rectangle {
                     anchors.fill: parent
-                    color: "red"
+                    color: "#262326"
+                    radius: 8
+
+                    Text {
+                        anchors.centerIn: parent
+                        text: "Список эмоций пустует.."
+                        color: "#4d4d4d"
+                        font.pixelSize: 11
+                        font.italic: true
+                        visible: emotionsListModel.count === 0
+                    }
+                }
+
+                ListView {
+                    anchors.fill: parent
+                    model: emotionsListModel
+                    spacing: 6
+                    orientation: ListView.Horizontal
+                    clip: true
+
+                    delegate: CustEmotButn {
+                        emotionText: model.emotion
+                        iconPath: model.iconPath
+                        buttonWidth: implicitWidth
+                        buttonHeight: 43
+                        Component.onCompleted: {
+                            console.log("Загружен в главное окно делегат с активностью:", model.emotion);
+                        }
+                    }
+                }
+
+                function setSelectedEmotions(emotionArray) {
+                    emotionsListModel.clear()
+                    for (let i = 0; i < emotionArray.length; ++i) {
+                        emotionsListModel.append({
+                            emotion: emotionArray[i].emotion,
+                            iconPath: emotionArray[i].iconPath
+                        })
+                    }
+                    selectedEmotions = emotionArray
                 }
             }
         }
@@ -345,6 +618,14 @@ Popup {
                         fillMode: Image.PreserveAspectFit
                     }
                 }
+
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: {
+                        console.log("Отмена создания записи");
+                        managerPopup.close();
+                    }
+                }
             }
 
             Rectangle {
@@ -377,7 +658,41 @@ Popup {
                         fillMode: Image.PreserveAspectFit
                     }
                 }
+
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: {
+                        console.log("Попытка создать компонент popEntryChooseFolder.qml");
+                        var component = Qt.createComponent("qrc:/popups/popEntryChooseFolder.qml");
+                        if (component.status === Component.Ready) {
+                            console.log("Компонент успешно загружен.");
+
+                            var popup = component.createObject(parent);
+                            if (popup) {
+                                console.log("Попап успешно создан.");
+                                popup.open(); // Открываем попап
+                            } else {
+                                console.error("Не удалось создать объект попапа.");
+                            }
+                        } else if (component.status === Component.Error) {
+                            console.error("Ошибка при загрузке компонента: " + component.errorString());
+                        } else {
+                            console.log("Компонент еще не готов.");
+                        }
+                    }
+                }
             }
         }
+    }
+
+    IconModelAct {
+        id: iconModelActivity
+    }
+
+    IconModelEmo {
+        id: iconModelEmotion
+    }
+    IconModelMod {
+        id: iconModelMood
     }
 }

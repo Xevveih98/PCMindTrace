@@ -3,7 +3,6 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import PCMindTrace 1.0
 import CustomComponents 1.0
-import "../CustomComponents"
 
 Rectangle {
     id: pageSettings

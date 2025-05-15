@@ -1,6 +1,6 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
-import QtQuick.Controls.impl 2.15  // нужно для отключения стилей, если используется
+import QtQuick.Controls.impl 2.15
 
 Button {
     id: emotionButton
@@ -8,6 +8,7 @@ Button {
     property string iconPath: "images/happy_icon.png"
     property alias buttonWidth: emotionButton.width
     property alias buttonHeight: emotionButton.height
+    property bool selected: false
 
     padding: 0
     hoverEnabled: false
@@ -15,9 +16,9 @@ Button {
 
     background: Rectangle {
         radius: 18
-        color: "#221F22"  // желтый цвет для позитивных эмоций
+        color: emotionButton.selected ? "#221F22" : "#181718"
         border.width: 1
-        border.color: "#4D4D4D"
+        border.color: emotionButton.selected ? "#5B5B5B" : "#4D4D4D"
     }
 
     contentItem: Row {
@@ -39,11 +40,11 @@ Button {
 
         Text {
             text: emotionText
-            color: "#d9d9d9"  // темный цвет для текста
+            color: "#d9d9d9"
             font.pixelSize: 12
             verticalAlignment: Text.AlignVCenter
         }
     }
 
-    onHoveredChanged: {}  // отключаем стилизацию
+    onHoveredChanged: {}
 }

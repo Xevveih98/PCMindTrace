@@ -5,9 +5,9 @@ import CustomComponents
 
 Popup {
 
-    property var selectedTags: []
-    signal tagsConfirmed(var selectedTags)
-    
+    property var selectedEmotions: []
+    signal emotionsConfirmed(var selectedEmotions)
+
     id: managerPopup
     width: Screen.width * 0.93
     height: Screen.height * 0.6
@@ -38,7 +38,7 @@ Popup {
 
             Text {
                 id: header
-                text: "Добавление тегов"
+                text: "Выбор эмоций"
                 color: "#D9D9D9"
                 font.pixelSize: 22
                 font.bold: true
@@ -48,7 +48,7 @@ Popup {
 
             Text {
                 id: text1
-                text: "Выберите теги, которые хотите добавить."
+                text: "Выберите эмоции, которые хотите добавить."
                 color: "#D9D9D9"
                 font.pixelSize: 15
                 anchors.top: header.bottom
@@ -60,7 +60,7 @@ Popup {
 
             Text {
                 id: text2
-                text: "Чтобы убрать тег - намите на него."
+                text: "Чтобы убрать эмоцию - нажмите на неё."
                 color: "#D9D9D9"
                 font.pixelSize: 15
                 anchors.top: text1.bottom
@@ -71,7 +71,7 @@ Popup {
             }
 
             ListModel {
-                id: tagListModel
+                id: emotionListModel
             }
 
             Item {
@@ -91,7 +91,7 @@ Popup {
                         color: "#4d4d4d"
                         font.pixelSize: 11
                         font.italic: true
-                        visible: tagListModel.count === 0
+                        visible: emotionListModel.count === 0
                     }
 
                     ScrollView {
@@ -105,22 +105,25 @@ Popup {
                             spacing: 6
 
                             Repeater {
-                                model: tagListModel
-                                delegate: CustTagButon {
-                                    tagText: model.tag
+                                model: emotionListModel
+                                delegate: CustEmotButn {
+                                    id: emoBtn
+                                    emotionText: model.emotion
+                                    iconPath: Utils.getIconPathById(iconModelEmotion, model.iconId)
                                     buttonWidth: implicitWidth
-                                    selected: managerPopup.selectedTags.indexOf(model.tag) !== -1
+                                    buttonHeight: 43
+                                    selected: managerPopup.selectedEmotions.indexOf(model.emotion) !== -1
                                     onClicked: {
-                                        let idx = managerPopup.selectedTags.indexOf(model.tag)
-                                        if (idx === -1)
-                                            managerPopup.selectedTags.push(model.tag)
-                                        else
-                                            managerPopup.selectedTags.splice(idx, 1)
-                                        selected = !selected
+                                        let idx = managerPopup.selectedEmotions.indexOf(model.emotion);
+                                        if (idx === -1) {
+                                            managerPopup.selectedEmotions.push(model.emotion);
+                                        } else {
+                                            managerPopup.selectedEmotions.splice(idx, 1);
+                                        }
+                                        selected = !selected;
                                     }
                                 }
                             }
-
                         }
                     }
                 }
@@ -148,34 +151,51 @@ Popup {
             MouseArea {
                 anchors.fill: parent
                 onClicked: {
-                    tagsConfirmed(managerPopup.selectedTags)
-                    managerPopup.close()
+                    var confirmedList = [];
+                    for (var i = 0; i < emotionListModel.count; ++i) {
+                        var item = emotionListModel.get(i);
+                        if (managerPopup.selectedEmotions.indexOf(item.emotion) !== -1) {
+                            confirmedList.push({
+                                emotion: item.emotion,
+                                iconPath: Utils.getIconPathById(iconModelEmotion, item.iconId)
+                            });
+                        }
+                    }
+                    emotionsConfirmed(confirmedList);
+                    managerPopup.close();
                 }
-            }            
+            }
         }
     }
 
-    function setTags(tagArray) {
-        tagListModel.clear()
-        selectedTags = []
-        for (let i = 0; i < tagArray.length; ++i) {
-            tagListModel.append({ tag: tagArray[i] })
+    function setEmotions(emotionArray) {
+        emotionListModel.clear();
+        selectedEmotions = [];
+        for (let i = 0; i < emotionArray.length; ++i) {
+            emotionListModel.append({
+                emotion: emotionArray[i].emotion,
+                iconId: emotionArray[i].iconId
+            });
         }
     }
 
-    function loadTagsFromServer(tags) {
-        console.log("Loading tags into model:", tags)
-        setTags(tags)
+    function loadEmotionsFromServer(emotions) {
+        console.log("Данные загружены:", emotions);
+        setEmotions(emotions);
     }
 
     onOpened: {
-        categoriesUser.loadTags()
+        categoriesUser.loadEmotion();
     }
 
     Connections {
         target: categoriesUser
-        onTagsLoaded: {
-            loadTagsFromServer(tags)
+        onEmotionLoadedSuccess: function(emotions) {
+            loadEmotionsFromServer(emotions);
         }
+    }
+
+    IconModelEmo {
+        id: iconModelEmotion
     }
 }

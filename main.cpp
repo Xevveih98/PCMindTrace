@@ -11,7 +11,7 @@
 #include "src/CategoriesUser.h"
 #include "src/FoldersUser.h"
 #include "src/CustomComponentsSingleton.h"
-#include "models/EntryModel.h""
+#include "models/EntryModel.h"
 
 int main(int argc, char *argv[])
 {

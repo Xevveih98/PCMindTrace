@@ -1,5 +1,6 @@
 #include "FoldersUser.h"
-#include "AppSave.h"  // для доступа к сохраненному логину
+#include "AppSave.h"
+#include "AppConfig.h"
 
 FoldersUser::FoldersUser(QObject *parent)
     : QObject(parent)
@@ -40,7 +41,7 @@ void FoldersUser::saveFolder(const QString &folder)
     json["folder"] = folder.trimmed();
 
     QJsonDocument jsonDoc(json);
-    QUrl serverUrl("http://192.168.30.184:8080/savefolder");
+    QUrl serverUrl = AppConfig::apiUrl("/savefolder");
     sendFolderSaveRequest(jsonDoc, serverUrl);
 }
 
@@ -81,12 +82,12 @@ void FoldersUser::loadFolder()
     QString login = appSave.getSavedLogin();
     qDebug() << "Выгружаем папки для пользователя:" << login;
 
-    QUrl url("http://192.168.30.184:8080/getuserfolders");
+    QUrl serverUrl = AppConfig::apiUrl("/getuserfolders");
     QUrlQuery query;
     query.addQueryItem("login", login);
-    url.setQuery(query);
+    serverUrl.setQuery(query);
 
-    QNetworkRequest request(url);
+    QNetworkRequest request(serverUrl);
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 
     QNetworkReply *reply = m_networkUser.get(request);
@@ -172,7 +173,7 @@ void FoldersUser::deleteFolder(const QString &folder)
     json["folder"] = folder.trimmed();
 
     QJsonDocument jsonDoc(json);
-    QUrl serverUrl("http://192.168.30.184:8080/deletefolder");
+    QUrl serverUrl = AppConfig::apiUrl("/deletefolder");
     sendFolderDeleteRequest(jsonDoc, serverUrl);
 }
 
@@ -223,7 +224,7 @@ void FoldersUser::changeFolder(const QString &newName, const QString &oldName)
     json["newName"] = newName.trimmed();
 
     QJsonDocument jsonDoc(json);
-    QUrl serverUrl("http://192.168.30.184:8080/changefolder");
+    QUrl serverUrl = AppConfig::apiUrl("/changefolder");
     sendFolderChangeRequest(jsonDoc, serverUrl);
 }
 

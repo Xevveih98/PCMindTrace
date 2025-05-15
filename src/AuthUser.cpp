@@ -1,10 +1,6 @@
 #include "AuthUser.h"
 #include "AppSave.h"
-#include <QDebug>
-#include <QJsonObject>
-#include <QJsonDocument>
-#include <QNetworkRequest>
-#include <QNetworkReply>
+#include "AppConfig.h"
 
 AuthUser::AuthUser(QObject *parent)
     : QObject(parent)
@@ -44,7 +40,7 @@ void AuthUser::registerUser(const QString &login, const QString &email, const QS
     json["password"] = password.trimmed();
 
     QJsonDocument jsonDoc(json);
-    QUrl serverUrl("http://192.168.30.184:8080/register");
+    QUrl serverUrl = AppConfig::apiUrl("/register");
     sendToServer(jsonDoc, serverUrl);
 }
 
@@ -75,7 +71,7 @@ void AuthUser::loginUser(const QString &login, const QString &email, const QStri
     json["password"] = password.trimmed();
 
     QJsonDocument jsonDoc(json);
-    QUrl serverUrl("http://192.168.30.184:8080/login");
+    QUrl serverUrl = AppConfig::apiUrl("/login");
     sendLoginRequest(jsonDoc, serverUrl);
 }
 
@@ -118,7 +114,7 @@ void AuthUser::changePassword(const QString &email, const QString &newPassword, 
     json["password_check"] = newPasswordCheck.trimmed();
 
     QJsonDocument jsonDoc(json);
-    QUrl serverUrl("http://192.168.30.184:8080/changepassword");
+    QUrl serverUrl = AppConfig::apiUrl("/changepassword");
     sendPasswordChangeRequest(jsonDoc, serverUrl);
 }
 
@@ -168,7 +164,7 @@ void AuthUser::sendSavedLoginToServer()
         json["login"] = savedLogin;  // Упаковываем логин в JSON объект
 
         QJsonDocument jsonDoc(json);  // Создаем JSON документ
-        QUrl serverUrl("http://192.168.30.184:8080/deleteuser");  // Замените на правильный URL
+        QUrl serverUrl = AppConfig::apiUrl("/deleteuser");  // Замените на правильный URL
         sendToServer(jsonDoc, serverUrl);  // Отправляем на сервер
     } else {
         qWarning() << "No saved login found.";
@@ -189,7 +185,7 @@ void AuthUser::changeEmail(const QString &email)
     json["email"] = email.trimmed();
 
     QJsonDocument jsonDoc(json);
-    QUrl serverUrl("http://192.168.30.184:8080/changemail");
+    QUrl serverUrl = AppConfig::apiUrl("/changemail");
     sendEmailChangeRequest(jsonDoc, serverUrl);
 }
 

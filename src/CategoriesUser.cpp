@@ -1,5 +1,6 @@
 #include "CategoriesUser.h"
-#include "AppSave.h"  // для доступа к сохраненному логину
+#include "AppSave.h"
+#include "AppConfig.h"
 
 CategoriesUser::CategoriesUser(QObject *parent)
     : QObject(parent)
@@ -34,7 +35,7 @@ CategoriesUser::CategoriesUser(QObject *parent)
 void CategoriesUser::saveTags(const QStringList &tags)
 {
     AppSave appSave;
-    QString savedLogin = appSave.getSavedLogin();
+    QString savedLogin = appSave.getSavedLogin().trimmed();
 
     qDebug() << "saveTags called with login:" << savedLogin;
     qDebug() << "tags:" << tags;
@@ -51,7 +52,7 @@ void CategoriesUser::saveTags(const QStringList &tags)
     json["tags"] = jsonTags;
 
     QJsonDocument jsonDoc(json);
-    QUrl serverUrl("http://192.168.30.184:8080/savetags");
+    QUrl serverUrl = AppConfig::apiUrl("/savetags");
     sendTagsSaveRequest(jsonDoc, serverUrl);
 }
 
@@ -88,15 +89,14 @@ void CategoriesUser::onTagsSaveReply(QNetworkReply *reply)
 void CategoriesUser::loadTags()
 {
     AppSave appSave;
-    QString login = appSave.getSavedLogin();
+    QString login = appSave.getSavedLogin().trimmed();
     qDebug() << "Loading tags for login:" << login;
-    // Создаем URL с параметром login в строке запроса
-    QUrl url("http://192.168.30.184:8080/getusertags");
+    QUrl serverUrl = AppConfig::apiUrl("/getusertags");
     QUrlQuery query;
-    query.addQueryItem("login", login);  // Добавляем параметр login в запрос
-    url.setQuery(query);
+    query.addQueryItem("login", login);
+    serverUrl.setQuery(query);
 
-    QNetworkRequest request(url);
+    QNetworkRequest request(serverUrl);
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 
     // Выполняем GET-запрос
@@ -141,7 +141,7 @@ void CategoriesUser::onUserTagsFetchReply(QNetworkReply *reply)
 void CategoriesUser::deleteTag(const QString &tag)
 {
     AppSave appSave;
-    QString savedLogin = appSave.getSavedLogin();
+    QString savedLogin = appSave.getSavedLogin().trimmed();
 
     qDebug() << "deleteTag called with login:" << savedLogin;
     qDebug() << "tag:" << tag;
@@ -151,7 +151,7 @@ void CategoriesUser::deleteTag(const QString &tag)
     json["tag"] = tag.trimmed();
 
     QJsonDocument jsonDoc(json);
-    QUrl serverUrl("http://192.168.30.184:8080/deletetag");
+    QUrl serverUrl = AppConfig::apiUrl("/deletetag");
     sendTagDeleteRequest(jsonDoc, serverUrl);
 }
 
@@ -188,24 +188,25 @@ void CategoriesUser::onTagDeleteReply(QNetworkReply *reply)
 void CategoriesUser::saveActivity(const QString &iconId, const QString &iconlabel)
 {
     AppSave appSave;
-    QString savedLogin = appSave.getSavedLogin();
+    QString savedLogin = appSave.getSavedLogin().trimmed();
+    QString cleanedIconId = iconId.trimmed();
+    QString cleanedIconLabel = iconlabel.trimmed();
 
     qDebug() << "saveActivity called with login:" << savedLogin;
     qDebug() << "iconId:" << iconId << ", icon_label:" << iconlabel;
 
-    // Проверка на пустые строки
-    if (savedLogin.isEmpty() || iconId.isEmpty() || iconlabel.isEmpty()) {
+    if (savedLogin.isEmpty() || cleanedIconId.isEmpty() || cleanedIconLabel.isEmpty()) {
         qWarning() << "Invalid input data: Login, iconId, or iconLabel is empty!";
-        return; // Не отправляем запрос, если данные некорректные
+        return;
     }
 
     QJsonObject json;
     json["login"] = savedLogin;
-    json["icon_id"] = iconId;
-    json["icon_label"] = iconlabel;
+    json["icon_id"] = cleanedIconId;
+    json["icon_label"] = cleanedIconLabel;
 
     QJsonDocument jsonDoc(json);
-    QUrl serverUrl("http://192.168.30.184:8080/saveactivity");
+    QUrl serverUrl = AppConfig::apiUrl("/saveactivity");
     sendActivitySaveRequest(jsonDoc, serverUrl);
 }
 
@@ -243,21 +244,21 @@ void CategoriesUser::onActivitySaveReply(QNetworkReply *reply)
 void CategoriesUser::loadActivity()
 {
     AppSave appSave;
-    QString login = appSave.getSavedLogin();
+    QString login = appSave.getSavedLogin().trimmed();
     qDebug() << "Loading user activity for login:" << login;
 
 
-    QUrl url("http://192.168.30.184:8080/getuseractivity");
-    qDebug() << "Request URL:" << url.toString();
+    QUrl serverUrl = AppConfig::apiUrl("/getuseractivity");
+    qDebug() << "Request URL:" << serverUrl.toString();
 
     QUrlQuery query;
     query.addQueryItem("login", login);
-    url.setQuery(query);
+    serverUrl.setQuery(query);
 
-    QNetworkRequest request(url);
+    QNetworkRequest request(serverUrl);
 
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
-    qDebug() << "Request URL:" << url.toString();
+    qDebug() << "Request URL:" << serverUrl.toString();
 
     QNetworkReply *reply = m_networkUser.get(request);
     connect(reply, &QNetworkReply::finished, this, [this, reply]() {
@@ -326,7 +327,7 @@ void CategoriesUser::onUserActivitiesFetchReply(QNetworkReply *reply)
 void CategoriesUser::deleteActivity(const QString &activity)
 {
     AppSave appSave;
-    QString savedLogin = appSave.getSavedLogin();
+    QString savedLogin = appSave.getSavedLogin().trimmed();
 
     qDebug() << "deleteActivity called with login:" << savedLogin;
     qDebug() << "activity:" << activity;
@@ -336,7 +337,7 @@ void CategoriesUser::deleteActivity(const QString &activity)
     json["activity"] = activity.trimmed();
 
     QJsonDocument jsonDoc(json);
-    QUrl serverUrl("http://192.168.30.184:8080/deleteactivity");  // Убедись, что сервер принимает этот эндпоинт
+    QUrl serverUrl = AppConfig::apiUrl("/deleteactivity");  // Убедись, что сервер принимает этот эндпоинт
     sendActivityDeleteRequest(jsonDoc, serverUrl);
 }
 
@@ -375,23 +376,25 @@ void CategoriesUser::onActivityDeleteReply(QNetworkReply *reply)
 void CategoriesUser::saveEmotion(const QString &iconId, const QString &iconlabel)
 {
     AppSave appSave;
-    QString savedLogin = appSave.getSavedLogin();
+    QString savedLogin = appSave.getSavedLogin().trimmed();
+    QString cleanedIconId = iconId.trimmed();
+    QString cleanedIconLabel = iconlabel.trimmed();
 
     qDebug() << "saveEmotion called with login:" << savedLogin;
     qDebug() << "iconId:" << iconId << ", iconlabel:" << iconlabel;
 
-    if (savedLogin.isEmpty() || iconId.isEmpty() || iconlabel.isEmpty()) {
-        qWarning() << "Invalid input data: Login, iconId, or iconlabel is empty!";
+    if (savedLogin.isEmpty() || cleanedIconId.isEmpty() || cleanedIconLabel.isEmpty()) {
+        qWarning() << "Invalid input data: Login, iconId, or iconLabel is empty!";
         return;
     }
 
     QJsonObject json;
     json["login"] = savedLogin;
-    json["icon_id"] = iconId;
-    json["icon_label"] = iconlabel;
+    json["icon_id"] = cleanedIconId;
+    json["icon_label"] = cleanedIconLabel;
 
     QJsonDocument jsonDoc(json);
-    QUrl serverUrl("http://192.168.30.184:8080/saveemotion");
+    QUrl serverUrl = AppConfig::apiUrl("/saveemotion");
     sendEmotionSaveRequest(jsonDoc, serverUrl);
 }
 
@@ -428,15 +431,15 @@ void CategoriesUser::onEmotionSaveReply(QNetworkReply *reply)
 void CategoriesUser::loadEmotion()
 {
     AppSave appSave;
-    QString login = appSave.getSavedLogin();
+    QString login = appSave.getSavedLogin().trimmed();
     qDebug() << "Loading user emotions for login:" << login;
 
-    QUrl url("http://192.168.30.184:8080/getuseremotions");
+    QUrl serverUrl = AppConfig::apiUrl("/getuseremotions");
     QUrlQuery query;
     query.addQueryItem("login", login);
-    url.setQuery(query);
+    serverUrl.setQuery(query);
 
-    QNetworkRequest request(url);
+    QNetworkRequest request(serverUrl);
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 
     QNetworkReply *reply = m_networkUser.get(request);
@@ -514,7 +517,7 @@ void CategoriesUser::deleteEmotion(const QString &emotion)
     json["emotion"] = emotion.trimmed();
 
     QJsonDocument jsonDoc(json);
-    QUrl serverUrl("http://192.168.30.184:8080/deleteemotion");
+    QUrl serverUrl = AppConfig::apiUrl("/deleteemotion");
     sendEmotionDeleteRequest(jsonDoc, serverUrl);
 }
 

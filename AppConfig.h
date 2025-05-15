@@ -2,11 +2,16 @@
 #define APPCONFIG_H
 
 #include <QString>
+#include <QUrl>
 
 class AppConfig {
 public:
-    static QString serverUrl() {
-        return "http://localhost:8080";
+    static QUrl baseServerUrl() {
+        return QUrl("http://192.168.30.184:8080");
+    }
+
+    static QUrl apiUrl(const QString& path) {
+        return baseServerUrl().resolved(QUrl(path));
     }
 };
 

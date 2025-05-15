@@ -12,3 +12,7 @@ CustEmotButn 1.0 CustEmotionButton.qml
 CustFoldBlok 1.0 CustFolderBlock.qml
 CustFoldButn 1.0 CustFolderButton.qml
 CustTodoButn 1.0 CustTodoButton.qml
+IconModelAct 1.0 IconModelActivities.qml
+IconModelEmo 1.0 IconModelEmotions.qml
+IconModelMod 1.0 IconModelMood.qml
+Utils 1.0 Utils.js

@@ -5,9 +5,9 @@ import CustomComponents
 
 Popup {
 
-    property var selectedTags: []
-    signal tagsConfirmed(var selectedTags)
-    
+    property var selectedActivities: []
+    signal activitiesConfirmed(var selectedActivities)
+
     id: managerPopup
     width: Screen.width * 0.93
     height: Screen.height * 0.6
@@ -38,7 +38,7 @@ Popup {
 
             Text {
                 id: header
-                text: "Добавление тегов"
+                text: "Выбор активностей"
                 color: "#D9D9D9"
                 font.pixelSize: 22
                 font.bold: true
@@ -48,7 +48,7 @@ Popup {
 
             Text {
                 id: text1
-                text: "Выберите теги, которые хотите добавить."
+                text: "Выберите активности, которые хотите добавить."
                 color: "#D9D9D9"
                 font.pixelSize: 15
                 anchors.top: header.bottom
@@ -60,7 +60,7 @@ Popup {
 
             Text {
                 id: text2
-                text: "Чтобы убрать тег - намите на него."
+                text: "Чтобы убрать активность - нажмите на неё."
                 color: "#D9D9D9"
                 font.pixelSize: 15
                 anchors.top: text1.bottom
@@ -71,14 +71,14 @@ Popup {
             }
 
             ListModel {
-                id: tagListModel
+                id: activityListModel
             }
 
             Item {
                 anchors.top: text2.bottom
                 anchors.topMargin: 15
                 width: parent.width
-                height: parent.height * 0.7
+                height: parent.height * 0.66
 
                 Rectangle {
                     anchors.fill: parent
@@ -91,7 +91,7 @@ Popup {
                         color: "#4d4d4d"
                         font.pixelSize: 11
                         font.italic: true
-                        visible: tagListModel.count === 0
+                        visible: activityListModel.count === 0
                     }
 
                     ScrollView {
@@ -105,22 +105,25 @@ Popup {
                             spacing: 6
 
                             Repeater {
-                                model: tagListModel
-                                delegate: CustTagButon {
-                                    tagText: model.tag
+                                model: activityListModel
+                                delegate: CustActvButn {
+                                    id: actBtn
+                                    activityText: model.activity
+                                    iconPath: Utils.getIconPathById(iconModelActivity, model.iconId)
                                     buttonWidth: implicitWidth
-                                    selected: managerPopup.selectedTags.indexOf(model.tag) !== -1
+                                    buttonHeight: 43
+                                    selected: managerPopup.selectedActivities.indexOf(model.activity) !== -1
                                     onClicked: {
-                                        let idx = managerPopup.selectedTags.indexOf(model.tag)
-                                        if (idx === -1)
-                                            managerPopup.selectedTags.push(model.tag)
-                                        else
-                                            managerPopup.selectedTags.splice(idx, 1)
-                                        selected = !selected
+                                        let idx = managerPopup.selectedActivities.indexOf(model.activity);
+                                        if (idx === -1) {
+                                            managerPopup.selectedActivities.push(model.activity);
+                                        } else {
+                                            managerPopup.selectedActivities.splice(idx, 1);
+                                        }
+                                        selected = !selected;
                                     }
                                 }
                             }
-
                         }
                     }
                 }
@@ -148,34 +151,51 @@ Popup {
             MouseArea {
                 anchors.fill: parent
                 onClicked: {
-                    tagsConfirmed(managerPopup.selectedTags)
-                    managerPopup.close()
+                    var confirmedList = [];
+                    for (var i = 0; i < activityListModel.count; ++i) {
+                        var item = activityListModel.get(i);
+                        if (managerPopup.selectedActivities.indexOf(item.activity) !== -1) {
+                            confirmedList.push({
+                                activity: item.activity,
+                                iconPath: Utils.getIconPathById(iconModelActivity, item.iconId)
+                            });
+                        }
+                    }
+                    activitiesConfirmed(confirmedList);
+                    managerPopup.close();
                 }
-            }            
+            }
         }
     }
 
-    function setTags(tagArray) {
-        tagListModel.clear()
-        selectedTags = []
-        for (let i = 0; i < tagArray.length; ++i) {
-            tagListModel.append({ tag: tagArray[i] })
+    function setActivities(activityArray) {
+        activityListModel.clear();
+        selectedActivities = [];
+        for (let i = 0; i < activityArray.length; ++i) {
+            activityListModel.append({
+                activity: activityArray[i].activity,
+                iconId: activityArray[i].iconId
+            });
         }
     }
 
-    function loadTagsFromServer(tags) {
-        console.log("Loading tags into model:", tags)
-        setTags(tags)
+    function loadActivitiesFromServer(activities) {
+        console.log("Данные загружены:", activities);
+        setActivities(activities);
     }
 
     onOpened: {
-        categoriesUser.loadTags()
+        categoriesUser.loadActivity();
     }
 
     Connections {
         target: categoriesUser
-        onTagsLoaded: {
-            loadTagsFromServer(tags)
+        onActivityLoadedSuccess: function(activities) {
+            loadActivitiesFromServer(activities);
         }
+    }
+
+    IconModelAct {
+        id: iconModelActivity
     }
 }

@@ -2,7 +2,6 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import PCMindTrace 1.0
 import CustomComponents
-import "../CustomComponents"
 
 Popup {
     id: managerPopup
