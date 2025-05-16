@@ -21,10 +21,17 @@ Rectangle {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: header.bottom
 
-        ScrollView {
+        Flickable {
+            property bool refreshing: false
+            id: flickable
             anchors.fill: parent
+            contentHeight: eda.height + entryColumn.height
+            //boundsBehavior: Flickable.StopAtBounds
+            flickableDirection: Flickable.VerticalFlick
+            clip: true
 
             Column {
+                id: eda
                 width: parent.width
                 spacing: 12
 
@@ -320,34 +327,68 @@ Rectangle {
                     id:entryFeed
                     width:  parent.width * 0.86
                     anchors.horizontalCenter: parent.horizontalCenter
-                    height: 400
+                    height: 100
 
-                    ListView {
-                        id: entryListView
-                        anchors.fill: parent
+                    Column {
+                        id: entryColumn
+                        width: parent.width
                         spacing: 8
-                        model: entriesUser.entryUserModel
 
-                        delegate: Rectangle {
-                            width: parent.width
-                            height: 50
-                            color: "lightgray"
-                            radius: 5
-                            border.color: "gray"
-                            border.width: 1
-                            anchors.horizontalCenter: parent.horizontalCenter
+                        Repeater {
+                            model: entriesUser.entryUserModel
 
-                            Text {
-                                text: model.title
-                                anchors.centerIn: parent
-                                font.pixelSize: 16
-                                color: "black"
-                                elide: Text.ElideRight
+                            delegate: Rectangle {
+                                width: parent.width
+                                height: 50
+                                color: "lightgray"
+                                radius: 5
+                                border.color: "gray"
+                                border.width: 1
+                                anchors.horizontalCenter: parent.horizontalCenter
+
+                                Text {
+                                    text: model.title
+                                    anchors.centerIn: parent
+                                    font.pixelSize: 16
+                                    color: "black"
+                                    elide: Text.ElideRight
+                                }
                             }
                         }
                     }
                 }
             }
+
+            onContentYChanged: {
+               if (!refreshing && contentY <= -60) { // -60 — порог "свайпа вниз"
+                   refreshing = true
+                   console.log("Обновление данных...")
+                   refreshPage()
+               }
+           }
+            function refreshPage() {
+                foldersUser.loadFolder();
+                todoUser.loadTodo();
+                entriesUser.loadUserEntries();
+                Qt.callLater(() => {
+                    refreshing = false
+                    contentY = 0
+                })
+            }
+
+            Rectangle {
+                id: refreshIndicator
+                width: parent.width
+                height: refreshing ? 40 : 0
+                color: "lightblue"
+                anchors.top: parent.top
+                z: 100
+                Text {
+                    anchors.centerIn: parent
+                    text: refreshing ? "Обновление..." : ""
+                }
+            }
+
         }
     }
 
