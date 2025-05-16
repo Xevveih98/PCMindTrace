@@ -1,16 +1,16 @@
 #include "EntryUser.h"
 
 EntryUser::EntryUser(int id,
-    const QString &userLogin,
-    const QString &title,
-    const QString &content,
-    int moodId,
-    int folderId,
-    const QDate &date,
-    const QTime &time,
-    const QVector<int> &tagIds,
-    const QVector<int> &activityIds,
-    const QVector<int> &emotionIds)
+                     const QString &userLogin,
+                     const QString &title,
+                     const QString &content,
+                     int moodId,
+                     int folderId,
+                     const QDate &date,
+                     const QTime &time,
+                     const QVector<UserItem> &tagItems,
+                     const QVector<UserItem> &activityItems,
+                     const QVector<UserItem> &emotionItems)
     : m_id(id),
     m_userLogin(userLogin),
     m_title(title),
@@ -19,139 +19,106 @@ EntryUser::EntryUser(int id,
     m_folderId(folderId),
     m_date(date),
     m_time(time),
-    m_tagIds(tagIds),
-    m_activityIds(activityIds),
-    m_emotionIds(emotionIds)
+    m_tagItems(tagItems),
+    m_activityItems(activityItems),
+    m_emotionItems(emotionItems)
 {
 }
 
-int EntryUser::getId() const {
-    return m_id;
+int EntryUser::getId() const { return m_id; }
+QString EntryUser::getUserLogin() const { return m_userLogin; }
+QString EntryUser::getTitle() const { return m_title; }
+QString EntryUser::getContent() const { return m_content; }
+int EntryUser::getMoodId() const { return m_moodId; }
+int EntryUser::getFolderId() const { return m_folderId; }
+QDate EntryUser::getDate() const { return m_date; }
+QTime EntryUser::getTime() const { return m_time; }
+
+QVector<UserItem> EntryUser::getTagItems() const { return m_tagItems; }
+QVector<UserItem> EntryUser::getActivityItems() const { return m_activityItems; }
+QVector<UserItem> EntryUser::getEmotionItems() const { return m_emotionItems; }
+
+void EntryUser::setTagItems(const QVector<UserItem> &tags) { m_tagItems = tags; }
+void EntryUser::setActivityItems(const QVector<UserItem> &activities) { m_activityItems = activities; }
+void EntryUser::setEmotionItems(const QVector<UserItem> &emotions) { m_emotionItems = emotions; }
+
+static QVector<UserItem> parseUserItemArray(const QJsonArray &array) {
+    QVector<UserItem> result;
+    for (const QJsonValue &val : array) {
+        QJsonObject obj = val.toObject();
+        UserItem item;
+        item.id = obj.value("id").toInt();
+        item.iconId = obj.value("iconId").toInt();
+        item.label = obj.value("label").toString();
+        result.append(item);
+    }
+    return result;
 }
 
-QString EntryUser::getUserLogin() const {
-    return m_userLogin;
+static QJsonArray toJsonUserItemArray(const QVector<UserItem> &items) {
+    QJsonArray array;
+    for (const UserItem &item : items) {
+        QJsonObject obj;
+        obj["id"] = item.id;
+        obj["iconId"] = item.iconId;
+        obj["label"] = item.label;
+        array.append(obj);
+    }
+    return array;
 }
-
-QString EntryUser::getTitle() const {
-    return m_title;
-}
-
-QString EntryUser::getContent() const {
-    return m_content;
-}
-
-int EntryUser::getMoodId() const {
-    return m_moodId;
-}
-
-int EntryUser::getFolderId() const {
-    return m_folderId;
-}
-
-QDate EntryUser::getDate() const {
-    return m_date;
-}
-
-QTime EntryUser::getTime() const {
-    return m_time;
-}
-
-QVector<int> EntryUser::getTagIds() const {
-    return m_tagIds;
-}
-
-QVector<int> EntryUser::getActivityIds() const {
-    return m_activityIds;
-}
-
-QVector<int> EntryUser::getEmotionIds() const {
-    return m_emotionIds;
-}
-
-void EntryUser::setTagIds(const QVector<int> &tags) {
-    m_tagIds = tags;
-}
-
-void EntryUser::setActivityIds(const QVector<int> &activities) {
-    m_activityIds = activities;
-}
-
-void EntryUser::setEmotionIds(const QVector<int> &emotions) {
-    m_emotionIds = emotions;
-}
-
 
 EntryUser EntryUser::fromJson(const QJsonObject &obj)
 {
     qDebug() << "EntryUser::fromJson() called. Source object:" << obj;
 
     int id = obj.value("id").toInt();
-    QString login = obj.value("user_login").toString();
-    QString title = obj.value("entry_title").toString();
-    QString content = obj.value("entry_content").toString();
-    int moodId = obj.value("entry_mood_id").toInt();
-    int folderId = obj.value("entry_folder_id").toInt();
+    QString login = obj.value("login").toString();
+    QString title = obj.value("title").toString();
+    QString content = obj.value("content").toString();
+    int moodId = obj.value("moodId").toInt();
+    int folderId = obj.value("folderId").toInt();
 
-    QString dateStr = obj.value("entry_date").toString();
-    QString timeStr = obj.value("entry_time").toString();
-    QDate date = QDate::fromString(dateStr, Qt::ISODate);
-    QTime time = QTime::fromString(timeStr, "hh:mm:ss");
+    QDate date = QDate::fromString(obj.value("date").toString(), Qt::ISODate);
+    QTime time = QTime::fromString(obj.value("time").toString(), "hh:mm");
 
-    QVector<int> tags, activities, emotions;
-
-    QJsonArray tagsArray = obj.value("tags").toArray();
-    for (const QJsonValue &val : tagsArray)
-        tags.append(val.toInt());
-
-    QJsonArray activitiesArray = obj.value("activities").toArray();
-    for (const QJsonValue &val : activitiesArray)
-        activities.append(val.toInt());
-
-    QJsonArray emotionsArray = obj.value("emotions").toArray();
-    for (const QJsonValue &val : emotionsArray)
-        emotions.append(val.toInt());
+    QVector<UserItem> tags = parseUserItemArray(obj.value("tags").toArray());
+    QVector<UserItem> activities = parseUserItemArray(obj.value("activities").toArray());
+    QVector<UserItem> emotions = parseUserItemArray(obj.value("emotions").toArray());
 
     qDebug() << "Создан EntryUser из JSON:"
              << "ID:" << id
              << "Login:" << login
              << "Title:" << title
              << "Date:" << date
-             << "Tags:" << tags;
+             << "Tags count:" << tags.size();
 
     return EntryUser(id, login, title, content, moodId, folderId, date, time, tags, activities, emotions);
 }
 
+
 QJsonObject EntryUser::toJson() const
 {
-    qDebug() << "EntryUser::toJson() called. Serializing entry:" << m_id << m_title;
-
     QJsonObject obj;
+    obj["title"] = m_title;
+    obj["content"] = m_content;
+    obj["date"] = m_date.toString(Qt::ISODate);
+    obj["time"] = m_time.toString();
+    obj["folder"] = m_folderId;
+    obj["moodId"] = m_moodId;
+
+    // Сериализация QVector<UserItem> в массив id
+    auto userItemsToJsonArray = [](const QVector<UserItem> &items) {
+        QJsonArray array;
+        for (const auto &item : items)
+            array.append(item.id);
+        return array;
+    };
+
+    obj["tags"] = userItemsToJsonArray(m_tagItems);
+    obj["activities"] = userItemsToJsonArray(m_activityItems);
+    obj["emotions"] = userItemsToJsonArray(m_emotionItems);
+
     obj["id"] = m_id;
-    obj["user_login"] = m_userLogin;
-    obj["entry_title"] = m_title;
-    obj["entry_content"] = m_content;
-    obj["entry_mood_id"] = m_moodId;
-    obj["entry_folder_id"] = m_folderId;
-    obj["entry_date"] = m_date.toString(Qt::ISODate);
-    obj["entry_time"] = m_time.toString("hh:mm:ss");
-
-    QJsonArray tagsArray;
-    for (int tag : m_tagIds)
-        tagsArray.append(tag);
-    obj["tags"] = tagsArray;
-
-    QJsonArray activitiesArray;
-    for (int activity : m_activityIds)
-        activitiesArray.append(activity);
-    obj["activities"] = activitiesArray;
-
-    QJsonArray emotionsArray;
-    for (int emotion : m_emotionIds)
-        emotionsArray.append(emotion);
-    obj["emotions"] = emotionsArray;
-
-    qDebug() << "EntryUser JSON serialization result:" << obj;
 
     return obj;
 }

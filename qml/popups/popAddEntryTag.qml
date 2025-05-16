@@ -112,14 +112,25 @@ Popup {
                             delegate: CustTagButon {
                                 tagText: model.tag
                                 buttonWidth: implicitWidth
-                                selected: managerPopup.selectedTags.indexOf(model.tag) !== -1
+                                selected: managerPopup.selectedTags.some(t => t.id === model.id)
                                 onClicked: {
-                                    let idx = managerPopup.selectedTags.indexOf(model.tag)
-                                    if (idx === -1)
-                                        managerPopup.selectedTags.push(model.tag)
-                                    else
-                                        managerPopup.selectedTags.splice(idx, 1)
+                                    let index = managerPopup.selectedTags.findIndex(t => t.id === model.id)
+                                    if (index === -1) {
+                                       managerPopup.selectedTags.push({
+                                           id: model.id,
+                                           tag: model.tag
+                                       })
+                                    } else {
+                                       managerPopup.selectedTags.splice(index, 1)
+                                    }
+
                                     selected = !selected
+
+                                    // Debug
+                                    console.log("Обновленные selectedTags:")
+                                    for (let i = 0; i < managerPopup.selectedTags.length; ++i) {
+                                       console.log("  id:", managerPopup.selectedTags[i].id, "tag:", managerPopup.selectedTags[i].tag)
+                                    }
                                 }
                             }
                         }
@@ -158,7 +169,7 @@ Popup {
     function setTags(tagArray) {
         tagListModel.clear();
         for (let i = 0; i < tagArray.length; ++i) {
-            tagListModel.append({ tag: tagArray[i].tag });
+            tagListModel.append({ id: tagArray[i].id, tag: tagArray[i].tag });
         }
     }
 

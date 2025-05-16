@@ -134,22 +134,20 @@ void FoldersUser::onUserFolderFetchReply(QNetworkReply *reply)
         for (const QJsonValue &val : foldersArray) {
             QJsonObject obj = val.toObject();
             QVariantMap map;
+
+            map["id"] = obj.value("id").toInt();
+
             map["name"] = obj.value("name").toString();
-            bool ok;
-            int itemCount = obj.value("itemCount").toString().toInt(&ok);
-            if (!ok) {
-                qWarning() << "Invalid itemCount value, setting to 0.";
-                itemCount = 0;
-            }
-            map["itemCount"] = itemCount;
+
+            map["itemCount"] = obj.value("itemCount").toInt();
 
             foldersList.append(map);
         }
 
-        qDebug() << "Sending emotions to QML:" << foldersList;
+        qDebug() << "Sending folders to QML:" << foldersList;
         emit foldersLoadedSuccess(foldersList);
     } else {
-        qWarning() << "Failed to load user emotions. Error:" << reply->errorString();
+        qWarning() << "Failed to load user folders. Error:" << reply->errorString();
         emit folderLoadedFailed(reply->errorString());
     }
 

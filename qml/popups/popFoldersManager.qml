@@ -200,6 +200,7 @@ Popup {
             console.log("Данные загружены:", folders);
             for (let i = 0; i < folders.length; ++i) {
                 foldersListModel.append({
+                    id: folders[i].id,
                     foldername: folders[i].name,
                     itemCount: folders[i].itemCount
                 });

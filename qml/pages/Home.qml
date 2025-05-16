@@ -318,6 +318,34 @@ Rectangle {
 
                 Item {
                     id:entryFeed
+                    width:  parent.width * 0.86
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    height: 400
+
+                    ListView {
+                        id: entryListView
+                        anchors.fill: parent
+                        spacing: 8
+                        model: entriesUser.entryUserModel
+
+                        delegate: Rectangle {
+                            width: parent.width
+                            height: 50
+                            color: "lightgray"
+                            radius: 5
+                            border.color: "gray"
+                            border.width: 1
+                            anchors.horizontalCenter: parent.horizontalCenter
+
+                            Text {
+                                text: model.title
+                                anchors.centerIn: parent
+                                font.pixelSize: 16
+                                color: "black"
+                                elide: Text.ElideRight
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -344,11 +372,13 @@ Rectangle {
             foldersListModel.clear();
             for (let i = 0; i < folders.length; ++i) {
                 foldersListModel.append({
+                    id: folders[i].id,
                     foldername: folders[i].name,
                     itemCount: folders[i].itemCount
                 });
             }
         }
+
         onClearFolderList: {
             foldersListModel.clear();
         }
@@ -357,6 +387,7 @@ Rectangle {
     Component.onCompleted: {
         foldersUser.loadFolder();
         todoUser.loadTodo();
+        entriesUser.loadUserEntries();
     }
 
     IconModelMod {

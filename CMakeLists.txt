@@ -31,6 +31,7 @@ qt_add_executable(appPCMindTrace
     src/EntryUserModel.cpp
     src/EntriesUser.h
     src/EntriesUser.cpp
+    src/UserItem.h
 )
 
 qt_add_qml_module(appPCMindTrace

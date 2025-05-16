@@ -272,10 +272,9 @@ Popup {
                                 if (popup) {
                                     console.log("Попап успешно создан.");
 
-                                    // Подключаемся к сигналу
                                     popup.tagsConfirmed.connect(function(selectedTags) {
                                         console.log("Получены теги из попапа:", selectedTags);
-                                        tagviewma.setSelectedTags(selectedTags); // <- загружаем их в модель
+                                        tagviewma.setSelectedTags(selectedTags);
                                     });
 
                                     popup.open();
@@ -339,13 +338,18 @@ Popup {
 
                 function setSelectedTags(tagArray) {
                     tagsListModel.clear()
+                    let fullTagObjects = []
                     for (let i = 0; i < tagArray.length; ++i) {
-                        tagsListModel.append({ tag: tagArray[i] })
+                        let tagObj = {
+                            id: tagArray[i].id,
+                            tag: tagArray[i].tag
+                        }
+                        tagsListModel.append(tagObj)
+                        fullTagObjects.push(tagObj)
                     }
+                    selectedTags = fullTagObjects
                 }
             }
-
-
         }
 
         Item {
@@ -442,7 +446,7 @@ Popup {
 
                     delegate: CustActvButn {
                         activityText: model.activity
-                        iconPath: model.iconPath
+                        iconPath: Utils.getIconPathById(iconModelActivity, model.iconId)
                         buttonWidth: implicitWidth
                         buttonHeight: 43
                         Component.onCompleted: {
@@ -453,14 +457,19 @@ Popup {
 
                 function setSelectedActivities(activityArray) {
                     activitiesListModel.clear()
+                    let fullActivityObjects = []
                     for (let i = 0; i < activityArray.length; ++i) {
-                        activitiesListModel.append({
+                        let obj = {
+                            id: activityArray[i].id,
                             activity: activityArray[i].activity,
-                            iconPath: activityArray[i].iconPath
-                        })
+                            iconId: activityArray[i].iconId
+                        }
+                        activitiesListModel.append(obj)
+                        fullActivityObjects.push(obj)
                     }
-                    selectedActivities = activityArray
+                    selectedActivities = fullActivityObjects
                 }
+
             }
         }
 
@@ -558,7 +567,7 @@ Popup {
 
                     delegate: CustEmotButn {
                         emotionText: model.emotion
-                        iconPath: model.iconPath
+                        iconPath: Utils.getIconPathById(iconModelEmotion, model.iconId)
                         buttonWidth: implicitWidth
                         buttonHeight: 43
                         Component.onCompleted: {
@@ -571,8 +580,9 @@ Popup {
                     emotionsListModel.clear()
                     for (let i = 0; i < emotionArray.length; ++i) {
                         emotionsListModel.append({
-                            emotion: emotionArray[i].emotion,
-                            iconPath: emotionArray[i].iconPath
+                            id: emotionArray[i].id,
+                            iconId: emotionArray[i].iconId,
+                            emotion: emotionArray[i].emotion
                         })
                     }
                     selectedEmotions = emotionArray
@@ -662,17 +672,20 @@ Popup {
                     anchors.fill: parent
                     onClicked: {
                         console.log("Попытка создать компонент popEntryChooseFolder.qml");
+
                         var component = Qt.createComponent("qrc:/popups/popEntryChooseFolder.qml");
                         if (component.status === Component.Ready) {
                             console.log("Компонент успешно загружен.");
-
+                            var tagIds = tagviewma.selectedTags.map(t => t.id)
+                            var activityIds = tagviwma.selectedActivities.map(a => a.id)
+                            var emotionIds = wmro.selectedEmotions.map(e => e.id)
                             var popup = component.createObject(parent, {
                                 entryHeaderText: entryHeader.text,
                                 entryContentText: textEdit.text,
-                                selectedEmotionId: managerPopup.selectedIconId,
-                                selectedTags: tagsListModel,
-                                selectedActivities: activitiesListModel,
-                                selectedEmotions: emotionsListModel,
+                                selectedMoodId: managerPopup.selectedIconId,
+                                selectedTags: tagIds,
+                                selectedActivities: activityIds,
+                                selectedEmotions: emotionIds,
                                 parentPopup: managerPopup
                             });
 

@@ -10,6 +10,7 @@
 #include <QObject>
 #include <QJsonObject>
 #include <QJsonDocument>
+#include "UserItem.h"
 
 class EntryUser
 {
@@ -22,9 +23,9 @@ public:
         int folderId,
         const QDate &date,
         const QTime &time,
-        const QVector<int> &tagIds = {},
-        const QVector<int> &activityIds = {},
-        const QVector<int> &emotionIds = {});
+        const QVector<UserItem> &tagItems,
+        const QVector<UserItem> &activityItems,
+        const QVector<UserItem> &emotionItems);
 
     int getId() const;
     QString getUserLogin() const;
@@ -35,13 +36,13 @@ public:
     QDate getDate() const;
     QTime getTime() const;
 
-    QVector<int> getTagIds() const;
-    QVector<int> getActivityIds() const;
-    QVector<int> getEmotionIds() const;
+    QVector<UserItem> getTagItems() const;
+    QVector<UserItem> getActivityItems() const;
+    QVector<UserItem> getEmotionItems() const;
 
-    void setTagIds(const QVector<int> &tags);
-    void setActivityIds(const QVector<int> &activities);
-    void setEmotionIds(const QVector<int> &emotions);
+    void setTagItems(const QVector<UserItem> &tags);
+    void setActivityItems(const QVector<UserItem> &activities);
+    void setEmotionItems(const QVector<UserItem> &emotions);
 
     static EntryUser fromJson(const QJsonObject &obj);
     QJsonObject toJson() const;
@@ -57,9 +58,9 @@ private:
     QDate m_date;
     QTime m_time;
 
-    QVector<int> m_tagIds;
-    QVector<int> m_activityIds;
-    QVector<int> m_emotionIds;
+    QVector<UserItem> m_tagItems;
+    QVector<UserItem> m_activityItems;
+    QVector<UserItem> m_emotionItems;
 };
 
 #endif // ENTRYUSER_H

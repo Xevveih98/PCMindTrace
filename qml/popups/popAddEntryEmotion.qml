@@ -114,15 +114,29 @@ Popup {
                                     iconPath: Utils.getIconPathById(iconModelEmotion, model.iconId)
                                     buttonWidth: implicitWidth
                                     buttonHeight: 43
-                                    selected: managerPopup.selectedEmotions.indexOf(model.emotion) !== -1
+
+                                    selected: managerPopup.selectedEmotions.some(e => e.id === model.id)
+
                                     onClicked: {
-                                        let idx = managerPopup.selectedEmotions.indexOf(model.emotion);
+                                        let idx = managerPopup.selectedEmotions.findIndex(e => e.id === model.id)
                                         if (idx === -1) {
-                                            managerPopup.selectedEmotions.push(model.emotion);
+                                            managerPopup.selectedEmotions.push({
+                                                id: model.id,
+                                                emotion: model.emotion,
+                                                iconId: model.iconId
+                                            })
                                         } else {
-                                            managerPopup.selectedEmotions.splice(idx, 1);
+                                            managerPopup.selectedEmotions.splice(idx, 1)
                                         }
-                                        selected = !selected;
+
+                                        selected = !selected
+
+                                        console.log("Обновленные selectedEmotions:")
+                                        for (let i = 0; i < managerPopup.selectedEmotions.length; ++i) {
+                                            console.log("id:", managerPopup.selectedEmotions[i].id,
+                                                        "iconId:", managerPopup.selectedEmotions[i].iconId,
+                                                        "emotion:", managerPopup.selectedEmotions[i].emotion)
+                                        }
                                     }
                                 }
                             }
@@ -153,17 +167,7 @@ Popup {
             MouseArea {
                 anchors.fill: parent
                 onClicked: {
-                    var confirmedList = [];
-                    for (var i = 0; i < emotionListModel.count; ++i) {
-                        var item = emotionListModel.get(i);
-                        if (managerPopup.selectedEmotions.indexOf(item.emotion) !== -1) {
-                            confirmedList.push({
-                                emotion: item.emotion,
-                                iconPath: Utils.getIconPathById(iconModelEmotion, item.iconId)
-                            });
-                        }
-                    }
-                    emotionsConfirmed(confirmedList);
+                    emotionsConfirmed(managerPopup.selectedEmotions);
                     managerPopup.close();
                 }
             }
@@ -175,8 +179,9 @@ Popup {
         selectedEmotions = [];
         for (let i = 0; i < emotionArray.length; ++i) {
             emotionListModel.append({
+                id: emotionArray[i].id,
                 emotion: emotionArray[i].emotion,
-                iconId: emotionArray[i].iconId
+                iconId: emotionArray[i].iconId               
             });
         }
     }

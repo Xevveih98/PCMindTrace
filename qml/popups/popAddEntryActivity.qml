@@ -115,15 +115,28 @@ Popup {
                                 iconPath: Utils.getIconPathById(iconModelActivity, model.iconId)
                                 buttonWidth: implicitWidth
                                 buttonHeight: 43
-                                selected: managerPopup.selectedActivities.indexOf(model.activity) !== -1
+                                selected: managerPopup.selectedActivities.some(a => a.id === model.id)
                                 onClicked: {
-                                    let idx = managerPopup.selectedActivities.indexOf(model.activity);
+                                    let idx = managerPopup.selectedActivities.findIndex(a => a.id === model.id)
                                     if (idx === -1) {
-                                        managerPopup.selectedActivities.push(model.activity);
+                                        managerPopup.selectedActivities.push({
+                                            id: model.id,
+                                            activity: model.activity,
+                                            iconId: model.iconId
+                                        })
                                     } else {
-                                        managerPopup.selectedActivities.splice(idx, 1);
+                                        managerPopup.selectedActivities.splice(idx, 1)
                                     }
-                                    selected = !selected;
+
+                                    selected = !selected
+
+                                    // Debug
+                                    console.log("Обновленные selectedActivities:")
+                                    for (let i = 0; i < managerPopup.selectedActivities.length; ++i) {
+                                        console.log("  id:", managerPopup.selectedActivities[i].id,
+                                                    "activity:", managerPopup.selectedActivities[i].activity,
+                                                    "iconId:", managerPopup.selectedActivities[i].iconId)
+                                    }
                                 }
                             }
                         }
@@ -153,18 +166,8 @@ Popup {
             MouseArea {
                 anchors.fill: parent
                 onClicked: {
-                    var confirmedList = [];
-                    for (var i = 0; i < activityListModel.count; ++i) {
-                        var item = activityListModel.get(i);
-                        if (managerPopup.selectedActivities.indexOf(item.activity) !== -1) {
-                            confirmedList.push({
-                                activity: item.activity,
-                                iconPath: Utils.getIconPathById(iconModelActivity, item.iconId)
-                            });
-                        }
-                    }
-                    activitiesConfirmed(confirmedList);
-                    managerPopup.close();
+                    activitiesConfirmed(managerPopup.selectedActivities)
+                    managerPopup.close()
                 }
             }
         }
@@ -175,6 +178,7 @@ Popup {
         selectedActivities = [];
         for (let i = 0; i < activityArray.length; ++i) {
             activityListModel.append({
+                id: activityArray[i].id,
                 activity: activityArray[i].activity,
                 iconId: activityArray[i].iconId
             });

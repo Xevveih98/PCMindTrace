@@ -8,26 +8,33 @@
 #include <QJsonArray>
 #include <QUrlQuery>
 #include "EntryUser.h"
+#include "EntryUserModel.h"
 
 class EntriesUser : public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(EntryUserModel* entryUserModel READ entryUserModel NOTIFY entryUserModelChanged)
 
 public:
     explicit EntriesUser(QObject *parent = nullptr);
     void saveEntry(const EntryUser &entry);
-    void loadUserEntries();
+    Q_INVOKABLE void loadUserEntries();
+    Q_INVOKABLE void saveEntryFromQml(const QVariant &entryDataVariant);
+    EntryUserModel* entryUserModel() const;
+
 
 signals:
     void entrySavedSuccess();
     void entrySavedFailed(const QString &error);
     void entriesLoadedSuccess(const QList<EntryUser> &entries);
     void entriesLoadedFailed(const QString &error);
+    void entryUserModelChanged();
 
 private:
     void sendEntrySaveRequest(const QJsonDocument &jsonDoc, const QUrl &url);
     void onEntrySaveReply(QNetworkReply *reply);
     void onUserEntryFetchReply(QNetworkReply *reply);
+    EntryUserModel *m_entryUserModel;
 
     QNetworkAccessManager m_networkUser;
 };

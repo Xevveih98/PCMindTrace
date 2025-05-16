@@ -7,7 +7,7 @@ import CustomComponents
 Popup {
     property string entryHeaderText
     property string entryContentText
-    property int selectedEmotionId
+    property int selectedMoodId
     property var selectedTags
     property var selectedActivities
     property var selectedEmotions
@@ -117,42 +117,31 @@ Popup {
         MouseArea {
             anchors.fill: parent
             onClicked: {
-                let tags = []
-                for (let i = 0; i < tagsListModel.count; i++) {
-                    tags.push(tagsListModel.get(i).tag)
-                }
+                 console.log("Emotions IDs:", selectedEmotions)
+                 console.log("Tags IDs:", selectedTags)
+                 console.log("Activities IDs:", selectedActivities)
 
-                let activities = []
-                for (let i = 0; i < activitiesListModel.count; i++) {
-                    activities.push(activitiesListModel.get(i).activity)
+                let selectedFolderId = -1
+                if (foldersListView.currentIndex >= 0 && foldersListView.currentIndex < foldersListModel.count) {
+                    selectedFolderId = foldersListModel.get(foldersListView.currentIndex).id
+                } else {
+                    console.warn("Папка не выбрана!")
                 }
-
-                let emotions = []
-                for (let i = 0; i < emotionsListModel.count; i++) {
-                    emotions.push(emotionsListModel.get(i).emotion)
-                }
-
-                let selectedFolder = ""
-                for (let i = 0; i < foldersListModel.count; i++) {
-                    if (foldersView.ListView.currentIndex === i) {
-                        selectedFolder = foldersListModel.get(i).foldername
-                        break
-                    }
-                }
+                console.log("Selected folder ID:", selectedFolderId)
 
                 let entryData = {
                     title: entryHeaderText,
                     content: entryContentText,
                     date: Utils.formatTodayDate(),
-                    emotionId: selectedEmotionId,
-                    tags: tags,
-                    activities: activities,
-                    emotions: emotions,
-                    folder: selectedFolder
+                    moodId: selectedMoodId,
+                    tags: selectedTags,
+                    activities: selectedActivities,
+                    emotions: selectedEmotions,
+                    folder: selectedFolderId
                 }
 
                 console.log("Отправка записи:", JSON.stringify(entryData, null, 2))
-                EntriesUser.saveEntryFromQml(entryData)
+                entriesUser.saveEntryFromQml(entryData)
                 managerFolderPopup.close()
 
                 if (parentPopup) {
@@ -173,6 +162,7 @@ Popup {
             console.log("Данные загружены:", folders);
             for (let i = 0; i < folders.length; ++i) {
                 foldersListModel.append({
+                    id: folders[i].id,
                     foldername: folders[i].name,
                 });
             }
