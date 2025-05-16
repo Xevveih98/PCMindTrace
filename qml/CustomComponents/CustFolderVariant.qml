@@ -27,7 +27,7 @@ Button {
 
         Item {
             height: parent.height
-            width: 44
+            width: 38
 
             Image {
                 source: "qrc:/images/foldervar.png"

@@ -33,7 +33,7 @@ public:
 signals:
     void tagsSavedSuccess();
     void tagsSavedFailed(const QString &error);
-    void tagsLoaded(const QStringList &tags);
+    void tagsLoaded(const QVariantList &tags);
     void tagsLoadedFailed(const QString &error);
     void tagDeletedSuccess();
     void tagDeletedFailed(const QString &error);

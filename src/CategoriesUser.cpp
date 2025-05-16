@@ -120,14 +120,29 @@ void CategoriesUser::onUserTagsFetchReply(QNetworkReply *reply)
             return;
         }
 
-        QJsonDocument doc = QJsonDocument::fromJson(response);
-        QJsonArray array = doc.object().value("tags").toArray();
+        QJsonParseError parseError;
+        QJsonDocument doc = QJsonDocument::fromJson(response, &parseError);
+        if (parseError.error != QJsonParseError::NoError) {
+            qWarning() << "JSON parse error:" << parseError.errorString();
+            emit tagsLoadedFailed("JSON parse error.");
+            reply->deleteLater();
+            return;
+        }
 
-        QStringList tags;
-        for (const auto &val : array)
-            tags << val.toString();
+        QJsonObject root = doc.object();
+        QJsonArray array = root.value("tags").toArray();
 
-        emit tagsLoaded(tags);
+        QVariantList tagList;
+        for (const QJsonValue &val : array) {
+            QJsonObject obj = val.toObject();
+            QVariantMap map;
+            map["id"] = obj.value("id").toInt();
+            map["tag"] = obj.value("tag").toString();
+            tagList.append(map);
+        }
+
+        qDebug() << "Sending tags to QML:" << tagList;
+        emit tagsLoaded(tagList);
     } else {
         qWarning() << "Failed to load tags. Error:" << reply->errorString();
         emit tagsLoadedFailed(reply->errorString());
@@ -135,7 +150,6 @@ void CategoriesUser::onUserTagsFetchReply(QNetworkReply *reply)
 
     reply->deleteLater();
 }
-
 // ----------- Удаление тегов -----------
 
 void CategoriesUser::deleteTag(const QString &tag)
@@ -290,13 +304,6 @@ void CategoriesUser::onUserActivitiesFetchReply(QNetworkReply *reply)
             return;
         }
 
-        if (!doc.isObject()) {
-            qWarning() << "Invalid JSON format: expected object at top level.";
-            emit activityLoadedFailed("Invalid JSON format.");
-            reply->deleteLater();
-            return;
-        }
-
         QJsonObject root = doc.object();
         QJsonArray activitiesArray = root.value("activities").toArray();
 
@@ -304,8 +311,9 @@ void CategoriesUser::onUserActivitiesFetchReply(QNetworkReply *reply)
         for (const QJsonValue &val : activitiesArray) {
             QJsonObject obj = val.toObject();
             QVariantMap map;
+            map["id"] = obj.value("id").toInt();
             map["activity"] = obj.value("activity").toString();
-            map["iconId"] = obj.value("iconId").toString().toInt();  // <-- теперь корректно
+            map["iconId"] = obj.value("iconId").toInt();
             activityList.append(map);
         }
 
@@ -318,9 +326,6 @@ void CategoriesUser::onUserActivitiesFetchReply(QNetworkReply *reply)
 
     reply->deleteLater();
 }
-
-
-
 
 // ----------- Удаление активностей -----------
 
@@ -472,13 +477,6 @@ void CategoriesUser::onUserEmotionsFetchReply(QNetworkReply *reply)
             return;
         }
 
-        if (!doc.isObject()) {
-            qWarning() << "Invalid JSON format: expected object at top level.";
-            emit emotionLoadedFailed("Invalid JSON format.");
-            reply->deleteLater();
-            return;
-        }
-
         QJsonObject root = doc.object();
         QJsonArray emotionsArray = root.value("emotions").toArray();
 
@@ -486,8 +484,9 @@ void CategoriesUser::onUserEmotionsFetchReply(QNetworkReply *reply)
         for (const QJsonValue &val : emotionsArray) {
             QJsonObject obj = val.toObject();
             QVariantMap map;
+            map["id"] = obj.value("id").toInt();
             map["emotion"] = obj.value("emotion").toString();
-            map["iconId"] = obj.value("iconId").toString().toInt();
+            map["iconId"] = obj.value("iconId").toInt();
             emotionList.append(map);
         }
 

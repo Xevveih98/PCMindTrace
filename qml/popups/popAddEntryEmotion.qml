@@ -81,7 +81,9 @@ Popup {
                 height: parent.height * 0.7
 
                 Rectangle {
-                    anchors.fill: parent
+                    anchors.centerIn: parent
+                    width: parent.width * 1.02
+                    height: parent.height * 1.03
                     color: "#262326"
                     radius: 8
 

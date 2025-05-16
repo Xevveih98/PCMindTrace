@@ -81,7 +81,9 @@ Popup {
                 height: parent.height * 0.7
 
                 Rectangle {
-                    anchors.fill: parent
+                    anchors.centerIn: parent
+                    width: parent.width * 1.02
+                    height: parent.height * 1.03
                     color: "#262326"
                     radius: 8
 
@@ -93,31 +95,31 @@ Popup {
                         font.italic: true
                         visible: tagListModel.count === 0
                     }
+                }
 
-                    ScrollView {
-                        id: amascroll
-                        width: parent.width
-                        height: parent.height
-                        z: 1
+                ScrollView {
+                    id: amascroll
+                    width: parent.width
+                    height: parent.height
+                    z: 1
 
-                        Flow {
-                            width: amascroll.width
-                            spacing: 6
+                    Flow {
+                        width: amascroll.width
+                        spacing: 6
 
-                            Repeater {
-                                model: tagListModel
-                                delegate: CustTagButon {
-                                    tagText: model.tag
-                                    buttonWidth: implicitWidth
-                                    selected: managerPopup.selectedTags.indexOf(model.tag) !== -1
-                                    onClicked: {
-                                        let idx = managerPopup.selectedTags.indexOf(model.tag)
-                                        if (idx === -1)
-                                            managerPopup.selectedTags.push(model.tag)
-                                        else
-                                            managerPopup.selectedTags.splice(idx, 1)
-                                        selected = !selected
-                                    }
+                        Repeater {
+                            model: tagListModel
+                            delegate: CustTagButon {
+                                tagText: model.tag
+                                buttonWidth: implicitWidth
+                                selected: managerPopup.selectedTags.indexOf(model.tag) !== -1
+                                onClicked: {
+                                    let idx = managerPopup.selectedTags.indexOf(model.tag)
+                                    if (idx === -1)
+                                        managerPopup.selectedTags.push(model.tag)
+                                    else
+                                        managerPopup.selectedTags.splice(idx, 1)
+                                    selected = !selected
                                 }
                             }
                         }
@@ -153,12 +155,10 @@ Popup {
             }            
         }
     }
-
     function setTags(tagArray) {
-        tagListModel.clear()
-        selectedTags = []
+        tagListModel.clear();
         for (let i = 0; i < tagArray.length; ++i) {
-            tagListModel.append({ tag: tagArray[i] })
+            tagListModel.append({ tag: tagArray[i].tag });
         }
     }
 

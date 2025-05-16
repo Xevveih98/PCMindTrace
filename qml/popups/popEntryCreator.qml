@@ -62,7 +62,6 @@ Popup {
                     }
                 }
 
-                // Мини-попап выбора эмоций
                 Popup {
                     id: moodPopup
                     width: 260
@@ -130,8 +129,8 @@ Popup {
                     color: "#d9d9d9"
                 }
 
-                Text  {
-                    text: "14 февраля 2020"
+                Text {
+                    text: Utils.formatTodayDate()
                     font.pixelSize: 11
                     anchors.right: parent.right
                     color: "#616161"
@@ -667,11 +666,19 @@ Popup {
                         if (component.status === Component.Ready) {
                             console.log("Компонент успешно загружен.");
 
-                            var popup = component.createObject(parent);
+                            var popup = component.createObject(parent, {
+                                entryHeaderText: entryHeader.text,
+                                entryContentText: textEdit.text,
+                                selectedEmotionId: managerPopup.selectedIconId,
+                                selectedTags: tagsListModel,
+                                selectedActivities: activitiesListModel,
+                                selectedEmotions: emotionsListModel,
+                                parentPopup: managerPopup
+                            });
+
                             if (popup) {
                                 console.log("Попап успешно создан.");
-
-                                popup.open(); // Открываем попап
+                                popup.open();
                             } else {
                                 console.error("Не удалось создать объект попапа.");
                             }
@@ -689,7 +696,6 @@ Popup {
     IconModelAct {
         id: iconModelActivity
     }
-
     IconModelEmo {
         id: iconModelEmotion
     }

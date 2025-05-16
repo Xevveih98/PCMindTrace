@@ -7,7 +7,7 @@ Popup {
     property string folderName: ""
 
     id: exitPopup
-    width: Screen.width * 0.66
+    width: Screen.width * 0.7
     height: Screen.height * 0.14
     modal: true
     padding: 0
@@ -34,7 +34,7 @@ Popup {
 
         Text {
             text: "Вы уверены, что хотите удалить папку? Все записи в этой папке будут удалены."
-            width: parent.width
+            width: parent.width * 0.8
             color: "#D9D9D9"
             font.pixelSize: 14
             wrapMode: Text.Wrap

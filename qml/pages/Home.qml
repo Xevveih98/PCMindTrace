@@ -188,10 +188,26 @@ Rectangle {
                         Item {
                             id: sdeer
                             anchors.top: plusminitodo.bottom
-                            //anchors.topMargin:
                             width: parent.width * 0.9
-                            height: parent.height * 0.79
+                            height: parent.height * 0.77
                             anchors.horizontalCenter: parent.horizontalCenter
+
+                            Rectangle {
+                                anchors.centerIn: parent
+                                width: parent.width * 1.02
+                                height: parent.height * 1.03
+                                color: "#262326"
+                                radius: 8
+
+                                Text {
+                                    anchors.centerIn: parent
+                                    text: "Список задач пуст.."
+                                    color: "#4d4d4d"
+                                    font.pixelSize: 11
+                                    font.italic: true
+                                    visible: todoListModel.count === 0
+                                }
+                            }
 
                             ListView {
                                 anchors.fill: parent
@@ -203,7 +219,7 @@ Rectangle {
                                     todoName: model.todoname
                                     buttonWidth: sdeer.width
                                     buttonHeight: 32
-                                    todoIndex: index  // ← передаём индекс
+                                    todoIndex: index
 
                                     onRequestDelete: function(i) {
                                         console.log("Удаление из модели:", i);
@@ -291,195 +307,6 @@ Rectangle {
                         }
                     }
                 }
-
-                //         Item {
-                //             anchors.top: headerwha.bottom
-                //             width: parent.width * 0.86
-                //             anchors.horizontalCenter: parent.horizontalCenter
-                //             height: parent.height * 0.46
-
-                //             Row {
-                //                 height: parent.height
-                //                 spacing: 12
-
-                //                 Item {
-                //                     id: buttemote1
-                //                     width: height
-                //                     height: 45
-
-                //                     MouseArea {
-                //                         anchors.fill: parent
-                //                         onClicked: {
-                //                             console.log("Попытка вызвать форму создания записи.");
-                //                             var component = Qt.createComponent("qrc:/popups/popEntryCreator.qml");
-                //                             if (component.status === Component.Ready) {
-                //                                 console.log("Компонент успешно загружен.");
-
-                //                                 var popup = component.createObject(parent);
-                //                                 if (popup) {
-                //                                     console.log("Попап успешно создан.");
-                //                                     popup.open();
-                //                                 } else {
-                //                                     console.error("Не удалось создать объект попапа.");
-                //                                 }
-                //                             } else if (component.status === Component.Error) {
-                //                                 console.error("Ошибка при загрузке компонента: " + component.errorString());
-                //                             } else {
-                //                                 console.log("Компонент еще не готов.");
-                //                             }
-                //                         }
-
-                //                         Image {
-                //                             anchors.fill: parent
-                //                             source: "qrc:/images/ehappy.png"
-                //                             fillMode: Image.PreserveAspectFit
-                //                         }
-                //                     }
-                //                 }
-
-                //                 Item {
-                //                     id: buttemote2
-                //                     width: height
-                //                     height: 45
-
-                //                     MouseArea {
-                //                         anchors.fill: parent
-                //                         onClicked: {
-                //                             console.log("Попытка вызвать менеджер задач");
-                //                             var component = Qt.createComponent("qrc:/popups/popEntryCreator.qml");
-                //                             if (component.status === Component.Ready) {
-                //                                 console.log("Компонент успешно загружен.");
-
-                //                                 var popup = component.createObject(parent);
-                //                                 if (popup) {
-                //                                     console.log("Попап успешно создан.");
-                //                                     popup.open(); // Открываем попап
-                //                                 } else {
-                //                                     console.error("Не удалось создать объект попапа.");
-                //                                 }
-                //                             } else if (component.status === Component.Error) {
-                //                                 console.error("Ошибка при загрузке компонента: " + component.errorString());
-                //                             } else {
-                //                                 console.log("Компонент еще не готов.");
-                //                             }
-                //                         }
-
-                //                         Image {
-                //                             anchors.fill: parent
-                //                             source: "qrc:/images/ecalm.png"
-                //                             fillMode: Image.PreserveAspectFit
-                //                         }
-                //                     }
-                //                 }
-
-                //                 Item {
-                //                     id: buttemote3
-                //                     width: height
-                //                     height: 45
-
-                //                     MouseArea {
-                //                         anchors.fill: parent
-                //                         onClicked: {
-                //                             console.log("Попытка вызвать менеджер задач");
-                //                             var component = Qt.createComponent("qrc:/popups/popEntryCreator.qml");
-                //                             if (component.status === Component.Ready) {
-                //                                 console.log("Компонент успешно загружен.");
-
-                //                                 var popup = component.createObject(parent);
-                //                                 if (popup) {
-                //                                     console.log("Попап успешно создан.");
-                //                                     popup.open(); // Открываем попап
-                //                                 } else {
-                //                                     console.error("Не удалось создать объект попапа.");
-                //                                 }
-                //                             } else if (component.status === Component.Error) {
-                //                                 console.error("Ошибка при загрузке компонента: " + component.errorString());
-                //                             } else {
-                //                                 console.log("Компонент еще не готов.");
-                //                             }
-                //                         }
-
-                //                         Image {
-                //                             anchors.fill: parent
-                //                             source: "qrc:/images/econfused.png"
-                //                             fillMode: Image.PreserveAspectFit
-                //                         }
-                //                     }
-                //                 }
-
-                //                 Item {
-                //                     id: buttemote4
-                //                     width: height
-                //                     height: 45
-
-                //                     MouseArea {
-                //                         anchors.fill: parent
-                //                         onClicked: {
-                //                             console.log("Попытка вызвать менеджер задач");
-                //                             var component = Qt.createComponent("qrc:/popups/popEntryCreator.qml");
-                //                             if (component.status === Component.Ready) {
-                //                                 console.log("Компонент успешно загружен.");
-
-                //                                 var popup = component.createObject(parent);
-                //                                 if (popup) {
-                //                                     console.log("Попап успешно создан.");
-                //                                     popup.open(); // Открываем попап
-                //                                 } else {
-                //                                     console.error("Не удалось создать объект попапа.");
-                //                                 }
-                //                             } else if (component.status === Component.Error) {
-                //                                 console.error("Ошибка при загрузке компонента: " + component.errorString());
-                //                             } else {
-                //                                 console.log("Компонент еще не готов.");
-                //                             }
-                //                         }
-
-                //                         Image {
-                //                             anchors.fill: parent
-                //                             source: "qrc:/images/eupset.png"
-                //                             fillMode: Image.PreserveAspectFit
-                //                         }
-                //                     }
-                //                 }
-
-                //                 Item {
-                //                     id: buttemote5
-                //                     width: height
-                //                     height: 45
-
-                //                     MouseArea {
-                //                         anchors.fill: parent
-                //                         onClicked: {
-                //                             console.log("Попытка вызвать менеджер задач");
-                //                             var component = Qt.createComponent("qrc:/popups/popEntryCreator.qml");
-                //                             if (component.status === Component.Ready) {
-                //                                 console.log("Компонент успешно загружен.");
-
-                //                                 var popup = component.createObject(parent);
-                //                                 if (popup) {
-                //                                     console.log("Попап успешно создан.");
-                //                                     popup.open(); // Открываем попап
-                //                                 } else {
-                //                                     console.error("Не удалось создать объект попапа.");
-                //                                 }
-                //                             } else if (component.status === Component.Error) {
-                //                                 console.error("Ошибка при загрузке компонента: " + component.errorString());
-                //                             } else {
-                //                                 console.log("Компонент еще не готов.");
-                //                             }
-                //                         }
-
-                //                         Image {
-                //                             anchors.fill: parent
-                //                             source: "qrc:/images/etear.png"
-                //                             fillMode: Image.PreserveAspectFit
-                //                         }
-                //                     }
-                //                 }
-                //             }
-                //         }
-                //     }
-                // }
 
 // ---------------- менеджер фильтрации записей по дате
 

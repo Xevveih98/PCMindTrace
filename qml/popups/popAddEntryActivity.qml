@@ -81,7 +81,9 @@ Popup {
                 height: parent.height * 0.66
 
                 Rectangle {
-                    anchors.fill: parent
+                    anchors.centerIn: parent
+                    width: parent.width * 1.02
+                    height: parent.height * 1.03
                     color: "#262326"
                     radius: 8
 
@@ -93,35 +95,35 @@ Popup {
                         font.italic: true
                         visible: activityListModel.count === 0
                     }
+                }
 
-                    ScrollView {
-                        id: amascroll
-                        width: parent.width
-                        height: parent.height
-                        z: 1
+                ScrollView {
+                    id: amascroll
+                    width: parent.width
+                    height: parent.height
+                    z: 1
 
-                        Flow {
-                            width: amascroll.width
-                            spacing: 6
+                    Flow {
+                        width: amascroll.width
+                        spacing: 6
 
-                            Repeater {
-                                model: activityListModel
-                                delegate: CustActvButn {
-                                    id: actBtn
-                                    activityText: model.activity
-                                    iconPath: Utils.getIconPathById(iconModelActivity, model.iconId)
-                                    buttonWidth: implicitWidth
-                                    buttonHeight: 43
-                                    selected: managerPopup.selectedActivities.indexOf(model.activity) !== -1
-                                    onClicked: {
-                                        let idx = managerPopup.selectedActivities.indexOf(model.activity);
-                                        if (idx === -1) {
-                                            managerPopup.selectedActivities.push(model.activity);
-                                        } else {
-                                            managerPopup.selectedActivities.splice(idx, 1);
-                                        }
-                                        selected = !selected;
+                        Repeater {
+                            model: activityListModel
+                            delegate: CustActvButn {
+                                id: actBtn
+                                activityText: model.activity
+                                iconPath: Utils.getIconPathById(iconModelActivity, model.iconId)
+                                buttonWidth: implicitWidth
+                                buttonHeight: 43
+                                selected: managerPopup.selectedActivities.indexOf(model.activity) !== -1
+                                onClicked: {
+                                    let idx = managerPopup.selectedActivities.indexOf(model.activity);
+                                    if (idx === -1) {
+                                        managerPopup.selectedActivities.push(model.activity);
+                                    } else {
+                                        managerPopup.selectedActivities.splice(idx, 1);
                                     }
+                                    selected = !selected;
                                 }
                             }
                         }

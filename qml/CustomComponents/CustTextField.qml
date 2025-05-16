@@ -131,9 +131,10 @@ Item {
     }
 
     function setTags(tagArray) {
-        tagListModel.clear()
-        for (let i = 0; i < tagArray.length; ++i)
-            tagListModel.append({ tag: tagArray[i] })
+        tagListModel.clear();
+        for (let i = 0; i < tagArray.length; ++i) {
+            tagListModel.append({ tag: tagArray[i].tag });
+        }
     }
 
     function loadTagsFromServer(tags) {

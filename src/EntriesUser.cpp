@@ -4,6 +4,8 @@
 
 EntriesUser::EntriesUser(QObject *parent) : QObject(parent) {}
 
+//--------------------------- сохранение записей ------------------------------
+
 void EntriesUser::saveEntry(const EntryUser &entry)
 {
     AppSave appSave;
@@ -47,6 +49,8 @@ void EntriesUser::onEntrySaveReply(QNetworkReply *reply)
     }
     reply->deleteLater();
 }
+
+//------------------------- загрузка записей ------------------------------
 
 void EntriesUser::loadUserEntries()
 {

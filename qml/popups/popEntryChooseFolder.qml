@@ -5,7 +5,13 @@ import PCMindTrace 1.0
 import CustomComponents
 
 Popup {
-    property Popup parentPopup
+    property string entryHeaderText
+    property string entryContentText
+    property int selectedEmotionId
+    property var selectedTags
+    property var selectedActivities
+    property var selectedEmotions
+    property var parentPopup
 
     id: managerFolderPopup
     width: Screen.width * 0.93
@@ -111,7 +117,47 @@ Popup {
         MouseArea {
             anchors.fill: parent
             onClicked: {
+                let tags = []
+                for (let i = 0; i < tagsListModel.count; i++) {
+                    tags.push(tagsListModel.get(i).tag)
+                }
+
+                let activities = []
+                for (let i = 0; i < activitiesListModel.count; i++) {
+                    activities.push(activitiesListModel.get(i).activity)
+                }
+
+                let emotions = []
+                for (let i = 0; i < emotionsListModel.count; i++) {
+                    emotions.push(emotionsListModel.get(i).emotion)
+                }
+
+                let selectedFolder = ""
+                for (let i = 0; i < foldersListModel.count; i++) {
+                    if (foldersView.ListView.currentIndex === i) {
+                        selectedFolder = foldersListModel.get(i).foldername
+                        break
+                    }
+                }
+
+                let entryData = {
+                    title: entryHeaderText,
+                    content: entryContentText,
+                    date: Utils.formatTodayDate(),
+                    emotionId: selectedEmotionId,
+                    tags: tags,
+                    activities: activities,
+                    emotions: emotions,
+                    folder: selectedFolder
+                }
+
+                console.log("Отправка записи:", JSON.stringify(entryData, null, 2))
+                EntriesUser.saveEntryFromQml(entryData)
                 managerFolderPopup.close()
+
+                if (parentPopup) {
+                    parentPopup.close()
+                }
             }
         }
     }
