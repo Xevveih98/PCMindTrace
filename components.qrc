@@ -19,5 +19,6 @@
         <file alias="IconModelEmotions.qml">qml/CustomComponents/IconModelEmotions.qml</file>
         <file alias="IconModelMood.qml">qml/CustomComponents/IconModelMood.qml</file>
         <file alias="CustFolderVariant.qml">qml/CustomComponents/CustFolderVariant.qml</file>
+        <file alias="CustEntryBlock.qml">qml/CustomComponents/CustEntryBlock.qml</file>
     </qresource>
 </RCC>

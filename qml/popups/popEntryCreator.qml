@@ -144,7 +144,7 @@ Popup {
                     font.pixelSize: 11
                     color: "#D9D9D9"
                     placeholderText: ""
-                    maximumLength: 30
+                    maximumLength: 56
                     wrapMode: Text.NoWrap
                     horizontalAlignment: TextInput.AlignLeft
                     verticalAlignment: TextInput.AlignVCenter
@@ -210,7 +210,6 @@ Popup {
                         wrapMode: TextEdit.WrapAnywhere
                         Keys.onReturnPressed: insert("\n")
                         padding: 6
-                        //focus: false
                         onCursorRectangleChanged: flick.ensureVisible(cursorRectangle)
                     }
                 }

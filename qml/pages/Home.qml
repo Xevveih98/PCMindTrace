@@ -2,7 +2,6 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import CustomComponents 1.0
-//import "../CustomComponents"
 
 Rectangle {
     id: pageHomeScreen
@@ -39,7 +38,7 @@ Rectangle {
 
                 Item {
                     id: folderTabs
-                    width:  parent.width
+                    width: parent.width
                     height: 45
 
                     Rectangle {
@@ -319,40 +318,84 @@ Rectangle {
 
                 Item {
                     id: monthSwitchButton
+                    width: contro.implicitWidth
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    height: 60
+
+                    Row {
+                        id: contro
+                        height: 30
+                        spacing: 8
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: parent.width
+
+                        Item {
+                            width: 40
+                            height: parent.height
+
+                            Image {
+                                width: 30
+                                height: 30
+                                anchors.centerIn: parent
+                                source: "qrc:/images/left-arrow.png"
+                                fillMode: Image.PreserveAspectFit
+                            }
+                        }
+
+                        Item {
+                            width: 160
+                            height: parent.height
+
+                            Text {
+                                color: "#d9d9d9"
+                                text: "Май 2025"
+                                font.pixelSize: 18
+                                font.bold: true
+                                anchors.horizontalCenter: parent.horizontalCenter
+                                anchors.verticalCenter: parent.verticalCenter
+                            }
+                        }
+
+                        Item {
+                            width: 40
+                            height: parent.height
+
+                            Image {
+                                width: 30
+                                height: 30
+                                anchors.centerIn: parent
+                                source: "qrc:/images/right-arrow(2).png"
+                                fillMode: Image.PreserveAspectFit
+                            }
+                        }
+                    }
                 }
 
 // ---------------- менеджер отображения записей ------
 
                 Item {
                     id:entryFeed
-                    width:  parent.width * 0.86
+                    width:  parent.width
                     anchors.horizontalCenter: parent.horizontalCenter
                     height: 100
 
                     Column {
                         id: entryColumn
                         width: parent.width
-                        spacing: 8
+                        spacing: 10
 
                         Repeater {
                             model: entriesUser.entryUserModel
-
-                            delegate: Rectangle {
-                                width: parent.width
-                                height: 50
-                                color: "lightgray"
-                                radius: 5
-                                border.color: "gray"
-                                border.width: 1
-                                anchors.horizontalCenter: parent.horizontalCenter
-
-                                Text {
-                                    text: model.title
-                                    anchors.centerIn: parent
-                                    font.pixelSize: 16
-                                    color: "black"
-                                    elide: Text.ElideRight
-                                }
+                            delegate: CustEntrBlok {
+                                width: entryColumn.width
+                                entryTitle: model.title
+                                entryContent: model.content
+                                entryDate: model.date
+                                entryTime: model.time
+                                entryMood: model.moodId
+                                tagItems: model.tags
+                                activityItems: model.activities
+                                emotionItems: model.emotions
                             }
                         }
                     }
@@ -360,7 +403,7 @@ Rectangle {
             }
 
             onContentYChanged: {
-               if (!refreshing && contentY <= -60) { // -60 — порог "свайпа вниз"
+               if (!refreshing && contentY <= -80) {
                    refreshing = true
                    console.log("Обновление данных...")
                    refreshPage()

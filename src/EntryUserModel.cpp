@@ -84,7 +84,18 @@ QHash<int, QByteArray> EntryUserModel::roleNames() const
 void EntryUserModel::setEntries(const QList<EntryUser> &entries)
 {
     beginResetModel();
+
     m_entries = entries;
+
+    std::sort(m_entries.begin(), m_entries.end(), [](const EntryUser &a, const EntryUser &b) {
+        if (a.getDate() == b.getDate()) {
+
+            return a.getTime() > b.getTime();
+        }
+        // Сравнение по дате (больше - новее)
+        return a.getDate() > b.getDate();
+    });
+
     endResetModel();
 }
 

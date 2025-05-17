@@ -16,4 +16,5 @@ CustTodoButn 1.0 CustTodoButton.qml
 IconModelAct 1.0 IconModelActivities.qml
 IconModelEmo 1.0 IconModelEmotions.qml
 IconModelMod 1.0 IconModelMood.qml
+CustEntrBlok 1.0 CustEntryBlock.qml
 Utils 1.0 Utils.js
