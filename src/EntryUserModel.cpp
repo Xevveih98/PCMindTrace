@@ -92,11 +92,11 @@ void EntryUserModel::setEntries(const QList<EntryUser> &entries)
 
             return a.getTime() > b.getTime();
         }
-        // Сравнение по дате (больше - новее)
         return a.getDate() > b.getDate();
     });
 
     endResetModel();
+    emit countChanged();
 }
 
 void EntryUserModel::clear()

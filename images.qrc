@@ -17,5 +17,6 @@
         <file alias="foldervar.png">assets/images/foldervar.png</file>
         <file alias="left-arrow.png">assets/images/left-arrow.png</file>
         <file alias="right-arrow(2).png">assets/images/right-arrow(2).png</file>
+        <file alias="noentries.png">assets/images/noentries.png</file>
     </qresource>
 </RCC>

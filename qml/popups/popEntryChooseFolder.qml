@@ -12,6 +12,7 @@ Popup {
     property var selectedActivities
     property var selectedEmotions
     property var parentPopup
+    property int selectedFolderId: -1
 
     id: managerFolderPopup
     width: Screen.width * 0.93
@@ -81,15 +82,26 @@ Popup {
                 }
 
                 ListView {
+                    id: lio
                     anchors.fill: parent
                     model: foldersListModel
                     spacing: 6
                     clip: true
+                    highlightFollowsCurrentItem: true
+                    highlightMoveDuration: 150
                     delegate: CustFoldVart {
                         width: ListView.view.width
                         height: 40
                         folderName: model.foldername
                         isSelected: ListView.isCurrentItem
+                        MouseArea {
+                            anchors.fill: parent
+                            onClicked: {
+                                lio.currentIndex = index
+                                managerFolderPopup.selectedFolderId = model.id
+                                console.log("Selected folder ID:", model.id)
+                            }
+                        }
                     }
                 }
             }
@@ -117,17 +129,13 @@ Popup {
         MouseArea {
             anchors.fill: parent
             onClicked: {
-                 console.log("Emotions IDs:", selectedEmotions)
-                 console.log("Tags IDs:", selectedTags)
-                 console.log("Activities IDs:", selectedActivities)
-
-                let selectedFolderId = -1
-                if (foldersListView.currentIndex >= 0 && foldersListView.currentIndex < foldersListModel.count) {
-                    selectedFolderId = foldersListModel.get(foldersListView.currentIndex).id
-                } else {
-                    console.warn("Папка не выбрана!")
-                }
-                console.log("Selected folder ID:", selectedFolderId)
+                // let selectedFolderId = -1
+                // if (lio.currentIndex >= 0 && lio.currentIndex < foldersListModel.count) {
+                //     selectedFolderId = foldersListModel.get(lio.currentIndex).id
+                // } else {
+                //     console.warn("Папка не выбрана!")
+                // }
+                console.log("Selected folder ID:", managerFolderPopup.selectedFolderId)
 
                 let entryData = {
                     title: entryHeaderText,
@@ -137,7 +145,7 @@ Popup {
                     tags: selectedTags,
                     activities: selectedActivities,
                     emotions: selectedEmotions,
-                    folder: selectedFolderId
+                    folder: managerFolderPopup.selectedFolderId
                 }
 
                 console.log("Отправка записи:", JSON.stringify(entryData, null, 2))

@@ -46,9 +46,4 @@ Button {
             elide: Text.ElideRight
         }
     }
-
-    onClicked: {
-        console.log("Выбрана папка:", folderName)
-        ListView.view.currentIndex = index
-    }
 }

@@ -137,7 +137,6 @@ void EntriesUser::onEntrySaveReply(QNetworkReply *reply)
     if (reply->error() == QNetworkReply::NoError) {
         qDebug() << "Запись успешно сохранена. Ответ сервера:" << reply->readAll();
         emit entrySavedSuccess();
-        loadUserEntries();
     } else {
         qWarning() << "Ошибка при сохранении записи:" << reply->errorString();
         emit entrySavedFailed(reply->errorString());
@@ -147,15 +146,21 @@ void EntriesUser::onEntrySaveReply(QNetworkReply *reply)
 
 //------------------------- загрузка записей ------------------------------
 
-void EntriesUser::loadUserEntries()
+void EntriesUser::loadUserEntries(int folderId, int year, int month)
 {
     AppSave appSave;
     QString login = appSave.getSavedLogin();
-    qDebug() << "Выгружаем записи для пользователя:" << login;
+    qDebug() << "Выгружаем записи для пользователя:" << login
+             << " | Папка ID:" << folderId
+             << " | Год:" << year
+             << " | Месяц:" << month;
 
     QUrl serverUrl = AppConfig::apiUrl("/getuserentries");
     QUrlQuery query;
     query.addQueryItem("login", login);
+    query.addQueryItem("folderId", QString::number(folderId));
+    query.addQueryItem("year", QString::number(year));
+    query.addQueryItem("month", QString::number(month));
     serverUrl.setQuery(query);
 
     QNetworkRequest request(serverUrl);
@@ -220,6 +225,7 @@ void EntriesUser::onUserEntryFetchReply(QNetworkReply *reply)
         m_entryUserModel->setEntries(entries);
 
         emit entriesLoadedSuccess(entries);
+
     } else {
         qWarning() << "Failed to load user entries. Error:" << reply->errorString();
         emit entriesLoadedFailed(reply->errorString());

@@ -18,7 +18,7 @@ class EntriesUser : public QObject
 public:
     explicit EntriesUser(QObject *parent = nullptr);
     void saveEntry(const EntryUser &entry);
-    Q_INVOKABLE void loadUserEntries();
+    Q_INVOKABLE void loadUserEntries(int folderId, int year, int month);
     Q_INVOKABLE void saveEntryFromQml(const QVariant &entryDataVariant);
     EntryUserModel* entryUserModel() const;
 

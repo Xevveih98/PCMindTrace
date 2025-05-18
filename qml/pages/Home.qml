@@ -7,6 +7,8 @@ Rectangle {
     id: pageHomeScreen
     color: "#181718"
 
+    property int selectedFolderId: -1
+
     CustPageHead {
         id: header
         headerWidth: parent.width
@@ -25,7 +27,6 @@ Rectangle {
             id: flickable
             anchors.fill: parent
             contentHeight: eda.height + entryColumn.height
-            //boundsBehavior: Flickable.StopAtBounds
             flickableDirection: Flickable.VerticalFlick
             clip: true
 
@@ -112,6 +113,10 @@ Rectangle {
                                     buttonWidth: implicitWidth
                                     buttonHeight: 40
                                     isSelected: ListView.isCurrentItem
+                                    onClicked: {
+                                        pageHomeScreen.selectedFolderId = model.id;
+                                        pageHomeScreen.loadEntriesForCurrentFilter();
+                                    }
 
                                     Component.onCompleted: {
                                         console.log("Загружен в главное окно делегат с папкой:", model.foldername);
@@ -322,6 +327,11 @@ Rectangle {
                     anchors.horizontalCenter: parent.horizontalCenter
                     height: 60
 
+                    property var monthsNom: ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"]
+                    property int selectedYear: new Date().getFullYear()
+                    property int selectedMonth: new Date().getMonth() + 1
+                    property var today: new Date()
+
                     Row {
                         id: contro
                         height: 30
@@ -329,7 +339,9 @@ Rectangle {
                         anchors.verticalCenter: parent.verticalCenter
                         width: parent.width
 
+                        // Левая стрелка
                         Item {
+                            id: leftArrowItem
                             width: 40
                             height: parent.height
 
@@ -340,6 +352,20 @@ Rectangle {
                                 source: "qrc:/images/left-arrow.png"
                                 fillMode: Image.PreserveAspectFit
                             }
+
+                            MouseArea {
+                                anchors.fill: parent
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: {
+                                    if (monthSwitchButton.selectedMonth === 1) {
+                                        monthSwitchButton.selectedMonth = 12;
+                                        monthSwitchButton.selectedYear--;
+                                    } else {
+                                        monthSwitchButton.selectedMonth--;
+                                    }
+                                    monthSwitchButton.updateDisplay();
+                                }
+                            }
                         }
 
                         Item {
@@ -347,8 +373,9 @@ Rectangle {
                             height: parent.height
 
                             Text {
+                                id: monthYearText
                                 color: "#d9d9d9"
-                                text: "Май 2025"
+                                text: ""
                                 font.pixelSize: 18
                                 font.bold: true
                                 anchors.horizontalCenter: parent.horizontalCenter
@@ -357,19 +384,56 @@ Rectangle {
                         }
 
                         Item {
+                            id: rightArrowItem
                             width: 40
                             height: parent.height
 
                             Image {
+                                id: rightArrowImage
                                 width: 30
                                 height: 30
                                 anchors.centerIn: parent
                                 source: "qrc:/images/right-arrow(2).png"
                                 fillMode: Image.PreserveAspectFit
+                                opacity: rightArrowArea.enabled ? 1.0 : 0.4
+                            }
+
+                            MouseArea {
+                                id: rightArrowArea
+                                anchors.fill: parent
+                                enabled: !(monthSwitchButton.selectedYear === monthSwitchButton.today.getFullYear() &&
+                                           monthSwitchButton.selectedMonth === (monthSwitchButton.today.getMonth() + 1))
+                                cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
+
+                                onClicked: {
+                                    if (!enabled)
+                                        return;
+
+                                    if (monthSwitchButton.selectedMonth === 12) {
+                                        monthSwitchButton.selectedMonth = 1;
+                                        monthSwitchButton.selectedYear++;
+                                    } else {
+                                        monthSwitchButton.selectedMonth++;
+                                    }
+                                    monthSwitchButton.updateDisplay();
+                                }
                             }
                         }
                     }
+
+                    function updateDisplay() {
+                        var monthName = monthsNom[selectedMonth - 1];
+                        monthYearText.text = monthName + " " + selectedYear;
+                        pageHomeScreen.loadEntriesForCurrentFilter();
+                        rightArrowArea.enabled = !(selectedYear === today.getFullYear() && selectedMonth === (today.getMonth() + 1));
+                        rightArrowImage.opacity = rightArrowArea.enabled ? 1.0 : 0.25;
+                        rightArrowArea.cursorShape = rightArrowArea.enabled ? Qt.PointingHandCursor : Qt.ArrowCursor;
+                    }
+
+                    Component.onCompleted: updateDisplay()
                 }
+
+
 
 // ---------------- менеджер отображения записей ------
 
@@ -377,7 +441,7 @@ Rectangle {
                     id:entryFeed
                     width:  parent.width
                     anchors.horizontalCenter: parent.horizontalCenter
-                    height: 100
+                    height: 200
 
                     Column {
                         id: entryColumn
@@ -397,18 +461,50 @@ Rectangle {
                                 activityItems: model.activities
                                 emotionItems: model.emotions
                             }
+                            visible: entriesUser.entryUserModel.count > 0
+                        }
+                    }
+
+                    Item {
+                        width: 80
+                        height: 80
+                        anchors.centerIn: parent
+                        visible: entriesUser.entryUserModel.count === 0
+
+                        Column {
+                            spacing: 8
+                            width: parent.width
+
+                            Image {
+                                width: 60
+                                height: 60
+                                source: "qrc:/images/noentries.png"
+                                fillMode: Image.PreserveAspectFit
+                                anchors.horizontalCenter: parent
+                            }
+
+                            Text {
+                                id: emptyText
+                                text: "Записи не найдены.."
+                                font.italic: true
+                                font.bold: true
+                                font.pixelSize: 14
+                                color: "#616161"
+                                anchors.horizontalCenter: parent.horizontalCenter
+                                visible: entriesUser.entryUserModel.count === 0
+                            }
                         }
                     }
                 }
             }
 
             onContentYChanged: {
-               if (!refreshing && contentY <= -80) {
-                   refreshing = true
-                   console.log("Обновление данных...")
-                   refreshPage()
-               }
-           }
+                if  (!refreshing && contentY <= -60) {
+                    refreshing = true
+                    console.log("Обновление данных...")
+                    refreshPage()
+                }
+            }
             function refreshPage() {
                 foldersUser.loadFolder();
                 todoUser.loadTodo();
@@ -431,7 +527,6 @@ Rectangle {
                     text: refreshing ? "Обновление..." : ""
                 }
             }
-
         }
     }
 
@@ -461,6 +556,11 @@ Rectangle {
                     itemCount: folders[i].itemCount
                 });
             }
+
+            if (folders.length > 0) {
+                pageHomeScreen.selectedFolderId = folders[0].id;
+                pageHomeScreen.loadEntriesForCurrentFilter();
+            }
         }
 
         onClearFolderList: {
@@ -472,9 +572,22 @@ Rectangle {
         foldersUser.loadFolder();
         todoUser.loadTodo();
         entriesUser.loadUserEntries();
+        pageHomeScreen.loadEntriesForCurrentFilter();
     }
 
     IconModelMod {
         id: iconModelMood
+    }
+
+    function loadEntriesForCurrentFilter() {
+        if (selectedFolderId === -1) {
+            console.log("Папка не выбрана, записи не загружаем");
+            return;
+        }
+        console.log("Загрузка записей для папки", selectedFolderId,
+                    "за", monthSwitchButton.selectedMonth, monthSwitchButton.selectedYear);
+        entriesUser.loadUserEntries(selectedFolderId,
+                                   monthSwitchButton.selectedYear,
+                                   monthSwitchButton.selectedMonth);
     }
 }
