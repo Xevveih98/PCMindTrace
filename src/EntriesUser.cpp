@@ -13,6 +13,8 @@ EntriesUser::EntriesUser(QObject *parent)
             onEntrySaveReply(reply);
         } else if (endpoint.path().contains("/getuserentries")) {
             onUserEntryFetchReply(reply);
+        } else if (endpoint.path().contains("/searchentriesbywords")) {
+            onUserEntryFetchReply(reply);
         } else {
             qWarning() << "Unhandled endpoint in EntriesUser:" << endpoint.toString();
             reply->deleteLater();
@@ -20,6 +22,7 @@ EntriesUser::EntriesUser(QObject *parent)
     });
 
     m_entryUserModel = new EntryUserModel(this);
+    m_searchModel = new EntryUserModel(this);
     qDebug() << "EntriesUser initialized and connected to network manager.";
 }
 
@@ -144,7 +147,7 @@ void EntriesUser::onEntrySaveReply(QNetworkReply *reply)
     reply->deleteLater();
 }
 
-//------------------------- загрузка записей ------------------------------
+//------------------------- загрузка записей (дата и папка)------------------------------
 
 void EntriesUser::loadUserEntries(int folderId, int year, int month)
 {
@@ -172,6 +175,19 @@ void EntriesUser::loadUserEntries(int folderId, int year, int month)
 void EntriesUser::onUserEntryFetchReply(QNetworkReply *reply)
 {
     qDebug() << "onUserEntryFetchReply вызван.";
+
+    QString path = reply->request().url().path();
+    EntryUserModel* targetModel = nullptr;
+
+    if (path.contains("/getuserentries")) {
+        targetModel = m_entryUserModel;
+    } else if (path.contains("/searchentriesbywords")) {
+        targetModel = m_searchModel;
+    } else {
+        qWarning() << "Unknown path in onUserEntryFetchReply:" << path;
+        reply->deleteLater();
+        return;
+    }
 
     if (reply->error() == QNetworkReply::NoError) {
         QByteArray response = reply->readAll();
@@ -222,7 +238,7 @@ void EntriesUser::onUserEntryFetchReply(QNetworkReply *reply)
 
         qDebug() << "Parsed entries count:" << entries.count();
 
-        m_entryUserModel->setEntries(entries);
+        targetModel->setEntries(entries);  // <--- В выбранную модель
 
         emit entriesLoadedSuccess(entries);
 
@@ -234,7 +250,54 @@ void EntriesUser::onUserEntryFetchReply(QNetworkReply *reply)
     reply->deleteLater();
 }
 
+
+//-------------------- загрузка записей (ключевые слова) ----------------------------
+
+void EntriesUser::loadUserEntriesByKeywords(const QStringList &keywords)
+{
+    AppSave appSave;
+    QString login = appSave.getSavedLogin();
+    qDebug() << "Ищем записи для пользователя:" << login
+             << " | По ключевым словам:" << keywords;
+
+    QUrl serverUrl = AppConfig::apiUrl("/searchentriesbywords");
+
+    QNetworkRequest request(serverUrl);
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+
+    // Формируем JSON-объект
+    QJsonObject json;
+    json["login"] = login;
+
+    QJsonArray keywordArray;
+    for (const QString &word : keywords) {
+        keywordArray.append(word);
+    }
+    json["keywords"] = keywordArray;
+
+    QJsonDocument doc(json);
+    QByteArray data = doc.toJson();
+
+    QNetworkReply *reply = m_networkUser.post(request, data);
+}
+
+//--------------------------------------------- геттеры ----------------------------
+
 EntryUserModel* EntriesUser::entryUserModel() const
 {
     return m_entryUserModel;
 }
+
+EntryUserModel* EntriesUser::searchModel() const
+{
+    return m_searchModel;
+}
+
+void EntriesUser::clearSearchModel() {
+    if (m_searchModel) {
+        m_searchModel->clear();
+        emit searchModelChanged();  // чтобы QML понял, что модель изменилась
+    }
+}
+
+

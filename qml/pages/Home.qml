@@ -569,6 +569,8 @@ Rectangle {
     }
 
     Component.onCompleted: {
+        entriesUser.entryUserModel.clear()
+        entriesUser.entryUserModel
         foldersUser.loadFolder();
         todoUser.loadTodo();
         entriesUser.loadUserEntries();

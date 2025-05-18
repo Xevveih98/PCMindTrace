@@ -24,7 +24,7 @@ Rectangle {
             property bool refreshing: false
             id: flickable
             anchors.fill: parent
-            contentHeight: eda.height //+ entryColumn.height
+            contentHeight: eda.height + entryColumn.height
             flickableDirection: Flickable.VerticalFlick
             clip: true
 
@@ -63,6 +63,16 @@ Rectangle {
                         verticalAlignment: TextInput.AlignVCenter
                         background: null
                         padding: 6
+
+                        Keys.onReturnPressed: {
+                            const rawText = searchbar.text.trim()
+                            if (rawText.length === 0) return;
+
+                            const words = rawText.split(/\s+|,|;|\.|\n/).filter(w => w.length > 0);
+                            entriesUser.loadUserEntriesByKeywords(words);
+                            console.log("searchModel count:", entriesUser.searchModel.count);
+
+                        }
                     }
 
 
@@ -93,6 +103,17 @@ Rectangle {
                         width: 38
                         height: parent.height
 
+                        MouseArea {
+                            anchors.fill: parent
+                            onClicked: {
+                                const rawText = searchbar.text.trim()
+                                if (rawText.length === 0) return;
+
+                                const words = rawText.split(/\s+|,|;|\.|\n/).filter(w => w.length > 0);
+                                entriesUser.loadUserEntriesByKeywords(words);
+                            }
+                        }
+
                         Image {
                             id: searchIcon
                             source: "qrc:/images/lupa.png"
@@ -108,7 +129,7 @@ Rectangle {
 
                 Item {
                     width: parent.width
-                    height: 100
+                    height: 180
 
                     Item {
                         id: headersertag
@@ -306,7 +327,7 @@ Rectangle {
                         spacing: 10
 
                         Repeater {
-                            model: entriesUser.entryUserModel
+                            model: entriesUser.searchModel
                             delegate: CustEntrBlok {
                                 width: entryColumn.width
                                 entryTitle: model.title
@@ -318,7 +339,7 @@ Rectangle {
                                 activityItems: model.activities
                                 emotionItems: model.emotions
                             }
-                            visible: entriesUser.entryUserModel.count > 0
+                            visible: entriesUser.searchModel.count > 0
                         }
                     }
 
@@ -326,7 +347,7 @@ Rectangle {
                         width: 80
                         height: 80
                         anchors.centerIn: parent
-                        visible: entriesUser.entryUserModel.count === 0
+                        visible: entriesUser.searchModel.count === 0
 
                         Column {
                             spacing: 8
@@ -348,12 +369,11 @@ Rectangle {
                                 font.pixelSize: 14
                                 color: "#616161"
                                 anchors.horizontalCenter: parent.horizontalCenter
-                                visible: entriesUser.entryUserModel.count === 0
+                                visible: entriesUser.searchModel.count === 0
                             }
                         }
                     }
                 }
-
             }
         }
     }
@@ -371,6 +391,7 @@ Rectangle {
     }
 
     Component.onCompleted: {
+        entriesUser.clearSearchModel()
         categoriesUser.loadTags()
     }
 

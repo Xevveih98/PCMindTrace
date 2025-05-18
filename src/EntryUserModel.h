@@ -30,7 +30,7 @@ public:
     QHash<int, QByteArray> roleNames() const override;
 
     void setEntries(const QList<EntryUser> &entries);
-    void clear();
+    Q_INVOKABLE void clear();
 
 signals:
     void countChanged();
