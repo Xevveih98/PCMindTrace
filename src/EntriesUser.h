@@ -24,6 +24,7 @@ public:
     Q_INVOKABLE void loadUserEntries(int folderId, int year, int month);
     Q_INVOKABLE void loadUserEntriesByKeywords(const QStringList &keywords);
     Q_INVOKABLE void saveEntryFromQml(const QVariant &entryDataVariant);
+    Q_INVOKABLE void loadUserEntriesByTags(const QList<int> &tagIds);
     EntryUserModel* entryUserModel() const;
     EntryUserModel* searchModel() const;
     Q_INVOKABLE void clearSearchModel();

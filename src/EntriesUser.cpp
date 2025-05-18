@@ -15,6 +15,8 @@ EntriesUser::EntriesUser(QObject *parent)
             onUserEntryFetchReply(reply);
         } else if (endpoint.path().contains("/searchentriesbywords")) {
             onUserEntryFetchReply(reply);
+        } else if (endpoint.path().contains("/searchentriesbytags")) {
+            onUserEntryFetchReply(reply);
         } else {
             qWarning() << "Unhandled endpoint in EntriesUser:" << endpoint.toString();
             reply->deleteLater();
@@ -181,7 +183,7 @@ void EntriesUser::onUserEntryFetchReply(QNetworkReply *reply)
 
     if (path.contains("/getuserentries")) {
         targetModel = m_entryUserModel;
-    } else if (path.contains("/searchentriesbywords")) {
+    } else if (path.contains("/searchentriesbywords") || path.contains("/searchentriesbytags")) {
         targetModel = m_searchModel;
     } else {
         qWarning() << "Unknown path in onUserEntryFetchReply:" << path;
@@ -251,7 +253,7 @@ void EntriesUser::onUserEntryFetchReply(QNetworkReply *reply)
 }
 
 
-//-------------------- загрузка записей (ключевые слова) ----------------------------
+//-------------------- загрузка записей (ключевые слова и теги) ----------------------------
 
 void EntriesUser::loadUserEntriesByKeywords(const QStringList &keywords)
 {
@@ -280,6 +282,35 @@ void EntriesUser::loadUserEntriesByKeywords(const QStringList &keywords)
 
     QNetworkReply *reply = m_networkUser.post(request, data);
 }
+
+void EntriesUser::loadUserEntriesByTags(const QList<int> &tagIds)
+{
+    AppSave appSave;
+    QString login = appSave.getSavedLogin();
+    qDebug() << "Ищем записи для пользователя:" << login
+             << " | По тегам:" << tagIds;
+
+    QUrl serverUrl = AppConfig::apiUrl("/searchentriesbytags");
+
+    QNetworkRequest request(serverUrl);
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+
+    // Формируем JSON-объект
+    QJsonObject json;
+    json["login"] = login;
+
+    QJsonArray tagsArray;
+    for (int tagId : tagIds) {
+        tagsArray.append(tagId);
+    }
+    json["tag_ids"] = tagsArray;
+
+    QJsonDocument doc(json);
+    QByteArray data = doc.toJson();
+
+    QNetworkReply *reply = m_networkUser.post(request, data);
+}
+
 
 //--------------------------------------------- геттеры ----------------------------
 

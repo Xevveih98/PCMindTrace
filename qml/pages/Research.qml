@@ -7,6 +7,8 @@ Rectangle {
     id: pageResearchScreen
     color: "#181718"
 
+    property var selectedTags: []
+
     CustPageHead {
         id: header
         headerWidth: parent.width
@@ -184,9 +186,11 @@ Rectangle {
                             MouseArea {
                                 anchors.fill: parent
                                 onClicked: {
-                                    //
+                                    pageResearchScreen.selectedTags.splice(0, pageResearchScreen.selectedTags.length);
+                                    console.log("Все теги сняты.");
                                 }
                             }
+
                         }
                     }
 
@@ -228,10 +232,27 @@ Rectangle {
                             delegate: CustTagButon {
                                 tagText: model.tag
                                 buttonWidth: implicitWidth
-                                Component.onCompleted: {
-                                    console.log("Загружен в главное окно делегат с тегом:", model.tag);
+                                selected: pageResearchScreen.selectedTags.some(t => t.id === model.tagId) // ← исправлено
+                                onClicked: {
+                                    let index = pageResearchScreen.selectedTags.findIndex(t => t.id === model.tagId); // ← уже верно
+                                    if (index === -1) {
+                                        pageResearchScreen.selectedTags.push({
+                                            id: Number(model.tagId), // ← на всякий случай явно
+                                            tag: model.tag
+                                        });
+                                    } else {
+                                        pageResearchScreen.selectedTags.splice(index, 1);
+                                    }
+
+                                    selected = !selected;
+
+                                    console.log("Обновленные selectedTags:");
+                                    for (let i = 0; i < pageResearchScreen.selectedTags.length; ++i) {
+                                        console.log("  id:", pageResearchScreen.selectedTags[i].id, "tag:", pageResearchScreen.selectedTags[i].tag);
+                                    }
                                 }
                             }
+
                         }
                     }
 
@@ -279,7 +300,10 @@ Rectangle {
                             MouseArea {
                                 anchors.fill: parent
                                 onClicked: {
-                                    //
+                                    let tagIds = selectedTags.map(t => Number(t.id));
+                                    console.log("Отправляем id-шники тегов:", tagIds);
+                                    entriesUser.loadUserEntriesByTags(tagIds);
+
                                 }
                             }
                         }
@@ -381,13 +405,14 @@ Rectangle {
     function setTags(tagArray) {
         tagsListModel.clear();
         for (let i = 0; i < tagArray.length; ++i) {
-            tagsListModel.append({ id: tagArray[i].id, tag: tagArray[i].tag });
+            tagsListModel.append({ tagId: tagArray[i].id, tag: tagArray[i].tag });
         }
     }
 
     function loadTagsFromServer(tags) {
         console.log("Loading tags into model:", tags)
         setTags(tags)
+
     }
 
     Component.onCompleted: {
@@ -397,8 +422,8 @@ Rectangle {
 
     Connections {
         target: categoriesUser
-        onTagsLoaded: {
-            loadTagsFromServer(tags)
+        onTagsLoaded: function(tags) {
+            loadTagsFromServer(tags);
         }
     }
 }
