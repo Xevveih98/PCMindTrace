@@ -16,9 +16,9 @@ Button {
 
     background: Rectangle {
         radius: 18
-        color: activityButton.selected ? "#221F22" : "#181718"
+        color: activityButton.selected ? "#37262E" : "#181718"
         border.width: 1
-        border.color: activityButton.selected ? "#5B5B5B" : "#4D4D4D"
+        border.color: activityButton.selected ? "#9A5556" : "#4D4D4D"
     }
 
     contentItem: Row {

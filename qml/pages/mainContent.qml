@@ -13,7 +13,7 @@ Item {
     ListModel {
         id: menuModel
         ListElement { title: "Главная страница"; page: "qrc:/pages/Home.qml" }
-        ListElement { title: "Календарь"; page: "qrc:/pages/Calendar.qml" }
+        ListElement { title: "Поиск"; page: "qrc:/pages/Research.qml" }
         ListElement { title: "Настройки"; page: "qrc:/pages/Settings.qml" }
     }
 
@@ -57,6 +57,6 @@ Item {
         anchors.fill: parent
         replaceEnter: null
         replaceExit: null
-        initialItem: "qrc:/pages/Home.qml"
+        initialItem: "qrc:/pages/Research.qml"
     }
 }

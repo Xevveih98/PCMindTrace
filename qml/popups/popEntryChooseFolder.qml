@@ -129,12 +129,6 @@ Popup {
         MouseArea {
             anchors.fill: parent
             onClicked: {
-                // let selectedFolderId = -1
-                // if (lio.currentIndex >= 0 && lio.currentIndex < foldersListModel.count) {
-                //     selectedFolderId = foldersListModel.get(lio.currentIndex).id
-                // } else {
-                //     console.warn("Папка не выбрана!")
-                // }
                 console.log("Selected folder ID:", managerFolderPopup.selectedFolderId)
 
                 let entryData = {

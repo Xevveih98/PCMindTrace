@@ -15,9 +15,9 @@ Button {
 
     background: Rectangle {
         radius: 18
-        color: tagButton.selected ? "#221F22" : "#181718"
+        color: tagButton.selected ? "#37262E" : "#181718"
         border.width: 1
-        border.color: tagButton.selected ? "#5B5B5B" : "#4D4D4D"
+        border.color: tagButton.selected ? "#9A5556" : "#4D4D4D"
     }
 
     contentItem: Text {

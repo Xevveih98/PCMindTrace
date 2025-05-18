@@ -15,9 +15,9 @@ Button {
     background: Rectangle {
         anchors.fill: parent
         radius: 8
-        color: folderButton.isSelected ? "#2D292C" : "#1F1B1F"
+        color: folderButton.isSelected ? "#37262E" : "#1F1B1F"
         border.width: 1
-        border.color: folderButton.isSelected ? "#5B5B5B" : "#4D4D4D"
+        border.color: folderButton.isSelected ? "#9A5556" : "#4D4D4D"
     }
 
     contentItem: RowLayout {

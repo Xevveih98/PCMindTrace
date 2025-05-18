@@ -17,9 +17,9 @@ Button {
 
     background: Rectangle {
         radius: 18
-        color: folderButton.isSelected ? "#2D292C" : "#1F1B1F"
+        color: folderButton.isSelected ? "#37262E" : "#1F1B1F"
         border.width: folderButton.isSelected ? 1 : 0
-        border.color: folderButton.isSelected ? "#4D4D4D" : "transparent"
+        border.color: folderButton.isSelected ? "#9A5556" : "transparent"
     }
 
     contentItem: Text {
@@ -35,6 +35,6 @@ Button {
 
     onClicked: {
         console.log("Нажата папка:", folderName)
-        ListView.view.currentIndex = index  // выделяем текущий элемент
+        ListView.view.currentIndex = index
     }
 }

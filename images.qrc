@@ -18,5 +18,8 @@
         <file alias="left-arrow.png">assets/images/left-arrow.png</file>
         <file alias="right-arrow(2).png">assets/images/right-arrow(2).png</file>
         <file alias="noentries.png">assets/images/noentries.png</file>
+        <file alias="lupa.png">assets/images/lupa.png</file>
+        <file alias="erase.png">assets/images/erase.png</file>
+        <file alias="tagsfilter.png">assets/images/tagsfilter.png</file>
     </qresource>
 </RCC>

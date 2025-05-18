@@ -6,14 +6,16 @@ Item {
     property alias buttonWidth: wrapper.width
     property alias buttonHeight: wrapper.height
     property color uncheckedColor: "#181718"
-    property color checkedColor: "#242224"
+    property color checkedColor: "#37262E"
+    property color uncheckedColorBg: "#474448"
+    property color checkedColorBg: "#9A5556"
     property color checkboxColorUnchecked: "#686A71"
     property color checkboxColorChecked: "transparent"
     property color textColorUnchecked: "#d9d9d9"
     property color textColorChecked: "#b9b9b9"
     property int boxSize: 18
     property string todoName: "Параметр"
-    property int todoIndex: -1  // ← добавлено для удаления
+    property int todoIndex: -1
 
     signal requestDelete(int index)
 
@@ -26,7 +28,7 @@ Item {
         height: wrapper.height
         color: checked ? checkedColor : uncheckedColor
         border.width: 1
-        border.color: "#474448"
+        border.color: checked ? checkedColorBg : uncheckedColorBg
         radius: 5
         anchors.centerIn: parent
 
