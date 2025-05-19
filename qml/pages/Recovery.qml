@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls
+import PCMindTrace 1.0
 
 Rectangle {
     id: pageRecovery
@@ -76,7 +77,7 @@ Rectangle {
                     }
 
                     TextField {
-                        id: tiEmailInput
+                        id: regEmail
                         width: oberInputFieldsEmpty.width
                         height: 30
                         font.pixelSize: 11
@@ -104,7 +105,7 @@ Rectangle {
                     }
 
                     TextField {
-                        id: tiNewPassInput
+                        id: regPassword
                         width: oberInputFieldsEmpty.width
                         height: 30
                         font.pixelSize: 6
@@ -133,7 +134,7 @@ Rectangle {
                     }
 
                     TextField {
-                        id: tiNewPassCheckInput
+                        id: regPasswordCheck
                         width: oberInputFieldsEmpty.width
                         height: 30
                         font.pixelSize: 6
@@ -192,7 +193,7 @@ Rectangle {
         MouseArea {
             anchors.fill: buttPassCheck
             onClicked: {
-                console.log("Клик по кнопке сработал");
+               authUser.changePassword(regEmail.text, regPassword.text, regPasswordCheck.text)
             }
         }
     }

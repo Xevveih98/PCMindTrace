@@ -1,0 +1,22 @@
+<RCC>
+    <qresource prefix="/popups">
+        <file alias="popUserExitAdmit.qml">qml/popups/popUserExitAdmit.qml</file>
+        <file alias="popUserDeleteAdmit.qml">qml/popups/popUserDeleteAdmit.qml</file>
+        <file alias="popUserChangeEmail.qml">qml/popups/popUserChangeEmail.qml</file>
+        <file alias="popUserChangePass.qml">qml/popups/popUserChangePass.qml</file>
+        <file alias="popCategoryActivitiesManage.qml">qml/popups/popCategoryActivitiesManage.qml</file>
+        <file alias="popCategoryEmotionsManage.qml">qml/popups/popCategoryEmotionsManage.qml</file>
+        <file alias="popCategoryTagsManage.qml">qml/popups/popCategoryTagsManage.qml</file>
+        <file alias="popIconPicker.qml">qml/popups/popIconPicker.qml</file>
+        <file alias="popIconPicker2.qml">qml/popups/popIconPicker2.qml</file>
+        <file alias="popFoldersManager.qml">qml/popups/popFoldersManager.qml</file>
+        <file alias="popTodoosManager.qml">qml/popups/popTodoosManager.qml</file>
+        <file alias="popFolderDeleteAdmit.qml">qml/popups/popFolderDeleteAdmit.qml</file>
+        <file alias="popFolderChangeName.qml">qml/popups/popFolderChangeName.qml</file>
+        <file alias="popEntryCreator.qml">qml/popups/popEntryCreator.qml</file>
+        <file alias="popAddEntryTag.qml">qml/popups/popAddEntryTag.qml</file>
+        <file alias="popEntryChooseFolder.qml">qml/popups/popEntryChooseFolder.qml</file>
+        <file alias="popAddEntryActivity.qml">qml/popups/popAddEntryActivity.qml</file>
+        <file alias="popAddEntryEmotion.qml">qml/popups/popAddEntryEmotion.qml</file>
+    </qresource>
+</RCC>

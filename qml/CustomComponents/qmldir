@@ -1,0 +1,22 @@
+module CustomComponents
+CustButtSett 1.0 CustButtonSettings.qml
+CustChbxHome 1.0 CustCheckboxHome.qml
+CustProfHead 1.0 CustProfileHeader.qml
+CustPageHead 1.0 CustPageHeader.qml
+CustButtTrBk 1.0 CustButtonTurnBack.qml
+CustViewNote 1.0 CustViewNote.qml
+CustTextFild 1.0 CustTextField.qml
+CustTagButon 1.0 CustTagButton.qml
+CustActvButn 1.0 CustActivityButton.qml
+CustEmotButn 1.0 CustEmotionButton.qml
+CustFoldBlok 1.0 CustFolderBlock.qml
+CustFoldButn 1.0 CustFolderButton.qml
+CustFoldVart 1.0 CustFolderVariant.qml
+CustTodoButn 1.0 CustTodoButton.qml
+IconModelAct 1.0 IconModelActivities.qml
+IconModelEmo 1.0 IconModelEmotions.qml
+IconModelMod 1.0 IconModelMood.qml
+CustEntrBlok 1.0 CustEntryBlock.qml
+CustMenuButn 1.0 CustMenuButton.qml
+CustMenuProf 1.0 CustMenuProfile.qml
+Utils 1.0 Utils.js

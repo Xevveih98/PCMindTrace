@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls
+import PCMindTrace 1.0
 
 Rectangle {
     id: pageLogIn
@@ -76,7 +77,36 @@ Rectangle {
                     }
 
                     TextField {
-                        id: tiLoginInput
+                        id: regLogin
+                        width: oberInputFieldsEmpty.width
+                        height: 30
+                        font.pixelSize: 11
+                        color: "#D9D9D9"
+                        placeholderText: ""
+                        maximumLength: 120
+                        wrapMode: Text.NoWrap
+                        horizontalAlignment: TextInput.AlignLeft
+                        verticalAlignment: TextInput.AlignVCenter
+                        background: Rectangle {
+                            color: "#292729"
+                            border.color: "#4D4D4D"
+                            border.width: 1
+                            radius: 0
+                        }
+                        padding: 10
+                    }
+                }
+
+                Column {
+                    spacing: 6
+                    Text {
+                        text: "Почта"
+                        font.pixelSize: 12
+                        color: "#D9D9D9"
+                    }
+
+                    TextField {
+                        id: regEmail
                         width: oberInputFieldsEmpty.width
                         height: 30
                         font.pixelSize: 11
@@ -105,7 +135,7 @@ Rectangle {
                     }
 
                     TextField {
-                        id: tiPassInput
+                        id: regPassword
                         width: oberInputFieldsEmpty.width
                         height: 30
                         font.pixelSize: 6
@@ -165,8 +195,21 @@ Rectangle {
         MouseArea {
             anchors.fill: buttAuthCheck
             onClicked: {
-                onClicked: {
-                    console.log("Клик по кнопке сработал");
+                // Входим в систему, передавая логин и пароль
+                authUser.loginUser(regLogin.text, regEmail.text, regPassword.text)
+
+
+            }
+
+            Connections {
+                target: authUser
+                onLoginSuccess: {
+                    // Сохраняем логин после успешного входа
+                    AppSave.saveUser(regLogin.text, regEmail.text)
+
+                    Qt.callLater(function() {
+                        pageLoader.source = "qrc:/pages/mainContent.qml"
+                    })
                 }
             }
         }

@@ -1,13 +1,31 @@
 <RCC>
     <qresource prefix="/images">
         <file alias="AuthWRegistrationMainIcon.png">assets/images/AuthWRegistrationMainIcon.png</file>
-        <file alias="calm.png">assets/images/calm.png</file>
+        <file alias="ecalm.png">assets/images/ecalm.png</file>
         <file alias="checkmark.png">assets/images/checkmark.png</file>
-        <file alias="confused.png">assets/images/confused.png</file>
+        <file alias="econfused.png">assets/images/econfused.png</file>
         <file alias="DataRecovery.png">assets/images/DataRecovery.png</file>
         <file alias="GoogleIcon.png">assets/images/GoogleIcon.png</file>
-        <file alias="happy.png">assets/images/happy.png</file>
-        <file alias="tear.png">assets/images/tear.png</file>
-        <file alias="upset.png">assets/images/upset.png</file>
+        <file alias="ehappy.png">assets/images/ehappy.png</file>
+        <file alias="etear.png">assets/images/etear.png</file>
+        <file alias="eupset.png">assets/images/eupset.png</file>
+        <file alias="addbuttplus.png">assets/images/addbuttplus.png</file>
+        <file alias="delete.png">assets/images/delete.png</file>
+        <file alias="settings.png">assets/images/settings.png</file>
+        <file alias="closebutt.png">assets/images/closebutt.png</file>
+        <file alias="right-arrow.png">assets/images/right-arrow.png</file>
+        <file alias="foldervar.png">assets/images/foldervar.png</file>
+        <file alias="left-arrow.png">assets/images/left-arrow.png</file>
+        <file alias="right-arrow(2).png">assets/images/right-arrow(2).png</file>
+        <file alias="noentries.png">assets/images/noentries.png</file>
+        <file alias="lupa.png">assets/images/lupa.png</file>
+        <file alias="erase.png">assets/images/erase.png</file>
+        <file alias="tagsfilter.png">assets/images/tagsfilter.png</file>
+        <file alias="calendarmenu.png">assets/images/calendarmenu.png</file>
+        <file alias="homemenu.png">assets/images/homemenu.png</file>
+        <file alias="memomenu.png">assets/images/memomenu.png</file>
+        <file alias="searchmenu.png">assets/images/searchmenu.png</file>
+        <file alias="settingsmenu.png">assets/images/settingsmenu.png</file>
+        <file alias="dashboardmenu.png">assets/images/dashboardmenu.png</file>
     </qresource>
 </RCC>

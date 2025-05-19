@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls
+import PCMindTrace 1.0
 
 Rectangle {
     id: pageRegistration
@@ -76,7 +77,7 @@ Rectangle {
                     }
 
                     TextField {
-                        id: LoginInput
+                        id: regLogin
                         width: oberInputFieldsEmpty.width
                         height: 30
                         font.pixelSize: 11
@@ -105,7 +106,7 @@ Rectangle {
                     }
 
                     TextField {
-                        id: EmailInput
+                        id: regEmail
                         width: oberInputFieldsEmpty.width
                         height: 30
                         font.pixelSize: 11
@@ -134,12 +135,12 @@ Rectangle {
                     }
 
                     TextField {
-                        id: PassInput
+                        id: regPassword
                         width: oberInputFieldsEmpty.width
                         height: 30
                         font.pixelSize: 6
                         color: "#D9D9D9"
-                        placeholderText: ""
+                        //placeholderText: ""
                         maximumLength: 64
                         wrapMode: Text.NoWrap
                         echoMode: TextInput.Password
@@ -194,7 +195,7 @@ Rectangle {
         MouseArea {
             anchors.fill: buttAuthCreateCheck
             onClicked: {
-                console.log("Клик по кнопке сработал");
+               authUser.registerUser(regLogin.text, regEmail.text, regPassword.text)
             }
         }
     }
