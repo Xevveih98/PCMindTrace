@@ -168,6 +168,11 @@ Popup {
                     foldername: folders[i].name,
                 });
             }
+            if (folders.length > 0) {
+                lio.currentIndex = 0;
+                managerFolderPopup.selectedFolderId = folders[0].id;
+                console.log("Установлена папка по умолчанию:", folders[0].id);
+            }
         }
     }
 }

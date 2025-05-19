@@ -252,7 +252,7 @@ Rectangle {
 
                     Rectangle {
                         color: "#2D292C"
-                        radius: 8
+                        radius: 12
                         anchors.fill: parent
 
                         Item {
@@ -480,7 +480,7 @@ Rectangle {
                                 height: 60
                                 source: "qrc:/images/noentries.png"
                                 fillMode: Image.PreserveAspectFit
-                                anchors.horizontalCenter: parent
+                                anchors.horizontalCenter: parent.horizontalCenter
                             }
 
                             Text {
@@ -499,8 +499,8 @@ Rectangle {
             }
 
             onContentYChanged: {
-                if  (!refreshing && contentY <= -60) {
-                    refreshing = true
+                if  (!flickable.refreshing && contentY <= -60) {
+                    flickable.refreshing = true
                     console.log("Обновление данных...")
                     refreshPage()
                 }
@@ -508,24 +508,71 @@ Rectangle {
             function refreshPage() {
                 foldersUser.loadFolder();
                 todoUser.loadTodo();
-                entriesUser.loadUserEntries();
-                Qt.callLater(() => {
-                    refreshing = false
-                    contentY = 0
-                })
+                entriesUser.loadUserEntries(selectedFolderId,
+                                            monthSwitchButton.selectedYear,
+                                            monthSwitchButton.selectedMonth);
+                refreshResetTimer.start()
+
             }
 
-            Rectangle {
-                id: refreshIndicator
-                width: parent.width
-                height: refreshing ? 40 : 0
-                color: "lightblue"
-                anchors.top: parent.top
-                z: 100
-                Text {
-                    anchors.centerIn: parent
-                    text: refreshing ? "Обновление..." : ""
+            Timer {
+                id: refreshResetTimer
+                interval: 1100
+                repeat: false
+                onTriggered: {
+                    flickable.refreshing = false
                 }
+            }
+        }
+    }
+
+    Rectangle {
+        id: refreshIndicator
+        width: parent.width * 0.6
+        radius: 16
+        border.width: 1
+        border.color: "#3E3A40"
+        height: 30
+        opacity: 0.0
+        color: "#2D292C"
+        anchors.horizontalCenter: parent.horizontalCenter
+        y: 10
+        z: 100
+        visible: opacity > 0.0
+
+        Text {
+            anchors.centerIn: parent
+            color: "#d9d9d9"
+            font.bold: true
+            font.pixelSize: 16
+            text: "Страница обновлена!"
+        }
+
+        SequentialAnimation {
+            id: appearAnim
+            PropertyAnimation {
+                target: refreshIndicator
+                property: "opacity"
+                from: 0.0
+                to: 1.0
+                duration: 100
+            }
+
+            PauseAnimation { duration: 900 }
+
+            PropertyAnimation {
+                target: refreshIndicator
+                property: "opacity"
+                to: 0.0
+                duration: 400
+            }
+        }
+
+        Connections {
+            target: flickable
+            onRefreshingChanged: {
+                if (flickable.refreshing)
+                    appearAnim.start();
             }
         }
     }
@@ -537,7 +584,7 @@ Rectangle {
             todoListModel.clear();
             for (let i = 0; i < todoos.length; ++i) {
                 todoListModel.append({
-                    todoname: todoos[i]  // todoos[i] — это просто строка
+                    todoname: todoos[i]
                 });
                 console.log("Элемент списка:", todoos[i])
             }
@@ -573,7 +620,9 @@ Rectangle {
         entriesUser.entryUserModel
         foldersUser.loadFolder();
         todoUser.loadTodo();
-        entriesUser.loadUserEntries();
+        entriesUser.loadUserEntries(selectedFolderId,
+                                    monthSwitchButton.selectedYear,
+                                    monthSwitchButton.selectedMonth);
         pageHomeScreen.loadEntriesForCurrentFilter();
     }
 

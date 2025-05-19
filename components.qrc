@@ -20,5 +20,7 @@
         <file alias="IconModelMood.qml">qml/CustomComponents/IconModelMood.qml</file>
         <file alias="CustFolderVariant.qml">qml/CustomComponents/CustFolderVariant.qml</file>
         <file alias="CustEntryBlock.qml">qml/CustomComponents/CustEntryBlock.qml</file>
+        <file alias="CustMenuButton.qml">qml/CustomComponents/CustMenuButton.qml</file>
+        <file alias="CustMenuProfile.qml">qml/CustomComponents/CustMenuProfile.qml</file>
     </qresource>
 </RCC>

@@ -190,7 +190,6 @@ Rectangle {
                                     console.log("Все теги сняты.");
                                 }
                             }
-
                         }
                     }
 

@@ -21,5 +21,11 @@
         <file alias="lupa.png">assets/images/lupa.png</file>
         <file alias="erase.png">assets/images/erase.png</file>
         <file alias="tagsfilter.png">assets/images/tagsfilter.png</file>
+        <file alias="calendarmenu.png">assets/images/calendarmenu.png</file>
+        <file alias="homemenu.png">assets/images/homemenu.png</file>
+        <file alias="memomenu.png">assets/images/memomenu.png</file>
+        <file alias="searchmenu.png">assets/images/searchmenu.png</file>
+        <file alias="settingsmenu.png">assets/images/settingsmenu.png</file>
+        <file alias="dashboardmenu.png">assets/images/dashboardmenu.png</file>
     </qresource>
 </RCC>

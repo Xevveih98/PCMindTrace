@@ -50,6 +50,23 @@ Item {
                 }
                 padding: 10
                 onAccepted: confirmCurrentTag()
+                property string previousText: ""
+                onTextChanged: {
+
+                    if (text.length > previousText.length &&
+                        previousText.length > 0 &&
+                        text.charAt(text.length - 2) === " ") {
+
+                        let lastChar = text.charAt(text.length - 1)
+                        let capitalized = lastChar.toUpperCase()
+
+                        if (lastChar.match(/[a-zа-яё]/i)) {
+                            inputField.text = text.slice(0, text.length - 1) + capitalized
+                            inputField.cursorPosition = text.length
+                        }
+                    }
+                    previousText = text
+                }
             }
         }
 
