@@ -18,6 +18,8 @@ Item {
     property var emotionItems
     property int entryId
 
+    property var foldersList: []
+
     MouseArea {
         id: clickArea
         anchors.fill: parent
@@ -72,19 +74,6 @@ Item {
                     onClicked: {
                         console.log("Попытка создать компонент popEntryChanger.qml");
 
-                        // Выводим parent для дебага
-                        console.log("Parent объекта:", parent);
-                        if (parent) {
-                            console.log("Parent typeName:", parent.toString ? parent.toString() : typeof parent);
-                            // Если parent — Item или Object с доступными свойствами, попробуем вывести их
-                            if ("objectName" in parent)
-                                console.log("Parent.objectName:", parent.objectName);
-                            if ("id" in parent)
-                                console.log("Parent.id:", parent.id);
-                        } else {
-                            console.log("Parent отсутствует (null или undefined)");
-                        }
-
                         var component = Qt.createComponent("qrc:/popups/popEntryChanger.qml");
                         if (component.status === Component.Ready) {
                             console.log("Компонент успешно загружен.");
@@ -98,7 +87,8 @@ Item {
                                 entryMood: papao.entryMood,
                                 tagItems: papao.tagItems,
                                 activityItems: papao.activityItems,
-                                emotionItems: papao.emotionItems
+                                emotionItems: papao.emotionItems,
+                                foldersList: papao.foldersList
                             });
                             if (popup) {
                                 console.log("Попап успешно создан.");

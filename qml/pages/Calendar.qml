@@ -212,7 +212,9 @@ Rectangle {
                                                     if (component.status === Component.Ready) {
                                                         console.log("Компонент успешно загружен.");
 
-                                                        var popup = component.createObject(parent);
+                                                        var popup = component.createObject(parent, {
+                                                            foldersList: pageCalendarScreen.folderu
+                                                        });
                                                         if (popup) {
                                                             console.log("Попап успешно создан.");
                                                             popup.open();
@@ -311,6 +313,24 @@ Rectangle {
                 if (flickable.refreshing)
                     appearAnim.start();
             }
+        }
+    }
+
+    Component.onCompleted: {
+        foldersUser.loadFolder();
+    }
+
+    property var folderu: []
+
+    Connections {
+        target: foldersUser
+        onFoldersLoadedSuccess: function(folders) {
+            console.log("Данные загружены:", folders);
+            folderu = folders;
+        }
+
+        onClearFolderList: {
+            folderu = [];
         }
     }
 }

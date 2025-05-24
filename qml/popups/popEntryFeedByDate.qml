@@ -6,6 +6,7 @@ import CustomComponents
 Popup {
     property var selectedEmotions: []
     signal emotionsConfirmed(var selectedEmotions)
+    property var foldersList: []
 
     id: managerPopup
     width: Screen.width * 0.93
@@ -76,6 +77,7 @@ Popup {
                                 activityItems: model.activities
                                 emotionItems: model.emotions
                                 entryId: model.id
+                                foldersList: managerPopup.foldersList
                             }
                             visible: entriesUser.dateSearchModel.count > 0
                         }

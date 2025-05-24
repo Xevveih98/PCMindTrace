@@ -752,27 +752,60 @@ Popup {
         id: iconModelMood
     }
 
-    function loadItems(sourceArray, targetModel, labelRole) {
+    function loadTags(sourceArray, targetModel) {
         targetModel.clear()
+        tagviewma.selectedTags = []  // Очистка выбранных тегов
         for (let i = 0; i < sourceArray.length; ++i) {
             const item = sourceArray[i]
-            const entry = {
+            const obj = {
                 id: item.id,
-                iconId: item.iconId !== undefined ? item.iconId : 0
+                iconId: item.iconId !== undefined ? item.iconId : 0,
+                tag: item.label
             }
-            entry[labelRole] = item.label
-            console.log("Добавляем:", labelRole, "->", item.label)
-            targetModel.append(entry)
+            targetModel.append(obj)
+            tagviewma.selectedTags.push(obj)  // Добавляем сразу в selectedTags
         }
     }
+
+    function loadActivities(sourceArray, targetModel) {
+        targetModel.clear()
+        tagviwma.selectedActivities = []  // Очистка выбранных активностей
+        for (let i = 0; i < sourceArray.length; ++i) {
+            const item = sourceArray[i]
+            const obj = {
+                id: item.id,
+                iconId: item.iconId !== undefined ? item.iconId : 0,
+                activity: item.label
+            }
+            targetModel.append(obj)
+            tagviwma.selectedActivities.push(obj)  // Добавляем сразу в selectedActivities
+        }
+    }
+
+    function loadEmotions(sourceArray, targetModel) {
+        targetModel.clear()
+        wmro.selectedEmotions = []
+        for (let i = 0; i < sourceArray.length; ++i) {
+            const item = sourceArray[i]
+            const obj = {
+                id: item.id,
+                iconId: item.iconId !== undefined ? item.iconId : 0,
+                emotion: item.label
+            }
+            targetModel.append(obj)
+            wmro.selectedEmotions.push(obj)  // Добавляем сразу в selectedEmotions.map
+        }
+    }
+
+
 
     Component.onCompleted: {
         console.log("tagItems:", tagItems)
         console.log("activityItems:", activityItems)
         console.log("emotionItems:", emotionItems)
 
-        loadItems(tagItems, tagsListModel, "tag")
-        loadItems(activityItems, activitiesListModel, "activity")
-        loadItems(emotionItems, emotionsListModel, "emotion")
+        loadTags(tagItems, tagsListModel)
+        loadActivities(activityItems, activitiesListModel)
+        loadEmotions(emotionItems, emotionsListModel)
     }
 }
