@@ -460,6 +460,8 @@ Rectangle {
                                 tagItems: model.tags
                                 activityItems: model.activities
                                 emotionItems: model.emotions
+                                entryId: model.id
+                                foldersList: pageHomeScreen.folderu
                             }
                             visible: entriesUser.entryUserModel.count > 0
                         }
@@ -591,10 +593,15 @@ Rectangle {
         }
     }
 
+    property var folderu: []
+
     Connections {
         target: foldersUser
         onFoldersLoadedSuccess: function(folders) {
             console.log("Данные загружены:", folders);
+
+            folderu = folders;
+
             foldersListModel.clear();
             for (let i = 0; i < folders.length; ++i) {
                 foldersListModel.append({
@@ -612,6 +619,7 @@ Rectangle {
 
         onClearFolderList: {
             foldersListModel.clear();
+            folderu = [];
         }
     }
 

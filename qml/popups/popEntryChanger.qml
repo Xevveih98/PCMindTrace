@@ -4,9 +4,17 @@ import QtQuick.Layouts
 import PCMindTrace 1.0
 import CustomComponents 1.0
 
-
 Popup {
-    property int selectedIconId: -1
+    property string entryTitle
+    property string entryContent
+    property var entryDate
+    property var entryTime
+    property int entryMood
+    property var tagItems
+    property var activityItems
+    property var emotionItems
+    property int entryId
+    property var foldersList: []
 
     id: managerPopup
     width: Screen.width * 0.93
@@ -57,7 +65,7 @@ Popup {
                     Image {
                         anchors.fill: parent
                         anchors.margins: 4
-                        source: Utils.getIconPathById(iconModelMood, managerPopup.selectedIconId)
+                        source: Utils.getIconPathById(iconModelMood, managerPopup.entryMood)
                         fillMode: Image.PreserveAspectFit
                     }
                 }
@@ -155,6 +163,14 @@ Popup {
                         radius: 8
                     }
                     padding: 10
+
+                    Component.onCompleted: {
+                        entryHeader.text = managerPopup.entryTitle
+                    }
+
+                    onTextChanged: {
+                        managerPopup.entryTitle = text
+                    }
                 }
             }
         }
@@ -211,6 +227,14 @@ Popup {
                         Keys.onReturnPressed: insert("\n")
                         padding: 6
                         onCursorRectangleChanged: flick.ensureVisible(cursorRectangle)
+
+                        Component.onCompleted: {
+                            textEdit.text = managerPopup.entryContent
+                        }
+
+                        onTextChanged: {
+                            managerPopup.entryContent = text
+                        }
                     }
                 }
 
@@ -287,7 +311,6 @@ Popup {
                             }
                         }
                     }
-
                 }
             }
 
@@ -468,7 +491,6 @@ Popup {
                     }
                     selectedActivities = fullActivityObjects
                 }
-
             }
         }
 
@@ -670,38 +692,53 @@ Popup {
                 MouseArea {
                     anchors.fill: parent
                     onClicked: {
-                        console.log("Попытка создать компонент popEntryChooseFolder.qml");
-                        var component = Qt.createComponent("qrc:/popups/popEntryChooseFolder.qml");
-                        if (component.status === Component.Ready) {
-                            console.log("Компонент успешно загружен.");
-                            var tagIds = tagviewma.selectedTags.map(t => t.id)
-                            var activityIds = tagviwma.selectedActivities.map(a => a.id)
-                            var emotionIds = wmro.selectedEmotions.map(e => e.id)
-                            var popup = component.createObject(parent, {
-                                mode: "creator",
-                                entryHeaderText: entryHeader.text,
-                                entryContentText: textEdit.text,
-                                selectedMoodId: managerPopup.selectedIconId,
-                                selectedTags: tagIds,
-                                selectedActivities: activityIds,
-                                selectedEmotions: emotionIds,
-                                parentPopup: managerPopup
-                            });
+                        console.log("Selected entry ID:", managerPopup.entryId)
 
-                            if (popup) {
-                                console.log("Попап успешно создан.");
-                                popup.open();
-                            } else {
-                                console.error("Не удалось создать объект попапа.");
-                            }
-                        } else if (component.status === Component.Error) {
-                            console.error("Ошибка при загрузке компонента: " + component.errorString());
+                        var tagIds = tagviewma.selectedTags.map(t => t.id)
+                        var activityIds = tagviwma.selectedActivities.map(a => a.id)
+                        var emotionIds = wmro.selectedEmotions.map(e => e.id)
+
+                        var component = Qt.createComponent("qrc:/popups/popEntryChooseFolder.qml")
+
+                        if (component.status !== Component.Ready) {
+                            console.error("Ошибка при загрузке компонента: " + component.errorString())
+                            return
+                        }
+
+                        console.log("Компонент успешно загружен.")
+
+                        var popupProps = {
+                            mode: "edit",
+                            entryId: managerPopup.entryId,
+                            entryHeaderText: entryHeader.text,
+                            entryContentText: textEdit.text,
+                            entryDate: managerPopup.entryDate,
+                            selectedMoodId: managerPopup.entryMood,
+                            selectedTags: tagIds,
+                            selectedActivities: activityIds,
+                            selectedEmotions: emotionIds,
+                            parentPopup: managerPopup,
+                            foldersList: managerPopup.foldersList
+                        }
+
+                        var popup = component.createObject(parent, popupProps)
+
+                        if (popup) {
+                            console.log("Попап выбора папки успешно создан.")
+                            popup.open()
                         } else {
-                            console.log("Компонент еще не готов.");
+                            console.error("Не удалось создать объект попапа.")
                         }
                     }
                 }
             }
+        }
+    }
+
+    onVisibleChanged: {
+        if (visible) {
+            entryHeader.text = entryTitle
+            textEdit.text = entryContent
         }
     }
 
@@ -713,5 +750,29 @@ Popup {
     }
     IconModelMod {
         id: iconModelMood
+    }
+
+    function loadItems(sourceArray, targetModel, labelRole) {
+        targetModel.clear()
+        for (let i = 0; i < sourceArray.length; ++i) {
+            const item = sourceArray[i]
+            const entry = {
+                id: item.id,
+                iconId: item.iconId !== undefined ? item.iconId : 0
+            }
+            entry[labelRole] = item.label
+            console.log("Добавляем:", labelRole, "->", item.label)
+            targetModel.append(entry)
+        }
+    }
+
+    Component.onCompleted: {
+        console.log("tagItems:", tagItems)
+        console.log("activityItems:", activityItems)
+        console.log("emotionItems:", emotionItems)
+
+        loadItems(tagItems, tagsListModel, "tag")
+        loadItems(activityItems, activitiesListModel, "activity")
+        loadItems(emotionItems, emotionsListModel, "emotion")
     }
 }

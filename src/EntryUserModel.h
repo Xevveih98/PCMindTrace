@@ -29,8 +29,10 @@ public:
     QVariant data(const QModelIndex &index, int role) const override;
     QHash<int, QByteArray> roleNames() const override;
 
+
     void setEntries(const QList<EntryUser> &entries);
     Q_INVOKABLE void clear();
+    Q_INVOKABLE bool removeEntryById(int id);
 
 signals:
     void countChanged();

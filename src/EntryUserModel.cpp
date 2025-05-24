@@ -105,3 +105,18 @@ void EntryUserModel::clear()
     m_entries.clear();
     endResetModel();
 }
+
+bool EntryUserModel::removeEntryById(int id)
+{
+    for (int i = 0; i < m_entries.size(); ++i) {
+        if (m_entries[i].getId() == id) {
+            beginRemoveRows(QModelIndex(), i, i);
+            m_entries.removeAt(i);
+            endRemoveRows();
+            emit countChanged();
+            return true;
+        }
+    }
+    return false;
+}
+

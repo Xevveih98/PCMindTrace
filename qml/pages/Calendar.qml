@@ -144,7 +144,7 @@ Rectangle {
                     Component.onCompleted: updateDisplay()
                 }
 
-                Item{
+                Item {
                     id: papcaledar
                     width: parent.width
                     height: 270
@@ -183,19 +183,53 @@ Rectangle {
 
                                 MonthGrid {
                                     id: monthGrid
-                                    month: Calendar.May
-                                    year: 2025
+                                    month: monthSwitchButton.selectedMonth - 1
+                                    year: monthSwitchButton.selectedYear
                                     locale: Qt.locale("ru_RU")
-                                    delegate: Text {
-                                        horizontalAlignment: Text.AlignHCenter
-                                        verticalAlignment: Text.AlignVCenter
-                                        opacity: model.month === monthGrid.month ? 1 : 0.2
-                                        text: monthGrid.locale.toString(model.date, "d")
-                                        color: "#d9d9d9"
-                                        font.pixelSize: 12
 
-                                        required property var model
-                                    }
+                                    delegate: Item {
+                                            width: 40
+                                            height: 40
+
+                                            Text {
+                                                anchors.centerIn: parent
+                                                horizontalAlignment: Text.AlignHCenter
+                                                verticalAlignment: Text.AlignVCenter
+                                                opacity: model.month === monthGrid.month ? 1 : 0.2
+                                                text: monthGrid.locale.toString(model.date, "d")
+                                                color: "#d9d9d9"
+                                                font.pixelSize: 12
+                                            }
+
+                                            MouseArea {
+                                                anchors.fill: parent
+                                                onClicked: {
+                                                    let selectedDate = Qt.formatDate(model.date, "yyyy-MM-dd");
+                                                    console.log("Выбрана дата:", selectedDate);
+                                                    entriesUser.loadUserEntriesByDate(selectedDate);
+                                                    console.log("Попытка создать компонент popEntryFeedByDate.qml");
+                                                    var component = Qt.createComponent("qrc:/popups/popEntryFeedByDate.qml");
+                                                    if (component.status === Component.Ready) {
+                                                        console.log("Компонент успешно загружен.");
+
+                                                        var popup = component.createObject(parent);
+                                                        if (popup) {
+                                                            console.log("Попап успешно создан.");
+                                                            popup.open();
+                                                        } else {
+                                                            console.error("Не удалось создать объект попапа.");
+                                                        }
+                                                    } else if (component.status === Component.Error) {
+                                                        console.error("Ошибка при загрузке компонента: " + component.errorString());
+                                                    } else {
+                                                        console.log("Компонент еще не готов.");
+                                                    }
+                                                }
+                                            }
+
+                                            required property var model
+                                        }
+
                                     Layout.fillWidth: true
                                     Layout.fillHeight: true
                                 }
