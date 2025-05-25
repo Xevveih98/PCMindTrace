@@ -16,6 +16,7 @@ class EntriesUser : public QObject
     Q_PROPERTY(EntryUserModel* entryUserModel READ entryUserModel NOTIFY entryUserModelChanged)
     Q_PROPERTY(EntryUserModel* searchModel READ searchModel NOTIFY searchModelChanged)
     Q_PROPERTY(EntryUserModel* dateSearchModel READ dateSearchModel NOTIFY dateSearchModelChanged)
+    Q_PROPERTY(EntryUserModel* monthSearchModel READ monthSearchModel NOTIFY monthSearchModelChanged)
 
 public:
     explicit EntriesUser(QObject *parent = nullptr);
@@ -30,13 +31,16 @@ public:
     Q_INVOKABLE void loadUserEntriesByKeywords(const QStringList &keywords);
     Q_INVOKABLE void loadUserEntriesByTags(const QList<int> &tagIds);
     Q_INVOKABLE void loadUserEntriesByDate(const QString &date);
+    Q_INVOKABLE void loadUserEntriesByMonth(const QString &date);
 
     EntryUserModel* entryUserModel() const;
     EntryUserModel* searchModel() const;
     EntryUserModel* dateSearchModel() const;
+    EntryUserModel* monthSearchModel() const;
 
     Q_INVOKABLE void clearSearchModel();
     Q_INVOKABLE void clearDateSearchModel();
+    Q_INVOKABLE void clearMonthSearchModel();
 
 signals:
     void entrySavedSuccess();
@@ -47,6 +51,8 @@ signals:
     void entryUserModelChanged();
     void searchModelChanged();
     void dateSearchModelChanged();
+    void monthSearchModelChanged();
+    void monthEntriesChanged();
 
 private:
     void sendEntrySaveRequest(const QJsonDocument &jsonDoc, const QUrl &url);
@@ -57,4 +63,5 @@ private:
     EntryUserModel *m_entryUserModel;
     EntryUserModel *m_searchModel;
     EntryUserModel *m_dateSearchModel;
+    EntryUserModel *m_monthSearchModel;
 };

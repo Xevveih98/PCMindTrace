@@ -294,7 +294,8 @@ Rectangle {
                                                 var component = Qt.createComponent("qrc:/popups/popEntryCreator.qml");
                                                 if (component.status === Component.Ready) {
                                                     var popup = component.createObject(parent, {
-                                                        selectedIconId: model.iconId
+                                                        selectedIconId: model.iconId,
+                                                        foldersList: pageHomeScreen.folderu
                                                     });
                                                     if (popup) {
                                                         popup.open();

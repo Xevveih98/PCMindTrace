@@ -95,6 +95,13 @@ void EntryUserModel::setEntries(const QList<EntryUser> &entries)
         return a.getDate() > b.getDate();
     });
 
+    qDebug() << "В модели установлено записей:" << m_entries.size();
+    for (const EntryUser &entry : m_entries) {
+        qDebug() << "Entry id:" << entry.getId()
+        << " date:" << entry.getDate().toString("yyyy-MM-dd")
+        << " moodId:" << entry.getMoodId();
+    }
+
     endResetModel();
     emit countChanged();
 }
@@ -135,4 +142,31 @@ QVariant EntryUserModel::get(int index) const
     map["date"] = entry.getDate().toString("yyyy-MM-dd");
     map["time"] = entry.getTime().toString("HH:mm");
     return map;
+}
+
+QVariantList EntryUserModel::all() const {
+    QVariantList list;
+    for (const EntryUser &entry : m_entries) {
+        QVariantMap map;
+        map["id"] = entry.getId();
+        map["title"] = entry.getTitle();
+        map["content"] = entry.getContent();
+        map["moodId"] = entry.getMoodId();
+        map["folderId"] = entry.getFolderId();
+        map["date"] = entry.getDate().toString("yyyy-MM-dd");
+        map["time"] = entry.getTime().toString("HH:mm");
+        list.append(map);
+    }
+    return list;
+}
+
+QVariant EntryUserModel::getFirstEntryMood() const {
+    if (!m_entries.isEmpty()) {
+        const EntryUser &entry = m_entries.first();
+        QVariantMap map;
+        map["id"] = entry.getId();
+        map["moodId"] = entry.getMoodId();
+        return map;
+    }
+    return QVariant();
 }

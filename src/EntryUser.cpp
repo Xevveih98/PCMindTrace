@@ -69,8 +69,6 @@ static QJsonArray toJsonUserItemArray(const QVector<UserItem> &items) {
 
 EntryUser EntryUser::fromJson(const QJsonObject &obj)
 {
-    qDebug() << "EntryUser::fromJson() called. Source object:" << obj;
-
     int id = obj.value("id").toInt();
     QString login = obj.value("login").toString();
     QString title = obj.value("title").toString();
@@ -86,11 +84,7 @@ EntryUser EntryUser::fromJson(const QJsonObject &obj)
     QVector<UserItem> emotions = parseUserItemArray(obj.value("emotions").toArray());
 
     qDebug() << "Создан EntryUser из JSON:"
-             << "ID:" << id
-             << "Login:" << login
-             << "Title:" << title
-             << "Date:" << date
-             << "Tags count:" << tags.size();
+             << "ID:" << id;
 
     return EntryUser(id, login, title, content, moodId, folderId, date, time, tags, activities, emotions);
 }
@@ -105,8 +99,6 @@ QJsonObject EntryUser::toJson() const
     obj["time"] = m_time.toString();
     obj["folder"] = m_folderId;
     obj["moodId"] = m_moodId;
-
-    // Сериализация QVector<UserItem> в массив id
     auto userItemsToJsonArray = [](const QVector<UserItem> &items) {
         QJsonArray array;
         for (const auto &item : items)

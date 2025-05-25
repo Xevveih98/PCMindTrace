@@ -115,10 +115,68 @@ Popup {
                     }
                 }
             }
+
+            Rectangle {
+                id: buttAdmit
+                color: "#474448"
+                radius: 8
+                width: parent.width
+                height: 50
+                anchors {
+                    bottom: parent.bottom
+                    horizontalCenter: parent.horizontalCenter
+                }
+
+                Text {
+                    text: "Добавить запись"
+                    font.pixelSize: 18
+                    color: "#D9D9D9"
+                    anchors.centerIn: parent
+                }
+
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: {
+                        model.iconId = 1;
+                        console.log("Выбран iconId:", model.iconId);
+                        var component = Qt.createComponent("qrc:/popups/popEntryCreator.qml");
+                        if (component.status === Component.Ready) {
+                            var popup = component.createObject(parent, {
+                                selectedIconId: model.iconId,
+                                foldersList: managerPopup.folderu
+                            });
+                            if (popup) {
+                                popup.open();
+                            } else {
+                                console.error("Не удалось создать объект попапа.");
+                            }
+                        } else if (component.status === Component.Error) {
+                            console.error("Ошибка при загрузке компонента: " + component.errorString());
+                        }
+                        managerPopup.close()
+                    }
+                }
+            }
+        }
+    }
+
+    property var folderu: []
+
+    Connections {
+        target: foldersUser
+        onFoldersLoadedSuccess: function(folders) {
+            console.log("Данные загружены:", folders);
+
+            folderu = folders;
+        }
+
+        onClearFolderList: {
+            folderu = [];
         }
     }
 
     Component.onCompleted: {
         entriesUser.clearDateSearchModel()
+        foldersUser.loadFolder();
     }
 }

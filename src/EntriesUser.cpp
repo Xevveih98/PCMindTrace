@@ -19,6 +19,8 @@ EntriesUser::EntriesUser(QObject *parent)
             onUserEntryFetchReply(reply);
         } else if (endpoint.path().contains("/searchentriesbydate")) {
             onUserEntryFetchReply(reply);
+        } else if (endpoint.path().contains("/searchentriesbymonth")) {
+            onUserEntryFetchReply(reply);
         } else {
             qWarning() << "Unhandled endpoint in EntriesUser:" << endpoint.toString();
             reply->deleteLater();
@@ -28,6 +30,7 @@ EntriesUser::EntriesUser(QObject *parent)
     m_entryUserModel = new EntryUserModel(this);
     m_searchModel = new EntryUserModel(this);
     m_dateSearchModel = new EntryUserModel(this);
+    m_monthSearchModel = new EntryUserModel(this);
     qDebug() << "EntriesUser initialized and connected to network manager.";
 }
 
@@ -190,6 +193,9 @@ void EntriesUser::onUserEntryFetchReply(QNetworkReply *reply)
         targetModel = m_searchModel;
     } else if (path.contains("/searchentriesbydate")) {
         targetModel = m_dateSearchModel;
+    } else if (path.contains("/searchentriesbymonth")) {
+        targetModel = m_monthSearchModel;
+        emit monthEntriesChanged();
     } else {
         qWarning() << "Unknown path in onUserEntryFetchReply:" << path;
         reply->deleteLater();
@@ -198,7 +204,7 @@ void EntriesUser::onUserEntryFetchReply(QNetworkReply *reply)
 
     if (reply->error() == QNetworkReply::NoError) {
         QByteArray response = reply->readAll();
-        qDebug() << "Entries loaded successfully. Server response:" << QString::fromUtf8(response);
+        qDebug() << "Entries loaded successfully."; /*Server response:" << QString::fromUtf8(response);*/
 
         if (response.isEmpty()) {
             qWarning() << "Empty entry response received.";
@@ -329,11 +335,30 @@ void EntriesUser::loadUserEntriesByDate(const QString &date)
 
     QNetworkRequest request(serverUrl);
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
-
-    // Формируем JSON-объект
     QJsonObject json;
     json["login"] = login;
-    json["date"] = date;  // Ожидается формат yyyy-MM-dd
+    json["date"] = date;
+
+    QJsonDocument doc(json);
+    QByteArray data = doc.toJson();
+
+    QNetworkReply *reply = m_networkUser.post(request, data);
+}
+
+void EntriesUser::loadUserEntriesByMonth(const QString &date)
+{
+    AppSave appSave;
+    QString login = appSave.getSavedLogin();
+    qDebug() << "Ищем записи для пользователя:" << login
+             << " | По дате:" << date;
+
+    QUrl serverUrl = AppConfig::apiUrl("/searchentriesbymonth");
+
+    QNetworkRequest request(serverUrl);
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+    QJsonObject json;
+    json["login"] = login;
+    json["date"] = date;
 
     QJsonDocument doc(json);
     QByteArray data = doc.toJson();
@@ -491,6 +516,11 @@ EntryUserModel* EntriesUser::dateSearchModel() const
     return m_dateSearchModel;
 }
 
+EntryUserModel* EntriesUser::monthSearchModel() const
+{
+    return m_monthSearchModel;
+}
+
 void EntriesUser::clearSearchModel() {
     if (m_searchModel) {
         m_searchModel->clear();
@@ -502,6 +532,13 @@ void EntriesUser::clearDateSearchModel() {
     if (m_dateSearchModel) {
         m_dateSearchModel->clear();
         emit dateSearchModelChanged();
+    }
+}
+
+void EntriesUser::clearMonthSearchModel() {
+    if (m_monthSearchModel) {
+        m_monthSearchModel->clear();
+        emit monthSearchModelChanged();
     }
 }
 

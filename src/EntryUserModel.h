@@ -6,8 +6,7 @@
 class EntryUserModel : public QAbstractListModel
 {
     Q_OBJECT
-    Q_PROPERTY(int count READ rowCount NOTIFY countChanged)
-
+    Q_PROPERTY(int count READ count NOTIFY countChanged)
 
 public:
     enum EntryRoles {
@@ -29,11 +28,14 @@ public:
     QVariant data(const QModelIndex &index, int role) const override;
     QHash<int, QByteArray> roleNames() const override;
 
-
     void setEntries(const QList<EntryUser> &entries);
     Q_INVOKABLE void clear();
     Q_INVOKABLE bool removeEntryById(int id);
     Q_INVOKABLE QVariant get(int index) const;
+    Q_INVOKABLE QVariantList all() const;
+    Q_INVOKABLE QVariant getFirstEntryMood() const;
+
+    int count() const { return m_entries.count(); }
 
 
 signals:
