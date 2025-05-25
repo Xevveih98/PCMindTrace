@@ -7,6 +7,7 @@ import CustomComponents 1.0
 
 Popup {
     property int selectedIconId: -1
+    property var foldersList: []
 
     id: managerPopup
     width: Screen.width * 0.93
@@ -685,7 +686,8 @@ Popup {
                                 selectedTags: tagIds,
                                 selectedActivities: activityIds,
                                 selectedEmotions: emotionIds,
-                                parentPopup: managerPopup
+                                parentPopup: managerPopup,
+                                foldersList: managerPopup.foldersList
                             });
 
                             if (popup) {

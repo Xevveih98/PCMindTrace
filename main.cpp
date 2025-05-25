@@ -39,6 +39,8 @@ int main(int argc, char *argv[])
     FoldersUser foldersUser;
     EntriesUser entriesUser;
     EntryUserModel entryUserModel;
+    EntryUserModel dateSearchModel;
+    engine.rootContext()->setContextProperty("dateSearchModel", &dateSearchModel);
     engine.rootContext()->setContextProperty("entryUserModel", &entryUserModel);
     engine.rootContext()->setContextProperty("entriesUser", &entriesUser);
     engine.rootContext()->setContextProperty("authUser", &authUser);

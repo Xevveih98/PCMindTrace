@@ -187,63 +187,10 @@ Rectangle {
                                     year: monthSwitchButton.selectedYear
                                     locale: Qt.locale("ru_RU")
 
-                                    delegate: Item {
-                                        width: 42
-                                        height: 90
-
-                                        Rectangle {
-                                            anchors.fill: parent
-                                            radius: 12
-                                            color: "#262326"
-                                        }
-
-                                        Column {
-                                            anchors.centerIn: parent
-                                            spacing: 2
-
-                                            Item {
-                                                width: 28
-                                                height: 23
-                                                Image {
-                                                    width: 20
-                                                    height: 20
-                                                    anchors.centerIn: parent
-                                                    source: model.month === monthGrid.month
-                                                            ? "qrc:/images/minus-circle.png"
-                                                            : "qrc:/images/minus-circle-shade.png"
-                                                }
-                                            }
-
-                                            Text {
-                                                horizontalAlignment: Text.AlignHCenter
-                                                verticalAlignment: Text.AlignVCenter
-                                                opacity: model.month === monthGrid.month ? 1 : 0.2
-                                                text: monthGrid.locale.toString(model.date, "d")
-                                                color: "#d9d9d9"
-                                                font.pixelSize: 12
-                                                anchors.horizontalCenter: parent.horizontalCenter
-                                            }
-                                        }
-
-                                        MouseArea {
-                                            anchors.fill: parent
-                                            onClicked: {
-                                                let selectedDate = Qt.formatDate(model.date, "yyyy-MM-dd");
-                                                console.log("Выбрана дата:", selectedDate);
-                                                entriesUser.loadUserEntriesByDate(selectedDate);
-                                                var component = Qt.createComponent("qrc:/popups/popEntryFeedByDate.qml");
-                                                if (component.status === Component.Ready) {
-                                                    var popup = component.createObject(parent);
-                                                    if (popup) {
-                                                        popup.open();
-                                                    } else {
-                                                        console.error("Не удалось создать объект попапа.");
-                                                    }
-                                                } else if (component.status === Component.Error) {
-                                                    console.error("Ошибка при загрузке компонента: " + component.errorString());
-                                                }
-                                            }
-                                        }
+                                    delegate: CustDateIcon {
+                                        modelmonth: model
+                                        currentMonth: monthGrid.month
+                                        locale: monthGrid.locale
 
                                         required property var model
                                     }
