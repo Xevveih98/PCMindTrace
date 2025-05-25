@@ -131,6 +131,6 @@ Item {
     StackView {
         id: stackViewMainContent
         anchors.fill: parent
-        initialItem: "qrc:/pages/Home.qml"
+        initialItem: "qrc:/pages/Calendar.qml"
     }
 }

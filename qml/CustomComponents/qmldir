@@ -20,4 +20,5 @@ CustEntrBlok 1.0 CustEntryBlock.qml
 CustMenuButn 1.0 CustMenuButton.qml
 CustMenuProf 1.0 CustMenuProfile.qml
 CustEntrBttn 1.0 CustEntryButton.qml
+CustDateIcon 1.0 custDateIcon.qml
 Utils 1.0 Utils.js

@@ -120,3 +120,19 @@ bool EntryUserModel::removeEntryById(int id)
     return false;
 }
 
+QVariant EntryUserModel::get(int index) const
+{
+    if (index < 0 || index >= m_entries.size())
+        return QVariant();
+
+    const EntryUser &entry = m_entries[index];
+    QVariantMap map;
+    map["id"] = entry.getId();
+    map["title"] = entry.getTitle();
+    map["content"] = entry.getContent();
+    map["moodId"] = entry.getMoodId();
+    map["folderId"] = entry.getFolderId();
+    map["date"] = entry.getDate().toString("yyyy-MM-dd");
+    map["time"] = entry.getTime().toString("HH:mm");
+    return map;
+}
