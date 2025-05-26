@@ -347,8 +347,6 @@ void EntriesUser::loadUserEntriesMoodIdies(const QString &date)
 {
     AppSave appSave;
     QString login = appSave.getSavedLogin();
-    qDebug() << "Ищем записи для пользователя:" << login
-             << " | По дате:" << date;
 
     QUrl serverUrl = AppConfig::apiUrl("/getmoodidies");
 

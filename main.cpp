@@ -1,10 +1,11 @@
-#include <QGuiApplication>
+#include <QApplication>
 #include <QQmlApplicationEngine>
 #include <QSqlDatabase>
 #include <QSqlError>
 #include <QDebug>
 #include <QFile>
 #include <QQmlContext>
+
 #include "src/AuthUser.h"
 #include "src/AppSave.h"
 #include "src/TodoUser.h"
@@ -16,7 +17,7 @@
 
 int main(int argc, char *argv[])
 {
-    QGuiApplication app(argc, argv);
+    QApplication app(argc, argv);  // заменили QGuiApplication
 
     QQmlApplicationEngine engine;
     QObject::connect(
@@ -25,12 +26,15 @@ int main(int argc, char *argv[])
         &app,
         []() { QCoreApplication::exit(-1); },
         Qt::QueuedConnection);
+
+    // Регистрация синглтонов
     qmlRegisterSingletonInstance("PCMindTrace", 1, 0, "AppSave", new AppSave);
     qmlRegisterSingletonType<CustomComponentsSingleton>("CustomComponents", 1, 0, "CustomComponents",
-        [](QQmlEngine *, QJSEngine *) -> QObject * {
-            return CustomComponentsSingleton::instance();
-    });
+                                                        [](QQmlEngine *, QJSEngine *) -> QObject * {
+                                                            return CustomComponentsSingleton::instance();
+                                                        });
 
+    // Создание и установка контекстных свойств
     AuthUser authUser;
     TodoUser todoUser;
     CategoriesUser categoriesUser;
@@ -38,6 +42,7 @@ int main(int argc, char *argv[])
     EntriesUser entriesUser;
     EntryUserModel entryUserModel;
     EntryUserModel dateSearchModel;
+
     engine.rootContext()->setContextProperty("dateSearchModel", &dateSearchModel);
     engine.rootContext()->setContextProperty("entryUserModel", &entryUserModel);
     engine.rootContext()->setContextProperty("entriesUser", &entriesUser);

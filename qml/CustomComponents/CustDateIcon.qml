@@ -73,7 +73,6 @@ Item {
         anchors.fill: parent
         onClicked: {
             let selectedDate = Qt.formatDate(modelmonth.date, "yyyy-MM-dd");
-            console.log("Выбрана дата:", selectedDate);
             entriesUser.loadUserEntriesByDate(selectedDate);
             const component = Qt.createComponent("qrc:/popups/popEntryFeedByDate.qml");
             if (component.status === Component.Ready) {
@@ -83,10 +82,8 @@ Item {
                 if (popup) {
                     popup.open();
                 } else {
-                    console.error("Не удалось создать объект попапа.");
                 }
             } else if (component.status === Component.Error) {
-                console.error("Ошибка при загрузке компонента: " + component.errorString());
             }
         }
     }
@@ -97,23 +94,18 @@ Item {
             const cellDate = Qt.formatDate(modelmonth.date, "yyyy-MM-dd");
             if (datet !== cellDate)
                 return;
-
-            console.log(" | moodIds для даты", cellDate, ":", JSON.stringify(moodIds))
-
             for (let i = 0; i < idImages.length; i++) {
                 idImages[i].visible = false;
             }
             if (modelmonth.month !== currentMonth) {
                 idImages[0].source = "qrc:/images/minus-circle-shade.png";
                 idImages[0].visible = true;
-                console.log(" | Ячейка не текущего месяца — показываем заглушку");
                 return;
             }
 
             if (!moodIds || moodIds.length === 0 || (moodIds.length === 1 && moodIds[0] === 0)) {
                 idImages[0].source = "qrc:/images/minus-circle.png";
                 idImages[0].visible = true;
-                console.log(" | Пустая ячейка - нет записей");
                 return;
             }
 

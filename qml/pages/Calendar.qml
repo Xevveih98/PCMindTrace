@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import CustomComponents 1.0
+import QtCharts
 
 Rectangle {
     id: pageCalendarScreen
@@ -24,7 +25,7 @@ Rectangle {
             property bool refreshing: false
             id: flickable
             anchors.fill: parent
-            contentHeight: eda.height
+            contentHeight: eda.height + 80
             flickableDirection: Flickable.VerticalFlick
             clip: true
 
@@ -32,6 +33,100 @@ Rectangle {
                 id: eda
                 width: parent.width
                 spacing: 12
+
+                Item {
+                    id: papcaledar
+                    width: parent.width
+                    height: 410
+                    anchors.horizontalCenter: parent.horizontalCenter
+
+                    Rectangle {
+                        color: "#2D292C"
+                        radius: 8
+                        anchors.fill: parent
+
+                        Item {
+                            width: parent.width
+                            height: parent.height * 0.94
+                            anchors.centerIn: parent
+
+                            ColumnLayout {
+                                width: parent.width
+                                height: parent.height
+
+                                DayOfWeekRow {
+                                    locale: Qt.locale("ru_RU")
+                                    spacing: 8
+
+                                    delegate: Text {
+                                        text: shortName.toUpperCase()
+                                        color: "#d9d9d9"
+                                        font.pixelSize: 12
+                                        font.bold: true
+                                        horizontalAlignment: Text.AlignHCenter
+                                        verticalAlignment: Text.AlignVCenter
+
+                                        required property string shortName
+                                    }
+                                    Layout.fillWidth: true
+                                }
+
+                                MonthGrid {
+                                    id: monthGrid
+                                    month: monthSwitchButton.selectedMonth - 1
+                                    year: monthSwitchButton.selectedYear
+                                    locale: Qt.locale("ru_RU")
+                                    spacing: 0
+                                    background: Rectangle {
+                                        anchors.fill: parent
+                                        //radius: 12
+                                        color: "#262326"
+                                    }
+
+
+
+                                    delegate: CustDateIcon {
+                                        modelmonth: model
+                                        currentMonth: monthGrid.month
+                                        locale: monthGrid.locale
+                                        required property var model
+
+                                        Connections {
+                                            target: monthSwitchButton
+                                            function onMonthChanged(dateString) {
+                                                const dateStr = Qt.formatDate(model.date, "yyyy-MM-dd");
+                                                entriesUser.loadUserEntriesMoodIdies(dateStr);
+                                            }
+                                        }
+
+                                        function clearIcons() {
+                                            for (let i = 0; i < idImages.length; i++) {
+                                                idImages[i].visible = false;
+                                            }
+                                        }
+                                    }
+
+                                    Connections {
+                                        target: monthSwitchButton
+                                        function onMonthChanged(dateString) {
+                                            console.log("Выбран новый месяц:", dateString);
+
+                                            for (let i = 0; i < monthGrid.contentItem.children.length; i++) {
+                                                const cell = monthGrid.contentItem.children[i];
+                                                if (cell.clearIcons) {
+                                                    cell.clearIcons();
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    Layout.fillWidth: true
+                                    Layout.fillHeight: true
+                                }
+                            }
+                        }
+                    }
+                }
 
                 Item {
                     id: monthSwitchButton
@@ -51,7 +146,6 @@ Rectangle {
                         anchors.verticalCenter: parent.verticalCenter
                         width: parent.width
 
-                        // Левая стрелка
                         Item {
                             id: leftArrowItem
                             width: 40
@@ -155,93 +249,433 @@ Rectangle {
                 }
 
                 Item {
-                    id: papcaledar
+                    id: monthChart
                     width: parent.width
-                    height: 410
-                    anchors.horizontalCenter: parent.horizontalCenter
+                    height: 240
 
                     Rectangle {
+                        anchors.fill: parent
                         color: "#2D292C"
                         radius: 8
+                    }
+
+                    ColumnLayout {
+                        id: sfesf
                         anchors.fill: parent
+                        spacing: 0
 
                         Item {
-                            width: parent.width * 0.95
-                            height: parent.height * 0.94
-                            anchors.centerIn: parent
+                            Layout.preferredWidth: parent.width * 0.9
+                            height: 40
+                            Layout.alignment: Qt.AlignHCenter
 
-                            ColumnLayout {
+                            Column {
+                                height: 28
                                 width: parent.width
-                                height: parent.height
+                                anchors.bottom: parent.bottom //anchors.verticalCenter: parent.verticalCenter
 
-                                DayOfWeekRow {
-                                    locale: Qt.locale("ru_RU")
-                                    spacing: 8
-
-                                    delegate: Text {
-                                        text: shortName.toUpperCase()
-                                        color: "#d9d9d9"
-                                        font.pixelSize: 12
-                                        font.bold: true
-                                        horizontalAlignment: Text.AlignHCenter
-                                        verticalAlignment: Text.AlignVCenter
-
-                                        required property string shortName
-                                    }
-                                    Layout.fillWidth: true
+                                Text {
+                                    id: hanle
+                                    color: "#d9d9d9"
+                                    text: "Динамика настроения по дням"
+                                    font.pixelSize: 16
+                                    font.bold: true
                                 }
 
-                                MonthGrid {
-                                    id: monthGrid
-                                    month: monthSwitchButton.selectedMonth - 1
-                                    year: monthSwitchButton.selectedYear
-                                    locale: Qt.locale("ru_RU")
-                                    spacing: 0
-                                    background: Rectangle {
-                                        anchors.fill: parent
-                                        radius: 12
-                                        color: "#262326"
+                                Row {
+                                    spacing: 4
+                                    anchors.left: parent.left
+
+                                    Text {
+                                        color: "#a1a1a1"
+                                        text: "Всего было сделано записей:"
+                                        font.pixelSize: 12
                                     }
 
-
-
-                                    delegate: CustDateIcon {
-                                        modelmonth: model
-                                        currentMonth: monthGrid.month
-                                        locale: monthGrid.locale
-                                        required property var model
-
-                                        Connections {
-                                            target: monthSwitchButton
-                                            function onMonthChanged(dateString) {
-                                                const dateStr = Qt.formatDate(model.date, "yyyy-MM-dd");
-                                                entriesUser.loadUserEntriesMoodIdies(dateStr);
-                                            }
-                                        }
-
-                                        function clearIcons() {
-                                            for (let i = 0; i < idImages.length; i++) {
-                                                idImages[i].visible = false;
-                                            }
-                                        }
+                                    Text {
+                                        id: entryMonthCount
+                                        color: "#a1a1a1"
+                                        text: "123"
+                                        font.pixelSize: 12
                                     }
 
-                                    Connections {
-                                        target: monthSwitchButton
-                                        function onMonthChanged(dateString) {
-                                            console.log("Выбран новый месяц:", dateString);
+                                    Text {
+                                        id: entryMonthTrend
+                                        color: "#519D65"
+                                        text: "(+12)"
+                                        font.pixelSize: 11
+                                    }
+                                }
+                            }
+                        }
 
-                                            for (let i = 0; i < monthGrid.contentItem.children.length; i++) {
-                                                const cell = monthGrid.contentItem.children[i];
-                                                if (cell.clearIcons) {
-                                                    cell.clearIcons();
-                                                }
-                                            }
-                                        }
+
+                        ChartView {
+                            id: chart
+                            Layout.fillWidth: true
+                            Layout.preferredHeight: 200
+                            antialiasing: true
+                            legend.visible: false
+                            backgroundColor: "transparent"
+                            plotAreaColor: "#262326"
+                            clip: false
+                            //animationOptions: ChartView.SeriesAnimations
+
+                            ValueAxis {
+                                id: axisX
+                                min: 0.5
+                                max: 31.4
+                                color: "transparent"
+                                tickType: ValueAxis.TicksDynamic
+                                tickAnchor: 1
+                                tickInterval: 3
+                                labelFormat: "%.0f"
+                                labelsColor: "#d9d9d9"
+                                gridVisible: false
+                            }
+
+                            ValueAxis {
+                                id: axisY
+                                min: 0.5
+                                max: 5.4
+                                reverse: true
+                                color:"transparent"
+                                minorTickCount: 1
+                                tickCount: 5
+                                labelFormat: "%.0f"
+                                labelsColor: "#2D292C"
+                                gridVisible: false
+                                minorGridVisible: true
+                                minorGridLineColor: "#2D292C"
+                            }
+
+                            LineSeries {
+                                id: prevMoodSeries
+                                axisX: axisX
+                                axisY: axisY
+                                color: "#41414B"
+                                pointsVisible: false
+                                name: "Настроение (предыдущий месяц)"
+                                Component.onCompleted: {
+                                    for (var day = 1; day <= 31; day++) {
+                                        var mood = Math.floor(Math.random() * 4) + 1;
+                                        prevMoodSeries.append(day, mood);
+                                    }
+                                }
+                            }
+
+                            LineSeries {
+                                id: moodSeries
+                                axisX: axisX
+                                color: "#DA446A"
+                                axisY: axisY
+                                pointsVisible: true
+                                name: "Настроение"
+                                Component.onCompleted: {
+                                    for (var day = 1; day <= 31; day++) {
+                                        var mood = Math.floor(Math.random() * 5) + 1;
+                                        moodSeries.append(day, mood);
+                                    }
+                                }
+                            }
+
+                            Column {
+                                id: iconsOverlay
+                                height: parent.height
+                                anchors.left: chart.left
+                                anchors.top: chart.top
+                                anchors.leftMargin: 12
+                                anchors.topMargin: 28
+                                width: 40
+                                spacing: 10
+
+                                Repeater {
+                                    model: 5
+                                    delegate: Image {
+                                        property int moodId: index + 1
+                                        source: Utils.getIconPathById(iconModelMood, moodId)
+                                        width: 18
+                                        height: 18
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                Item {
+                    id: monthMerge
+                    width: parent.width
+                    height: 270
+
+                    ColumnLayout {
+                        id: sfesfrrrrr
+                        anchors.fill: parent
+                        spacing: 0
+
+                        Item {
+                            Layout.preferredWidth: parent.width * 0.9
+                            height: 40
+                            Layout.alignment: Qt.AlignHCenter
+
+                            Column {
+                                height: 28
+                                width: parent.width
+                                anchors.bottom: parent.bottom //anchors.verticalCenter: parent.verticalCenter
+
+                                Text {
+                                    id: han
+                                    color: "#d9d9d9"
+                                    text: "Среднее настроение за месяц"
+                                    font.pixelSize: 16
+                                    font.bold: true
+                                }
+
+                                Row {
+                                    spacing: 4
+                                    anchors.left: parent.left
+
+                                    Text {
+                                        color: "#a1a1a1"
+                                        text: "Записей с этим настроением:"
+                                        font.pixelSize: 12
                                     }
 
-                                    Layout.fillWidth: true
-                                    Layout.fillHeight: true
+                                    Text {
+                                        id: moodPrimaryMonthCount
+                                        color: "#a1a1a1"
+                                        text: "34"
+                                        font.pixelSize: 12
+                                    }
+
+                                    Text {
+                                        id: moodPrimaryMonthStability
+                                        color: "#519D65"
+                                        text: "(стабильное настроение!)"
+                                        font.pixelSize: 11
+                                    }
+                                }
+                            }
+                        }
+
+                        Item {
+                            Layout.preferredWidth: parent.width * 0.8
+                            height: 120
+                            Layout.alignment: Qt.AlignHCenter
+
+                            Row {
+                                anchors.fill: parent
+                                spacing: 0
+
+                                Item {
+                                    width: parent.width * 0.5
+                                    height: parent.height * 0.9
+
+                                    Rectangle {
+                                        width: 66
+                                        height: 66
+                                        anchors.centerIn: parent
+                                        color: "#2D292C"
+                                        radius: 100
+                                    }
+
+                                    Image {
+                                        source: Utils.getIconPathById(iconModelMood, 1)
+                                        width: 50
+                                        height: 50
+                                        anchors.centerIn: parent
+                                    }
+
+                                    Text {
+                                        id: moodMidMonthCount
+                                        color: "#a1a1a1"
+                                        text: "1,2"
+                                        font.bold: true
+                                        font.pixelSize: 16
+                                        anchors.bottom: parent.bottom
+                                        //anchors.bottomMargin: 3
+                                        anchors.horizontalCenter: parent.horizontalCenter
+                                    }
+                                }
+
+                                Item {
+                                    width: parent.width * 0.5
+                                    height: parent.height * 0.7
+                                    anchors.verticalCenter: parent.verticalCenter
+
+                                    Text {
+                                        color: "#a1a1a1"
+                                        text: "Прошлый месяц"
+                                        font.pixelSize: 12
+                                        anchors.top: parent.top
+                                        anchors.horizontalCenter: parent.horizontalCenter
+                                    }
+
+                                    Image {
+                                        source: Utils.getIconPathById(iconModelMood, 3)
+                                        width: 30
+                                        height: 30
+                                        anchors.centerIn: parent
+                                    }
+
+                                    Text {
+                                        id: moodMidLastMonthCount
+                                        color: "#a1a1a1"
+                                        text: "1,2"
+                                        font.pixelSize: 14
+                                        anchors.bottom: parent.bottom
+                                        anchors.horizontalCenter: parent.horizontalCenter
+                                    }
+                                }
+                            }
+                        }
+
+                        Item {
+                            Layout.fillWidth: true
+                            height: 60
+                            Layout.alignment: Qt.AlignHCenter
+
+                            Row {
+                                id: iconRow
+                                anchors.horizontalCenter: parent.horizontalCenter
+                                spacing: 18
+
+                                Repeater {
+                                    model: iconModelMood
+                                    delegate: Item {
+                                        width: 30
+                                        height: 54
+
+                                        Image {
+                                            width: 30
+                                            height: width
+                                            anchors.horizontalCenter: parent.horizontalCenter
+                                            source: model.path
+                                            fillMode: Image.PreserveAspectFit
+                                        }
+
+                                        Text {
+                                            id: moodCount
+                                            color: "#a1a1a1"
+                                            text: "9"
+                                            font.bold: true
+                                            font.pixelSize: 14
+                                            anchors.bottom: parent.bottom
+                                            anchors.horizontalCenter: parent.horizontalCenter
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                Item {
+                    id: entryWeekPopular
+                    width: parent.width
+                    height: 300
+
+                    Rectangle {
+                        anchors.fill: parent
+                        color: "#2D292C"
+                    }
+
+                    ColumnLayout {
+                        anchors.fill: parent
+                        spacing: 0
+
+                        Item {
+                            Layout.preferredWidth: parent.width * 0.9
+                            height: 40
+                            Layout.alignment: Qt.AlignHCenter
+
+                            Column {
+                                height: 28
+                                width: parent.width
+                                anchors.bottom: parent.bottom
+
+                                Text {
+                                    color: "#d9d9d9"
+                                    text: "Среднее настроение по дням"
+                                    font.pixelSize: 16
+                                    font.bold: true
+                                }
+
+                                Row {
+                                    spacing: 4
+                                    anchors.left: parent.left
+
+                                    Text {
+                                        color: "#a1a1a1"
+                                        text: "Любимый день -"
+                                        font.pixelSize: 12
+                                    }
+
+                                    Text {
+                                        color: "#DA446A"
+                                        text: "понедельник!"
+                                        font.pixelSize: 12
+                                    }
+                                }
+                            }
+                        }
+
+                        ChartView {
+                            Layout.fillWidth: true
+                            Layout.preferredHeight: 200
+                            antialiasing: true
+
+                            BarSeries {
+                                id: mySeries
+                                axisX: BarCategoryAxis { categories: ["Пн", "Вт", "чт", "ср", "пт", "сб" ] }
+                                BarSet { values: [3, 6, 8, 1, 4, 1, 3] }
+                            }
+                        }
+                    }
+                }
+
+                Item {
+                    id: entryDayPopular
+                    width: parent.width
+                    height: 100
+
+                    ColumnLayout {
+                        anchors.fill: parent
+                        spacing: 0
+
+                        Item {
+                            Layout.preferredWidth: parent.width * 0.9
+                            height: 40
+                            Layout.alignment: Qt.AlignHCenter
+
+                            Column {
+                                height: 28
+                                width: parent.width
+                                anchors.bottom: parent.bottom
+
+                                Text {
+                                    color: "#d9d9d9"
+                                    text: "Самый насыщенный день"
+                                    font.pixelSize: 16
+                                    font.bold: true
+                                }
+
+                                Row {
+                                    spacing: 4
+                                    anchors.left: parent.left
+
+                                    Text {
+                                        color: "#a1a1a1"
+                                        text: "Вспомните события"
+                                        font.pixelSize: 12
+                                    }
+
+                                    Text {
+                                        color: "#DA446A"
+                                        text: "12 ферваля 2024!"
+                                        font.pixelSize: 12
+                                        font.bold: true
+                                    }
                                 }
                             }
                         }
@@ -321,5 +755,9 @@ Rectangle {
                     appearAnim.start();
             }
         }
+    }
+
+    IconModelMod {
+        id: iconModelMood
     }
 }
