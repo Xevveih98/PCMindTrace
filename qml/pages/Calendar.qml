@@ -227,9 +227,6 @@ Rectangle {
                         }
                     }
 
-
-
-
                     function updateDisplay() {
                         var monthName = monthsNom[selectedMonth - 1];
                         monthYearText.text = monthName + " " + selectedYear;
@@ -303,6 +300,7 @@ Rectangle {
                                         id: entryMonthTrend
                                         color: "#519D65"
                                         text: "(+12)"
+                                        font.bold: true
                                         font.pixelSize: 11
                                     }
                                 }
@@ -325,7 +323,7 @@ Rectangle {
                                 id: axisX
                                 min: 0.5
                                 max: 31.4
-                                color: "transparent"
+                                color: "#616161"
                                 tickType: ValueAxis.TicksDynamic
                                 tickAnchor: 1
                                 tickInterval: 3
@@ -452,6 +450,7 @@ Rectangle {
                                         id: moodPrimaryMonthStability
                                         color: "#519D65"
                                         text: "(стабильное настроение!)"
+                                        font.bold: true
                                         font.pixelSize: 11
                                     }
                                 }
@@ -488,10 +487,10 @@ Rectangle {
 
                                     Text {
                                         id: moodMidMonthCount
-                                        color: "#a1a1a1"
+                                        color: "#DA446A"
                                         text: "1,2"
                                         font.bold: true
-                                        font.pixelSize: 16
+                                        font.pixelSize: 18
                                         anchors.bottom: parent.bottom
                                         //anchors.bottomMargin: 3
                                         anchors.horizontalCenter: parent.horizontalCenter
@@ -573,11 +572,12 @@ Rectangle {
                 Item {
                     id: entryWeekPopular
                     width: parent.width
-                    height: 300
+                    height: 250
 
                     Rectangle {
                         anchors.fill: parent
                         color: "#2D292C"
+                        radius: 8
                     }
 
                     ColumnLayout {
@@ -614,6 +614,7 @@ Rectangle {
                                     Text {
                                         color: "#DA446A"
                                         text: "понедельник!"
+                                        font.bold: true
                                         font.pixelSize: 12
                                     }
                                 }
@@ -621,14 +622,70 @@ Rectangle {
                         }
 
                         ChartView {
+                            id: chart2
                             Layout.fillWidth: true
                             Layout.preferredHeight: 200
                             antialiasing: true
+                            legend.visible: false
+                            backgroundColor: "transparent"
+                            plotAreaColor: "#262326"
+                            clip: false
+
+                            BarCategoryAxis {
+                                id: axisXc
+                                categories: ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"]
+                                labelsColor: "#d9d9d9"
+                                gridVisible: false
+                                color: "#616161"
+                            }
+
+
+                            ValueAxis {
+                                id: axisYc
+                                min: 0.5
+                                max: 5.4
+                                color: "transparent"
+                                labelsVisible: true
+                                minorTickCount: 1
+                                tickCount: 5
+                                labelFormat: "%.0f"
+                                labelsColor: "#2D292C"
+                                gridVisible: false
+                                minorGridVisible: true
+                                minorGridLineColor: "#2D292C"
+                            }
 
                             BarSeries {
-                                id: mySeries
-                                axisX: BarCategoryAxis { categories: ["Пн", "Вт", "чт", "ср", "пт", "сб" ] }
-                                BarSet { values: [3, 6, 8, 1, 4, 1, 3] }
+                                axisX: axisXc
+                                axisY: axisYc
+
+                                BarSet {
+                                    values: [5, 5, 2, 5, 1, 4, 3]
+                                    borderWidth: 0
+                                    borderColor: "transparent"
+                                    color: "#DA446A"
+                                }
+                            }
+
+                            Column {
+                                id: iconsOverlay2
+                                height: parent.height
+                                anchors.left: chart2.left
+                                anchors.top: chart2.top
+                                anchors.leftMargin: 12
+                                anchors.topMargin: 28
+                                width: 40
+                                spacing: 0
+
+                                Repeater {
+                                    model: 3
+                                    delegate: Image {
+                                        property int idd: index + 1
+                                        source: Utils.getIconPathById(iconModelPlaces, idd)
+                                        width: 28
+                                        height: 28
+                                    }
+                                }
                             }
                         }
                     }
@@ -759,5 +816,12 @@ Rectangle {
 
     IconModelMod {
         id: iconModelMood
+    }
+
+    ListModel {
+        id: iconModelPlaces
+        ListElement { iconId: 1; path: "qrc:/images/best.png" }
+        ListElement { iconId: 2; path: "qrc:/images/second.png" }
+        ListElement { iconId: 3; path: "qrc:/images/third.png" }
     }
 }

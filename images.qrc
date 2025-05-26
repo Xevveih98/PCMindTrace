@@ -29,5 +29,8 @@
         <file alias="dashboardmenu.png">assets/images/dashboardmenu.png</file>
         <file alias="minus-circle.png">assets/images/minus-circle.png</file>
         <file alias="minus-circle-shade.png">assets/images/minus-circle-shade.png</file>
+        <file alias="best.png">assets/images/best.png</file>
+        <file alias="third.png">assets/images/third.png</file>
+        <file alias="second.png">assets/images/second.png</file>
     </qresource>
 </RCC>
