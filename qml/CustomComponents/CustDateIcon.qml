@@ -1,15 +1,24 @@
-import QtQuick 2.15
-import QtQuick.Controls
-import QtQuick.Layouts
-import CustomComponents
+import QtQuick
 
 Item {
-    width: 42
+    id: nerjl
+    width: 80
     height: 90
+
+    function clearIcons() {
+        for (let i = 0; i < idImages.length; i++) {
+            idImages[i].visible = false;
+        }
+    }
 
     required property var modelmonth
     required property int currentMonth
     required property var locale
+    property var idImages: [ko1, ko2, ko3]
+
+    function iconForIndex(moodId) {
+        return Utils.getIconPathById(iconModelMood, moodId);
+    }
 
     Rectangle {
         anchors.fill: parent
@@ -22,16 +31,30 @@ Item {
         spacing: 2
 
         Item {
-            width: 28
-            height: 23
+            width: 38
+            height: 30
+            anchors.horizontalCenter: parent.horizontalCenter
 
             Image {
-                width: 20
-                height: 20
-                anchors.centerIn: parent
-                source: modelmonth.month === currentMonth
-                        ? "qrc:/images/minus-circle.png"
-                        : "qrc:/images/minus-circle-shade.png"
+                id: ko3
+                width: parent.height; height: parent.height
+                x: 0
+                visible: false
+                z: 0
+            }
+            Image {
+                id: ko2
+                width: parent.height; height: parent.height
+                x: 3
+                visible: false
+                z: 1
+            }
+            Image {
+                id: ko1
+                width: parent.height; height: parent.height
+                x: 6
+                visible: false
+                z: 2
             }
         }
 
@@ -52,9 +75,11 @@ Item {
             let selectedDate = Qt.formatDate(modelmonth.date, "yyyy-MM-dd");
             console.log("Выбрана дата:", selectedDate);
             entriesUser.loadUserEntriesByDate(selectedDate);
-            var component = Qt.createComponent("qrc:/popups/popEntryFeedByDate.qml");
+            const component = Qt.createComponent("qrc:/popups/popEntryFeedByDate.qml");
             if (component.status === Component.Ready) {
-                var popup = component.createObject(parent);
+                const popup = component.createObject(parent, {
+                    datefromdg: selectedDate
+                    });
                 if (popup) {
                     popup.open();
                 } else {
@@ -64,5 +89,43 @@ Item {
                 console.error("Ошибка при загрузке компонента: " + component.errorString());
             }
         }
+    }
+
+    Connections {
+        target: entriesUser
+        function onMoodIdsLoadSuccess(moodIds, datet) {
+            const cellDate = Qt.formatDate(modelmonth.date, "yyyy-MM-dd");
+            if (datet !== cellDate)
+                return;
+
+            console.log(" | moodIds для даты", cellDate, ":", JSON.stringify(moodIds))
+
+            for (let i = 0; i < idImages.length; i++) {
+                idImages[i].visible = false;
+            }
+
+            if (!moodIds || moodIds.length === 0 || (moodIds.length === 1 && moodIds[0] === 0)) {
+                idImages[0].source = modelmonth.month === currentMonth
+                    ? "qrc:/images/minus-circle.png"
+                    : "qrc:/images/minus-circle-shade.png";
+                idImages[0].visible = true;
+                console.log(" | Пустая ячейка - нет записей");
+                return;
+            }
+
+            for (let i = 0; i < moodIds.length && i < idImages.length; i++) {
+                idImages[i].source = iconForIndex(moodIds[i]);
+                idImages[i].visible = true;
+            }
+        }
+    }
+
+    Component.onCompleted: {
+        const dateStr = Qt.formatDate(modelmonth.date, "yyyy-MM-dd");
+        entriesUser.loadUserEntriesMoodIdies(dateStr);
+    }
+
+    IconModelMod {
+        id: iconModelMood
     }
 }

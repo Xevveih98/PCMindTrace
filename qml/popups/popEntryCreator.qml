@@ -8,6 +8,8 @@ import CustomComponents 1.0
 Popup {
     property int selectedIconId: -1
     property var foldersList: []
+    property string startplace: "home"
+    property string olddate: "yyyy-mm-dd"
 
     id: managerPopup
     width: Screen.width * 0.93
@@ -131,11 +133,13 @@ Popup {
                 }
 
                 Text {
-                    text: Utils.formatTodayDate()
+                    id: entryDateTake
                     font.pixelSize: 11
                     anchors.right: parent.right
                     color: "#616161"
+                    text: startplace === "feed" ? olddate : Utils.formatTodayDate()
                 }
+
 
                 TextField {
                     id: entryHeader
@@ -687,7 +691,8 @@ Popup {
                                 selectedActivities: activityIds,
                                 selectedEmotions: emotionIds,
                                 parentPopup: managerPopup,
-                                foldersList: managerPopup.foldersList
+                                foldersList: managerPopup.foldersList,
+                                entryDateCreate: entryDateTake.text
                             });
 
                             if (popup) {

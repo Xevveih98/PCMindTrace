@@ -31,9 +31,6 @@ public:
     void setEntries(const QList<EntryUser> &entries);
     Q_INVOKABLE void clear();
     Q_INVOKABLE bool removeEntryById(int id);
-    Q_INVOKABLE QVariant get(int index) const;
-    Q_INVOKABLE QVariantList all() const;
-    Q_INVOKABLE QVariant getFirstEntryMood() const;
 
     int count() const { return m_entries.count(); }
 

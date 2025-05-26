@@ -6,7 +6,7 @@ import CustomComponents
 Popup {
     property var selectedEmotions: []
     signal emotionsConfirmed(var selectedEmotions)
-    property var foldersList: []
+    property string datefromdg
 
     id: managerPopup
     width: Screen.width * 0.93
@@ -77,7 +77,7 @@ Popup {
                                 activityItems: model.activities
                                 emotionItems: model.emotions
                                 entryId: model.id
-                                foldersList: managerPopup.foldersList
+                                foldersList: managerPopup.folderu
                             }
                             visible: entriesUser.dateSearchModel.count > 0
                         }
@@ -115,47 +115,49 @@ Popup {
                     }
                 }
             }
+        }
+    }
 
-            Rectangle {
-                id: buttAdmit
-                color: "#474448"
-                radius: 8
-                width: parent.width
-                height: 50
-                anchors {
-                    bottom: parent.bottom
-                    horizontalCenter: parent.horizontalCenter
-                }
+    Rectangle {
+        id: buttAdmit
+        color: "#474448"
+        radius: 8
+        width: parent.width
+        height: 50
+        anchors {
+            bottom: parent.bottom
+            horizontalCenter: parent.horizontalCenter
+        }
 
-                Text {
-                    text: "Добавить запись"
-                    font.pixelSize: 18
-                    color: "#D9D9D9"
-                    anchors.centerIn: parent
-                }
+        Text {
+            text: "Добавить запись"
+            font.pixelSize: 18
+            color: "#D9D9D9"
+            anchors.centerIn: parent
+        }
 
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: {
-                        model.iconId = 1;
-                        console.log("Выбран iconId:", model.iconId);
-                        var component = Qt.createComponent("qrc:/popups/popEntryCreator.qml");
-                        if (component.status === Component.Ready) {
-                            var popup = component.createObject(parent, {
-                                selectedIconId: model.iconId,
-                                foldersList: managerPopup.folderu
-                            });
-                            if (popup) {
-                                popup.open();
-                            } else {
-                                console.error("Не удалось создать объект попапа.");
-                            }
-                        } else if (component.status === Component.Error) {
-                            console.error("Ошибка при загрузке компонента: " + component.errorString());
-                        }
-                        managerPopup.close()
+        MouseArea {
+            anchors.fill: parent
+            onClicked: {
+                model.iconId = 1;
+                console.log("Выбран iconId:", model.iconId);
+                var component = Qt.createComponent("qrc:/popups/popEntryCreator.qml");
+                if (component.status === Component.Ready) {
+                    var popup = component.createObject(parent, {
+                        selectedIconId: model.iconId,
+                        foldersList: managerPopup.folderu,
+                        startplace: "feed",
+                        olddate: datefromdg
+                    });
+                    if (popup) {
+                        popup.open();
+                    } else {
+                        console.error("Не удалось создать объект попапа.");
                     }
+                } else if (component.status === Component.Error) {
+                    console.error("Ошибка при загрузке компонента: " + component.errorString());
                 }
+                managerPopup.close()
             }
         }
     }
@@ -166,7 +168,6 @@ Popup {
         target: foldersUser
         onFoldersLoadedSuccess: function(folders) {
             console.log("Данные загружены:", folders);
-
             folderu = folders;
         }
 

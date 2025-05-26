@@ -25,8 +25,6 @@ int main(int argc, char *argv[])
         &app,
         []() { QCoreApplication::exit(-1); },
         Qt::QueuedConnection);
-
-    //qmlRegisterType<EntryUserModel>("MyEntries", 1, 0, "EntryUserModel");
     qmlRegisterSingletonInstance("PCMindTrace", 1, 0, "AppSave", new AppSave);
     qmlRegisterSingletonType<CustomComponentsSingleton>("CustomComponents", 1, 0, "CustomComponents",
         [](QQmlEngine *, QJSEngine *) -> QObject * {

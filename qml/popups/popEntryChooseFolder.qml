@@ -9,6 +9,7 @@ Popup {
     property string entryContentText
     property int selectedMoodId
     property var selectedTags
+    property string entryDateCreate
     property var selectedActivities
     property var selectedEmotions
     property var parentPopup
@@ -134,7 +135,7 @@ Popup {
             anchors.fill: parent
             onClicked: {
                 console.log("Selected folder ID:", managerFolderPopup.selectedFolderId)
-                let entryDateToSave = (mode === "edit" && entryDate) ? entryDate : Utils.formatTodayDate();
+                let entryDateToSave = (mode === "edit" && entryDate) ? entryDate : entryDateCreate;
 
                 let entryData = {
                     title: entryHeaderText,

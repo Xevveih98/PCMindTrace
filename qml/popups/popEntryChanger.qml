@@ -15,6 +15,7 @@ Popup {
     property var emotionItems
     property int entryId
     property var foldersList: []
+    property int selectedIconId: entryMood
 
     id: managerPopup
     width: Screen.width * 0.93
@@ -65,7 +66,7 @@ Popup {
                     Image {
                         anchors.fill: parent
                         anchors.margins: 4
-                        source: Utils.getIconPathById(iconModelMood, managerPopup.entryMood)
+                        source: Utils.getIconPathById(iconModelMood, managerPopup.selectedIconId)
                         fillMode: Image.PreserveAspectFit
                     }
                 }
@@ -713,7 +714,7 @@ Popup {
                             entryHeaderText: entryHeader.text,
                             entryContentText: textEdit.text,
                             entryDate: managerPopup.entryDate,
-                            selectedMoodId: managerPopup.entryMood,
+                            selectedMoodId: managerPopup.selectedIconId,
                             selectedTags: tagIds,
                             selectedActivities: activityIds,
                             selectedEmotions: emotionIds,

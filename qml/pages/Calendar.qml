@@ -133,13 +133,23 @@ Rectangle {
                         }
                     }
 
+
+
+
                     function updateDisplay() {
                         var monthName = monthsNom[selectedMonth - 1];
                         monthYearText.text = monthName + " " + selectedYear;
                         rightArrowArea.enabled = !(selectedYear === today.getFullYear() && selectedMonth === (today.getMonth() + 1));
                         rightArrowImage.opacity = rightArrowArea.enabled ? 1.0 : 0.25;
                         rightArrowArea.cursorShape = rightArrowArea.enabled ? Qt.PointingHandCursor : Qt.ArrowCursor;
+                        var dateString = selectedYear + "-" +
+                                         (selectedMonth < 10 ? "0" + selectedMonth : selectedMonth) +
+                                         "-01";
+
+                        monthChanged(dateString);
+
                     }
+                    signal monthChanged(string dateString)
 
                     Component.onCompleted: updateDisplay()
                 }
@@ -156,8 +166,8 @@ Rectangle {
                         anchors.fill: parent
 
                         Item {
-                            width: parent.width * 0.9
-                            height: parent.height * 0.9
+                            width: parent.width * 0.95
+                            height: parent.height * 0.94
                             anchors.centerIn: parent
 
                             ColumnLayout {
@@ -186,13 +196,48 @@ Rectangle {
                                     month: monthSwitchButton.selectedMonth - 1
                                     year: monthSwitchButton.selectedYear
                                     locale: Qt.locale("ru_RU")
+                                    spacing: 0
+                                    background: Rectangle {
+                                        anchors.fill: parent
+                                        radius: 12
+                                        color: "#262326"
+                                    }
+
+
 
                                     delegate: CustDateIcon {
                                         modelmonth: model
                                         currentMonth: monthGrid.month
                                         locale: monthGrid.locale
-
                                         required property var model
+
+                                        Connections {
+                                            target: monthSwitchButton
+                                            function onMonthChanged(dateString) {
+                                                const dateStr = Qt.formatDate(model.date, "yyyy-MM-dd");
+                                                entriesUser.loadUserEntriesMoodIdies(dateStr);
+                                            }
+                                        }
+
+                                        function clearIcons() {
+                                            for (let i = 0; i < idImages.length; i++) {
+                                                idImages[i].visible = false;
+                                            }
+                                        }
+                                    }
+
+                                    Connections {
+                                        target: monthSwitchButton
+                                        function onMonthChanged(dateString) {
+                                            console.log("Выбран новый месяц:", dateString);
+
+                                            for (let i = 0; i < monthGrid.contentItem.children.length; i++) {
+                                                const cell = monthGrid.contentItem.children[i];
+                                                if (cell.clearIcons) {
+                                                    cell.clearIcons();
+                                                }
+                                            }
+                                        }
                                     }
 
                                     Layout.fillWidth: true
@@ -208,13 +253,12 @@ Rectangle {
                 if  (!flickable.refreshing && contentY <= -60) {
                     flickable.refreshing = true
                     console.log("Обновление данных...")
+                    monthSwitchButton.updateDisplay()
                     refreshPage()
                 }
             }
             function refreshPage() {
-
                 refreshResetTimer.start()
-
             }
 
             Timer {
@@ -277,9 +321,5 @@ Rectangle {
                     appearAnim.start();
             }
         }
-    }
-
-    IconModelMod {
-        id: iconModelMood
     }
 }

@@ -7,7 +7,7 @@ EntriesUser::EntriesUser(QObject *parent)
 {
     connect(&m_networkUser, &QNetworkAccessManager::finished, this, [=](QNetworkReply *reply) {
         QUrl endpoint = reply->request().url();
-        qDebug() << "Network reply received from:" << endpoint.toString();
+        //qDebug() << "Network reply received from:" << endpoint.toString();
 
         if (endpoint.path().contains("/saveentry")) {
             onEntrySaveReply(reply);
@@ -19,8 +19,8 @@ EntriesUser::EntriesUser(QObject *parent)
             onUserEntryFetchReply(reply);
         } else if (endpoint.path().contains("/searchentriesbydate")) {
             onUserEntryFetchReply(reply);
-        } else if (endpoint.path().contains("/searchentriesbymonth")) {
-            onUserEntryFetchReply(reply);
+        } else if (endpoint.path().contains("/getmoodidies")) {
+            onUserMoodIdsFetchReply(reply);
         } else {
             qWarning() << "Unhandled endpoint in EntriesUser:" << endpoint.toString();
             reply->deleteLater();
@@ -30,7 +30,6 @@ EntriesUser::EntriesUser(QObject *parent)
     m_entryUserModel = new EntryUserModel(this);
     m_searchModel = new EntryUserModel(this);
     m_dateSearchModel = new EntryUserModel(this);
-    m_monthSearchModel = new EntryUserModel(this);
     qDebug() << "EntriesUser initialized and connected to network manager.";
 }
 
@@ -193,9 +192,6 @@ void EntriesUser::onUserEntryFetchReply(QNetworkReply *reply)
         targetModel = m_searchModel;
     } else if (path.contains("/searchentriesbydate")) {
         targetModel = m_dateSearchModel;
-    } else if (path.contains("/searchentriesbymonth")) {
-        targetModel = m_monthSearchModel;
-        emit monthEntriesChanged();
     } else {
         qWarning() << "Unknown path in onUserEntryFetchReply:" << path;
         reply->deleteLater();
@@ -204,7 +200,7 @@ void EntriesUser::onUserEntryFetchReply(QNetworkReply *reply)
 
     if (reply->error() == QNetworkReply::NoError) {
         QByteArray response = reply->readAll();
-        qDebug() << "Entries loaded successfully."; /*Server response:" << QString::fromUtf8(response);*/
+        qDebug() << "Entries loaded successfully.";
 
         if (response.isEmpty()) {
             qWarning() << "Empty entry response received.";
@@ -345,14 +341,16 @@ void EntriesUser::loadUserEntriesByDate(const QString &date)
     QNetworkReply *reply = m_networkUser.post(request, data);
 }
 
-void EntriesUser::loadUserEntriesByMonth(const QString &date)
+//------------------------------ загрузка настроения -------------------------------
+
+void EntriesUser::loadUserEntriesMoodIdies(const QString &date)
 {
     AppSave appSave;
     QString login = appSave.getSavedLogin();
     qDebug() << "Ищем записи для пользователя:" << login
              << " | По дате:" << date;
 
-    QUrl serverUrl = AppConfig::apiUrl("/searchentriesbymonth");
+    QUrl serverUrl = AppConfig::apiUrl("/getmoodidies");
 
     QNetworkRequest request(serverUrl);
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
@@ -365,6 +363,34 @@ void EntriesUser::loadUserEntriesByMonth(const QString &date)
 
     QNetworkReply *reply = m_networkUser.post(request, data);
 }
+
+void EntriesUser::onUserMoodIdsFetchReply(QNetworkReply *reply)
+{
+    if (reply->error() != QNetworkReply::NoError) {
+        emit moodIdsLoadFailed(reply->errorString());
+        reply->deleteLater();
+        return;
+    }
+
+    QByteArray response = reply->readAll();
+    QJsonDocument doc = QJsonDocument::fromJson(response);
+    if (!doc.isObject()) {
+        emit moodIdsLoadFailed("Invalid JSON format");
+        reply->deleteLater();
+        return;
+    }
+
+    QJsonArray moodIdsArray = doc.object().value("moodIds").toArray();
+    QString date = doc.object().value("date").toString();
+    QList<int> moodIds;
+    for (const auto &val : moodIdsArray) {
+        if (val.isDouble())
+            moodIds.append(val.toInt());
+    }
+    emit moodIdsLoadSuccess(moodIds, date);
+    reply->deleteLater();
+}
+
 
 //-------------------------- удаление и изменение записи --------------------------
 
@@ -393,9 +419,11 @@ void EntriesUser::deleteUserEntry(int entryId)
             if (m_dateSearchModel->removeEntryById(entryId)) {
                 qDebug() << "Entry removed from local model.";
                 emit entryDeleted(entryId);
+                emit entryDeletedSucc();
             } else {
                 qWarning() << "Entry ID not found in local model.";
             }
+
         } else {
             qWarning() << "Failed to delete entry:" << reply->errorString();
         }
@@ -516,11 +544,6 @@ EntryUserModel* EntriesUser::dateSearchModel() const
     return m_dateSearchModel;
 }
 
-EntryUserModel* EntriesUser::monthSearchModel() const
-{
-    return m_monthSearchModel;
-}
-
 void EntriesUser::clearSearchModel() {
     if (m_searchModel) {
         m_searchModel->clear();
@@ -534,13 +557,3 @@ void EntriesUser::clearDateSearchModel() {
         emit dateSearchModelChanged();
     }
 }
-
-void EntriesUser::clearMonthSearchModel() {
-    if (m_monthSearchModel) {
-        m_monthSearchModel->clear();
-        emit monthSearchModelChanged();
-    }
-}
-
-
-
