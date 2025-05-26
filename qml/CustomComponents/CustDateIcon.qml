@@ -31,7 +31,7 @@ Item {
         spacing: 2
 
         Item {
-            width: 38
+            width: 40
             height: 30
             anchors.horizontalCenter: parent.horizontalCenter
 
@@ -45,14 +45,14 @@ Item {
             Image {
                 id: ko2
                 width: parent.height; height: parent.height
-                x: 3
+                x: 4
                 visible: false
                 z: 1
             }
             Image {
                 id: ko1
                 width: parent.height; height: parent.height
-                x: 6
+                x: 8
                 visible: false
                 z: 2
             }
@@ -103,11 +103,15 @@ Item {
             for (let i = 0; i < idImages.length; i++) {
                 idImages[i].visible = false;
             }
+            if (modelmonth.month !== currentMonth) {
+                idImages[0].source = "qrc:/images/minus-circle-shade.png";
+                idImages[0].visible = true;
+                console.log(" | Ячейка не текущего месяца — показываем заглушку");
+                return;
+            }
 
             if (!moodIds || moodIds.length === 0 || (moodIds.length === 1 && moodIds[0] === 0)) {
-                idImages[0].source = modelmonth.month === currentMonth
-                    ? "qrc:/images/minus-circle.png"
-                    : "qrc:/images/minus-circle-shade.png";
+                idImages[0].source = "qrc:/images/minus-circle.png";
                 idImages[0].visible = true;
                 console.log(" | Пустая ячейка - нет записей");
                 return;
@@ -119,6 +123,7 @@ Item {
             }
         }
     }
+
 
     Component.onCompleted: {
         const dateStr = Qt.formatDate(modelmonth.date, "yyyy-MM-dd");

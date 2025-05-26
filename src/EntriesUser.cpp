@@ -419,7 +419,6 @@ void EntriesUser::deleteUserEntry(int entryId)
             if (m_dateSearchModel->removeEntryById(entryId)) {
                 qDebug() << "Entry removed from local model.";
                 emit entryDeleted(entryId);
-                emit entryDeletedSucc();
             } else {
                 qWarning() << "Entry ID not found in local model.";
             }
