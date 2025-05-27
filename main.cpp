@@ -5,7 +5,6 @@
 #include <QDebug>
 #include <QFile>
 #include <QQmlContext>
-
 #include "src/AuthUser.h"
 #include "src/AppSave.h"
 #include "src/TodoUser.h"
@@ -14,6 +13,7 @@
 #include "src/CustomComponentsSingleton.h"
 #include "src/EntryUserModel.h"
 #include "src/EntriesUser.h"
+#include "src/ComputeUser.h"
 
 int main(int argc, char *argv[])
 {
@@ -41,9 +41,11 @@ int main(int argc, char *argv[])
     FoldersUser foldersUser;
     EntriesUser entriesUser;
     EntryUserModel entryUserModel;
-    EntryUserModel dateSearchModel;
-
-    engine.rootContext()->setContextProperty("dateSearchModel", &dateSearchModel);
+    ComputeUser computeUser;
+    engine.rootContext()->setContextProperty("entryCurrentMonthModel", computeUser.entryCurrentMonthModel());
+    engine.rootContext()->setContextProperty("entryLastMonthModel", computeUser.entryLastMonthModel());
+    engine.rootContext()->setContextProperty("computeUser", &computeUser);
+    engine.rootContext()->setContextProperty("dateSearchModel", entriesUser.dateSearchModel());
     engine.rootContext()->setContextProperty("entryUserModel", &entryUserModel);
     engine.rootContext()->setContextProperty("entriesUser", &entriesUser);
     engine.rootContext()->setContextProperty("authUser", &authUser);

@@ -83,8 +83,7 @@ EntryUser EntryUser::fromJson(const QJsonObject &obj)
     QVector<UserItem> activities = parseUserItemArray(obj.value("activities").toArray());
     QVector<UserItem> emotions = parseUserItemArray(obj.value("emotions").toArray());
 
-    qDebug() << "Создан EntryUser из JSON:"
-             << "ID:" << id;
+    //qDebug() << "Создан EntryUser из JSON ----- " << "ID:" << id << " | дата:" << date;
 
     return EntryUser(id, login, title, content, moodId, folderId, date, time, tags, activities, emotions);
 }

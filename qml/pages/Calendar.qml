@@ -8,6 +8,8 @@ Rectangle {
     id: pageCalendarScreen
     color: "#181718"
 
+    property int daysInMonth: 31
+
     CustPageHead {
         id: header
         headerWidth: parent.width
@@ -233,12 +235,16 @@ Rectangle {
                         rightArrowArea.enabled = !(selectedYear === today.getFullYear() && selectedMonth === (today.getMonth() + 1));
                         rightArrowImage.opacity = rightArrowArea.enabled ? 1.0 : 0.25;
                         rightArrowArea.cursorShape = rightArrowArea.enabled ? Qt.PointingHandCursor : Qt.ArrowCursor;
-                        var dateString = selectedYear + "-" +
-                                         (selectedMonth < 10 ? "0" + selectedMonth : selectedMonth) +
-                                         "-01";
 
-                        monthChanged(dateString);
+                        var monthKeyCurrent = Utils.formatMonthKey(selectedYear, selectedMonth);
+                        var prevInfo = Utils.getPreviousMonthKey(selectedYear, selectedMonth);
+                        var monthKeyLast = prevInfo.key;
 
+                        daysInMonth = Utils.getDaysInMonth(selectedYear, selectedMonth);
+                        console.log("Дней в месяце:", daysInMonth);
+
+                        monthChanged(monthKeyCurrent + "-01");
+                        computeUser.loadEntriesByMonth(monthKeyLast, monthKeyCurrent);
                     }
                     signal monthChanged(string dateString)
 
@@ -292,16 +298,22 @@ Rectangle {
                                     Text {
                                         id: entryMonthCount
                                         color: "#a1a1a1"
-                                        text: "123"
+                                        text: entryCurrentMonthModel.count
                                         font.pixelSize: 12
                                     }
 
                                     Text {
                                         id: entryMonthTrend
-                                        color: "#519D65"
-                                        text: "(+12)"
                                         font.bold: true
-                                        font.pixelSize: 11
+                                        font.pixelSize: 12
+                                        color: entryCurrentMonthModel.count >= entryLastMonthModel.count ? "#519D65" : "#D24D57"
+
+                                        text: {
+                                            var diff = entryCurrentMonthModel.count - entryLastMonthModel.count;
+                                            if (diff > 0) return "( +" + diff + " )";
+                                            if (diff < 0) return "( " + diff + " )";
+                                            return "( 0 )";
+                                        }
                                     }
                                 }
                             }
@@ -317,7 +329,8 @@ Rectangle {
                             backgroundColor: "transparent"
                             plotAreaColor: "#262326"
                             clip: false
-                            //animationOptions: ChartView.SeriesAnimations
+                            property int daysInMonth: 31
+                            animationOptions: ChartView.SeriesAnimations
 
                             ValueAxis {
                                 id: axisX
@@ -354,10 +367,17 @@ Rectangle {
                                 color: "#41414B"
                                 pointsVisible: false
                                 name: "Настроение (предыдущий месяц)"
-                                Component.onCompleted: {
-                                    for (var day = 1; day <= 31; day++) {
-                                        var mood = Math.floor(Math.random() * 4) + 1;
-                                        prevMoodSeries.append(day, mood);
+                                Connections {
+                                    target: entryLastMonthModel
+                                    onCountChanged: {
+                                        prevMoodSeries.clear();
+                                        var dayToMood = entryLastMonthModel.averageMoodByDay();
+                                        for (var day = 1; day <= daysInMonth; day++) {
+                                            var mood = dayToMood[day.toString()];
+                                            if (mood !== undefined) {
+                                                prevMoodSeries.append(day, mood);
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -369,13 +389,21 @@ Rectangle {
                                 axisY: axisY
                                 pointsVisible: true
                                 name: "Настроение"
-                                Component.onCompleted: {
-                                    for (var day = 1; day <= 31; day++) {
-                                        var mood = Math.floor(Math.random() * 5) + 1;
-                                        moodSeries.append(day, mood);
+                                Connections {
+                                    target: entryCurrentMonthModel
+                                    onCountChanged: {
+                                        moodSeries.clear();
+                                        var dayToMood = entryCurrentMonthModel.averageMoodByDay();
+                                        for (var day = 1; day <= daysInMonth; day++) {
+                                            var mood = dayToMood[day.toString()];
+                                            if (mood !== undefined) {
+                                                moodSeries.append(day, mood);
+                                            }
+                                        }
                                     }
                                 }
                             }
+
 
                             Column {
                                 id: iconsOverlay
@@ -405,6 +433,30 @@ Rectangle {
                     id: monthMerge
                     width: parent.width
                     height: 270
+
+                    property var moodStats: {}
+                    property var stats: {}
+
+                    Connections {
+                        target: entryCurrentMonthModel
+                        onCountChanged: {
+                            monthMerge.moodStats = entryCurrentMonthModel.calculateMoodStats();
+                            moodPrimaryMonthCount.text = monthMerge.moodStats.primaryCount;
+                            moodPrimaryMonthStability.text = monthMerge.moodStats.stabilityText;
+                            moodMidMonthCount.text = monthMerge.moodStats.avgMoodExact.toFixed(1);
+                            moodIcon.source = Utils.getIconPathById(iconModelMood, monthMerge.moodStats.avgMoodRounded);
+                            moodPrimaryMonthStability.color = monthMerge.moodStats.stabilityColor || "#519D65";
+                        }
+                    }
+
+                    Connections {
+                        target: entryLastMonthModel
+                        onCountChanged: {
+                            monthMerge.stats = entryLastMonthModel.calculateMoodStats();
+                            moodMidLastMonthCount.text = monthMerge.stats.avgMoodExact.toFixed(1);
+                            moodIconLastMonth.source = Utils.getIconPathById(iconModelMood, monthMerge.stats.avgMoodRounded);
+                        }
+                    }
 
                     ColumnLayout {
                         id: sfesfrrrrr
@@ -442,14 +494,14 @@ Rectangle {
                                     Text {
                                         id: moodPrimaryMonthCount
                                         color: "#a1a1a1"
-                                        text: "34"
+                                        text: "у"
                                         font.pixelSize: 12
                                     }
 
                                     Text {
                                         id: moodPrimaryMonthStability
                                         color: "#519D65"
-                                        text: "(стабильное настроение!)"
+                                        text: "у"
                                         font.bold: true
                                         font.pixelSize: 11
                                     }
@@ -479,7 +531,8 @@ Rectangle {
                                     }
 
                                     Image {
-                                        source: Utils.getIconPathById(iconModelMood, 1)
+                                        id: moodIcon
+                                        source: "qrc:/images/nonemo.png"
                                         width: 50
                                         height: 50
                                         anchors.centerIn: parent
@@ -492,7 +545,6 @@ Rectangle {
                                         font.bold: true
                                         font.pixelSize: 18
                                         anchors.bottom: parent.bottom
-                                        //anchors.bottomMargin: 3
                                         anchors.horizontalCenter: parent.horizontalCenter
                                     }
                                 }
@@ -511,7 +563,8 @@ Rectangle {
                                     }
 
                                     Image {
-                                        source: Utils.getIconPathById(iconModelMood, 3)
+                                        id: moodIconLastMonth
+                                        source: "qrc:/images/nonemo.png"
                                         width: 30
                                         height: 30
                                         anchors.centerIn: parent
@@ -530,6 +583,7 @@ Rectangle {
                         }
 
                         Item {
+                            id: moodStatsContainer
                             Layout.fillWidth: true
                             height: 60
                             Layout.alignment: Qt.AlignHCenter
@@ -539,30 +593,130 @@ Rectangle {
                                 anchors.horizontalCenter: parent.horizontalCenter
                                 spacing: 18
 
-                                Repeater {
-                                    model: iconModelMood
-                                    delegate: Item {
+                                // MoodId = 1
+                                Item {
+                                    width: 30
+                                    height: 54
+                                    Image {
+                                        id: icon1
                                         width: 30
-                                        height: 54
-
-                                        Image {
-                                            width: 30
-                                            height: width
-                                            anchors.horizontalCenter: parent.horizontalCenter
-                                            source: model.path
-                                            fillMode: Image.PreserveAspectFit
-                                        }
-
-                                        Text {
-                                            id: moodCount
-                                            color: "#a1a1a1"
-                                            text: "9"
-                                            font.bold: true
-                                            font.pixelSize: 14
-                                            anchors.bottom: parent.bottom
-                                            anchors.horizontalCenter: parent.horizontalCenter
-                                        }
+                                        height: width
+                                        anchors.horizontalCenter: parent.horizontalCenter
+                                        source: Utils.getIconPathById(iconModelMood, 1)
+                                        fillMode: Image.PreserveAspectFit
                                     }
+                                    Text {
+                                        id: count1
+                                        color: "#a1a1a1"
+                                        font.bold: true
+                                        font.pixelSize: 14
+                                        anchors.bottom: parent.bottom
+                                        anchors.horizontalCenter: parent.horizontalCenter
+                                        text: "0"
+                                    }
+                                }
+
+                                // MoodId = 2
+                                Item {
+                                    width: 30
+                                    height: 54
+                                    Image {
+                                        id: icon2
+                                        width: 30
+                                        height: width
+                                        anchors.horizontalCenter: parent.horizontalCenter
+                                        source: Utils.getIconPathById(iconModelMood, 2)
+                                        fillMode: Image.PreserveAspectFit
+                                    }
+                                    Text {
+                                        id: count2
+                                        color: "#a1a1a1"
+                                        font.bold: true
+                                        font.pixelSize: 14
+                                        anchors.bottom: parent.bottom
+                                        anchors.horizontalCenter: parent.horizontalCenter
+                                        text: "0"
+                                    }
+                                }
+
+                                // MoodId = 3
+                                Item {
+                                    width: 30
+                                    height: 54
+                                    Image {
+                                        id: icon3
+                                        width: 30
+                                        height: width
+                                        anchors.horizontalCenter: parent.horizontalCenter
+                                        source: Utils.getIconPathById(iconModelMood, 3)
+                                        fillMode: Image.PreserveAspectFit
+                                    }
+                                    Text {
+                                        id: count3
+                                        color: "#a1a1a1"
+                                        font.bold: true
+                                        font.pixelSize: 14
+                                        anchors.bottom: parent.bottom
+                                        anchors.horizontalCenter: parent.horizontalCenter
+                                        text: "0"
+                                    }
+                                }
+
+                                // MoodId = 4
+                                Item {
+                                    width: 30
+                                    height: 54
+                                    Image {
+                                        id: icon4
+                                        width: 30
+                                        height: width
+                                        anchors.horizontalCenter: parent.horizontalCenter
+                                        source: Utils.getIconPathById(iconModelMood, 4)
+                                        fillMode: Image.PreserveAspectFit
+                                    }
+                                    Text {
+                                        id: count4
+                                        color: "#a1a1a1"
+                                        font.bold: true
+                                        font.pixelSize: 14
+                                        anchors.bottom: parent.bottom
+                                        anchors.horizontalCenter: parent.horizontalCenter
+                                        text: "0"
+                                    }
+                                }
+
+                                // MoodId = 5
+                                Item {
+                                    width: 30
+                                    height: 54
+                                    Image {
+                                        id: icon5
+                                        width: 30
+                                        height: width
+                                        anchors.horizontalCenter: parent.horizontalCenter
+                                        source: Utils.getIconPathById(iconModelMood, 5)
+                                        fillMode: Image.PreserveAspectFit
+                                    }
+                                    Text {
+                                        id: count5
+                                        color: "#a1a1a1"
+                                        font.bold: true
+                                        font.pixelSize: 14
+                                        anchors.bottom: parent.bottom
+                                        anchors.horizontalCenter: parent.horizontalCenter
+                                        text: "0"
+                                    }
+                                }
+                            }
+
+                            Connections {
+                                target: entryCurrentMonthModel
+                                onCountChanged: {
+                                    count1.text = entryCurrentMonthModel.countMood(1);
+                                    count2.text = entryCurrentMonthModel.countMood(2);
+                                    count3.text = entryCurrentMonthModel.countMood(3);
+                                    count4.text = entryCurrentMonthModel.countMood(4);
+                                    count5.text = entryCurrentMonthModel.countMood(5);
                                 }
                             }
                         }
@@ -612,10 +766,19 @@ Rectangle {
                                     }
 
                                     Text {
+                                        id: lovday
                                         color: "#DA446A"
                                         text: "понедельник!"
                                         font.bold: true
                                         font.pixelSize: 12
+                                    }
+
+                                    Connections {
+                                        target: entryCurrentMonthModel
+                                        onCountChanged: {
+                                            var res = entryCurrentMonthModel.averageMoodByWeekday();
+                                            lovday.text = res.bestDay + "!";
+                                        }
                                     }
                                 }
                             }
@@ -660,10 +823,20 @@ Rectangle {
                                 axisY: axisYc
 
                                 BarSet {
-                                    values: [5, 5, 2, 5, 1, 4, 3]
+                                    id: moodBarSet
                                     borderWidth: 0
                                     borderColor: "transparent"
                                     color: "#DA446A"
+                                    values: moodValues
+                                    property var moodValues: []
+                                }
+
+                                Connections {
+                                    target: entryCurrentMonthModel
+                                    onCountChanged: {
+                                        var vals = entryCurrentMonthModel.averageMoodByWeekday();
+                                        moodBarSet.moodValues = vals.averages;
+                                    }
                                 }
                             }
 
@@ -675,15 +848,15 @@ Rectangle {
                                 anchors.leftMargin: 12
                                 anchors.topMargin: 28
                                 width: 40
-                                spacing: 0
+                                spacing: 10
 
                                 Repeater {
-                                    model: 3
+                                    model: 5
                                     delegate: Image {
                                         property int idd: index + 1
-                                        source: Utils.getIconPathById(iconModelPlaces, idd)
-                                        width: 28
-                                        height: 28
+                                        source: Utils.getIconPathById(iconModelMood, idd)
+                                        width: 18
+                                        height: 18
                                     }
                                 }
                             }
@@ -694,7 +867,7 @@ Rectangle {
                 Item {
                     id: entryDayPopular
                     width: parent.width
-                    height: 100
+                    height: 70
 
                     ColumnLayout {
                         anchors.fill: parent
@@ -728,13 +901,75 @@ Rectangle {
                                     }
 
                                     Text {
+                                        id: daydateo
                                         color: "#DA446A"
                                         text: "12 ферваля 2024!"
                                         font.pixelSize: 12
                                         font.bold: true
                                     }
+
+                                    Connections {
+                                        target: entryCurrentMonthModel
+                                        onCountChanged: {
+                                            var richo = entryCurrentMonthModel.dateWithMostEntries();
+                                            daydateo.text = richo.formattedDate;
+                                        }
+                                    }
                                 }
                             }
+                        }
+                    }
+                }
+
+                Column {
+                    id: entryColumn
+                    width: parent.width
+                    spacing: 10
+
+                    Repeater {
+                        model: entriesUser.dateSearchModel
+                        delegate: CustEntrBlok {
+                            width: entryColumn.width
+                            entryTitle: model.title
+                            entryContent: model.content
+                            entryDate: model.date
+                            entryTime: model.time
+                            entryMood: model.moodId
+                            tagItems: model.tags
+                            activityItems: model.activities
+                            emotionItems: model.emotions
+                            entryId: model.id
+                        }
+                        visible: entriesUser.dateSearchModel.count > 0
+                    }
+                }
+
+                Item {
+                    Layout.fillWidth: true
+                    height: 80
+                    visible: entriesUser.dateSearchModel.count === 0
+
+                    Column {
+                        spacing: 8
+                        width: parent.width
+
+                        Image {
+                            width: 60
+                            height: 60
+                            source: "qrc:/images/noentries.png"
+                            fillMode: Image.PreserveAspectFit
+                            anchors.horizontalCenter: parent.horizontalCenter
+                        }
+
+                        Text {
+                            id: emptyText
+                            text: "Записи не найдены.."
+                            font.italic: true
+                            font.bold: true
+                            font.pixelSize: 14
+                            color: "#616161"
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            visible: entriesUser.dateSearchModel.count === 0
                         }
                     }
                 }
@@ -811,6 +1046,16 @@ Rectangle {
                 if (flickable.refreshing)
                     appearAnim.start();
             }
+        } 
+    }
+
+    Connections {
+        target: entryCurrentMonthModel
+        onCountChanged: {
+            var richoraw = entryCurrentMonthModel.dateWithMostEntries();
+            var datetoload = richoraw.rawDate;
+            console.log("ПЕРЕДАВАЕМАЯ ДАТА (через Connections):", datetoload);
+            entriesUser.loadUserEntriesByDate(datetoload);
         }
     }
 

@@ -7,4 +7,5 @@ ListModel {
     ListElement { iconId: 3; path: "qrc:/images/econfused.png" }
     ListElement { iconId: 4; path: "qrc:/images/eupset.png" }
     ListElement { iconId: 5; path: "qrc:/images/etear.png" }
+    //ListElement { iconId: 6; path: "qrc:/images/nonemo.png" }
 }
