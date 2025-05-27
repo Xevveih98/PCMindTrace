@@ -433,7 +433,7 @@ Rectangle {
                 Item {
                     id: monthMerge
                     width: parent.width
-                    height: 270
+                    height: 280
 
                     property var moodStats: {}
                     property var stats: {}
@@ -442,7 +442,6 @@ Rectangle {
                         target: entryCurrentMonthModel
                         onCountChanged: {
                             monthMerge.moodStats = entryCurrentMonthModel.calculateMoodStats();
-                            moodPrimaryMonthCount.text = monthMerge.moodStats.primaryCount;
                             moodPrimaryMonthStability.text = monthMerge.moodStats.stabilityText;
                             moodMidMonthCount.text = monthMerge.moodStats.avgMoodExact.toFixed(1);
                             moodIcon.source = Utils.getIconPathById(iconModelMood, monthMerge.moodStats.avgMoodRounded);
@@ -465,6 +464,7 @@ Rectangle {
                         spacing: 0
 
                         Item {
+                            id: apperw
                             Layout.preferredWidth: parent.width * 0.9
                             height: 40
                             Layout.alignment: Qt.AlignHCenter
@@ -487,24 +487,13 @@ Rectangle {
                                     anchors.left: parent.left
 
                                     Text {
-                                        color: "#a1a1a1"
-                                        text: "Записей с этим настроением:"
-                                        font.pixelSize: 12
-                                    }
-
-                                    Text {
-                                        id: moodPrimaryMonthCount
-                                        color: "#a1a1a1"
-                                        text: "у"
-                                        font.pixelSize: 12
-                                    }
-
-                                    Text {
                                         id: moodPrimaryMonthStability
                                         color: "#519D65"
                                         text: "у"
                                         font.bold: true
                                         font.pixelSize: 11
+                                        wrapMode: Text.Wrap
+                                        width: apperw.width
                                     }
                                 }
                             }
@@ -512,7 +501,7 @@ Rectangle {
 
                         Item {
                             Layout.preferredWidth: parent.width * 0.8
-                            height: 120
+                            height: 110
                             Layout.alignment: Qt.AlignHCenter
 
                             Row {
@@ -541,10 +530,10 @@ Rectangle {
 
                                     Text {
                                         id: moodMidMonthCount
-                                        color: "#DA446A"
+                                        color: "#f1f1f1"
                                         text: "1,2"
                                         font.bold: true
-                                        font.pixelSize: 18
+                                        font.pixelSize: 16
                                         anchors.bottom: parent.bottom
                                         anchors.horizontalCenter: parent.horizontalCenter
                                     }

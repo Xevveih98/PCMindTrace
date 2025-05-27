@@ -167,12 +167,12 @@ QVariantMap EntryUserModel::calculateMoodStats() const
     }
 
     int sumMood = 0;
-    QMap<int, int> moodCounts; // moodId -> количество
-    QVector<int> moods; // для дисперсии
+    QMap<int, int> moodCounts;
+    QVector<int> moods;
 
     for (int i = 0; i < count; ++i) {
         QModelIndex idx = index(i, 0);
-        int mood = data(idx, MoodIdRole).toInt(); // RoleMoodId — роль для moodId, нужно заменить на твою роль
+        int mood = data(idx, MoodIdRole).toInt();
         sumMood += mood;
         moodCounts[mood]++;
         moods.append(mood);
@@ -190,31 +190,76 @@ QVariantMap EntryUserModel::calculateMoodStats() const
     variance /= count;
     double stddev = sqrt(variance);
 
-    QString stabilityText;
-     QString stabilityColor;
+    int veryGood = moodCounts.value(1, 0);
+    int good = moodCounts.value(2, 0);
+    int neutral = moodCounts.value(3, 0);
+    int bad = moodCounts.value(4, 0);
+    int veryBad = moodCounts.value(5, 0);
 
-    if (stddev < 0.5) {
-        stabilityText = "(очень стабильное настроение!)";
-        stabilityColor = "#3CB371";
-    } else if (stddev < 1.35) {
-        stabilityText = "(стабильное настроение!)";
-        stabilityColor = "#519D65";
-    } else if (stddev < 2.5) {
-        stabilityText = "(настроение колеблется)";
-        stabilityColor = "#D2691E";
+    QStringList summaryList;
+    QString stabilityColor;
+
+    if (avgMood <= 2.0 && veryBad <= 2) {
+        summaryList << "Месяц прошёл спокойно.";
+        stabilityColor = "#5ACC78";
+    } else if (avgMood >= 4.0 && veryGood <= 2) {
+        summaryList << "Месяц был тяжёлым.";
+        stabilityColor = "#C04753";
+    } else if (stddev < 0.8) {
+        summaryList << "Настроение было стабильным.";
+        stabilityColor = "#8AB195";
+    } else if (stddev < 1.5) {
+        summaryList << "Настроение немного колебалось.";
+        stabilityColor = "#D4C447";
     } else {
-        stabilityText = "(настроение сильно нестабильное)";
-        stabilityColor = "#B22222";
+        summaryList << "Настроение сильно менялось.";
+        stabilityColor = "#D47947";
     }
+
+    double veryGoodRatio = static_cast<double>(veryGood) / count;
+    double veryBadRatio = static_cast<double>(veryBad) / count;
+    double neutralRatio = static_cast<double>(neutral) / count;
+    double dominantMoodRatio = static_cast<double>(primaryCount) / count;
+
+    // Более тонкий анализ
+    if (veryBadRatio >= 0.5)
+        summaryList << "Плохое настроение преобладало.";
+    else if (veryBadRatio >= 0.35)
+        summaryList << "Плохое настроение было частым.";
+
+    if (veryGoodRatio >= 0.5)
+        summaryList << "Хорошее настроение преобладало.";
+    else if (veryGoodRatio >= 0.35)
+        summaryList << "Хорошее настроение было частым.";
+
+    if (neutralRatio >= 0.6)
+        summaryList << "Настроение было в основном нейтральным.";
+
+    if (dominantMoodRatio >= 0.5)
+        summaryList << "Преобладало одно настроение.";
+
+    // Использовались ли почти все типы настроения
+    int moodTypesUsed = 0;
+    for (int i = 1; i <= 5; ++i) {
+        if (moodCounts.value(i, 0) > 0)
+            moodTypesUsed++;
+    }
+    if (moodTypesUsed <= 2)
+        summaryList << "Настроение менялось редко.";
+
+    // Почти не было нейтрального
+    if (neutralRatio < 0.1 && (veryGood + good + bad + veryBad) >= count * 0.9)
+        summaryList << "Настроение колебалось между крайностями.";
 
     result["avgMoodRounded"] = avgMoodRounded;
     result["avgMoodExact"] = avgMood;
     result["primaryCount"] = primaryCount;
-    result["stabilityText"] = stabilityText;
+    result["stabilityText"] = summaryList.join(" ");
     result["stabilityColor"] = stabilityColor;
 
     return result;
 }
+
 
 int EntryUserModel::countMood(int moodId) const
 {
@@ -228,6 +273,9 @@ int EntryUserModel::countMood(int moodId) const
     return count;
 }
 
+
+
+
 QVariantMap EntryUserModel::averageMoodByWeekday() const
 {
     QVector<double> sums(7, 0.0);
@@ -239,45 +287,94 @@ QVariantMap EntryUserModel::averageMoodByWeekday() const
             continue;
 
         int index = date.dayOfWeek() - 1;
-        sums[index] += entry.getMoodId();
+        int invertedMood = 6 - entry.getMoodId(); // Инверсия: 1 (лучшее) → 5, 5 (худшее) → 1
+        sums[index] += invertedMood;
         counts[index] += 1;
     }
 
-    // Считаем averages по порядку (для графика)
-    QVariantList averages;
-    for (int i = 0; i < 7; ++i) {
-        double avg = counts[i] > 0 ? sums[i] / counts[i] : 0.0;
-        averages.append(avg);
-    }
-
-    // Используем отдельную переменную для поиска лучших дней
     QVector<QPair<int, double>> indexedAverages;
     for (int i = 0; i < 7; ++i) {
         double avg = counts[i] > 0 ? sums[i] / counts[i] : -1.0;
         indexedAverages.append(qMakePair(i, avg));
     }
 
-    std::sort(indexedAverages.begin(), indexedAverages.end(), [](const QPair<int, double> &a, const QPair<int, double> &b) {
+    // Отфильтруем дни с данными (avg >= 0)
+    QVector<QPair<int, double>> validAverages;
+    for (const auto& pair : indexedAverages) {
+        if (pair.second >= 0.0)
+            validAverages.append(pair);
+    }
+
+    // Если нет данных — возвращаем сразу с -1 для всех
+    if (validAverages.isEmpty()) {
+        QVariantList emptyAverages;
+        for (int i = 0; i < 7; ++i)
+            emptyAverages.append(-1.0);
+
+        QVariantMap result;
+        result["averages"] = emptyAverages;
+        result["bestDayIndex"] = -1;
+        result["secondDayIndex"] = -1;
+        result["thirdDayIndex"] = -1;
+        result["bestDay"] = QString("");
+        result["secondDay"] = QString("");
+        result["thirdDay"] = QString("");
+        return result;
+    }
+
+    // Сортируем валидные по возрастанию для нормализации
+    std::sort(validAverages.begin(), validAverages.end(), [](const QPair<int, double> &a, const QPair<int, double> &b) {
+        return a.second < b.second;
+    });
+
+    // Применяем минимальный интервал 0.3
+    for (int i = 1; i < validAverages.size(); ++i) {
+        double prev = validAverages[i - 1].second;
+        double &curr = validAverages[i].second;
+
+        if (curr - prev < 0.3)
+            curr = prev + 0.3;
+    }
+
+    // Ограничиваем значения по диапазону [0.5, 5.4]
+    for (auto &pair : validAverages) {
+        pair.second = std::clamp(pair.second, 0.5, 5.4);
+    }
+
+    // Создаём итоговый массив adjusted с -1 по умолчанию
+    QVector<double> adjusted(7, -1.0);
+    for (const auto &pair : validAverages) {
+        adjusted[pair.first] = pair.second;
+    }
+
+    QVariantList averages;
+    for (double val : adjusted) {
+        averages.append(val);
+    }
+
+    // Находим топ-3 среди дней с валидными значениями
+    QVector<QPair<int, double>> sortedForBest;
+    for (int i = 0; i < 7; ++i) {
+        if (adjusted[i] >= 0.0)
+            sortedForBest.append(qMakePair(i, adjusted[i]));
+    }
+
+    std::sort(sortedForBest.begin(), sortedForBest.end(), [](const QPair<int, double> &a, const QPair<int, double> &b) {
         return a.second > b.second;
     });
 
-    bool hasValidData = indexedAverages[0].second >= 0;
-
-    int bestIndex = hasValidData ? indexedAverages[0].first : -1;
-    int secondIndex = (hasValidData && indexedAverages.size() > 1 && indexedAverages[1].second >= 0) ? indexedAverages[1].first : -1;
-    int thirdIndex = (hasValidData && indexedAverages.size() > 2 && indexedAverages[2].second >= 0) ? indexedAverages[2].first : -1;
-
-    static const char* dayNames[7] = {
-        "понедельник",
-        "вторник",
-        "среда",
-        "четверг",
-        "пятница",
-        "суббота",
-        "воскресенье"
+    auto getValidIndex = [&](int pos) -> int {
+        return (sortedForBest.size() > pos) ? sortedForBest[pos].first : -1;
     };
 
+    int bestIndex = getValidIndex(0);
+    int secondIndex = getValidIndex(1);
+    int thirdIndex = getValidIndex(2);
 
+    static const char* dayNames[7] = {
+        "понедельник", "вторник", "среда",
+        "четверг", "пятница", "суббота", "воскресенье"
+    };
 
     QVariantMap result;
     result["averages"] = averages;
@@ -290,6 +387,9 @@ QVariantMap EntryUserModel::averageMoodByWeekday() const
 
     return result;
 }
+
+
+
 
 
 
