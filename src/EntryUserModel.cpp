@@ -238,26 +238,35 @@ QVariantMap EntryUserModel::averageMoodByWeekday() const
         if (!date.isValid())
             continue;
 
-        int dayOfWeek = date.dayOfWeek();
-        int index = dayOfWeek - 1;
-
+        int index = date.dayOfWeek() - 1;
         sums[index] += entry.getMoodId();
         counts[index] += 1;
     }
 
+    // Считаем averages по порядку (для графика)
     QVariantList averages;
-    double maxAverage = -1.0;
-    int bestIndex = -1;
-
     for (int i = 0; i < 7; ++i) {
         double avg = counts[i] > 0 ? sums[i] / counts[i] : 0.0;
         averages.append(avg);
-
-        if (avg > maxAverage) {
-            maxAverage = avg;
-            bestIndex = i;
-        }
     }
+
+    // Используем отдельную переменную для поиска лучших дней
+    QVector<QPair<int, double>> indexedAverages;
+    for (int i = 0; i < 7; ++i) {
+        double avg = counts[i] > 0 ? sums[i] / counts[i] : -1.0;
+        indexedAverages.append(qMakePair(i, avg));
+    }
+
+    std::sort(indexedAverages.begin(), indexedAverages.end(), [](const QPair<int, double> &a, const QPair<int, double> &b) {
+        return a.second > b.second;
+    });
+
+    bool hasValidData = indexedAverages[0].second >= 0;
+
+    int bestIndex = hasValidData ? indexedAverages[0].first : -1;
+    int secondIndex = (hasValidData && indexedAverages.size() > 1 && indexedAverages[1].second >= 0) ? indexedAverages[1].first : -1;
+    int thirdIndex = (hasValidData && indexedAverages.size() > 2 && indexedAverages[2].second >= 0) ? indexedAverages[2].first : -1;
+
     static const char* dayNames[7] = {
         "понедельник",
         "вторник",
@@ -268,12 +277,21 @@ QVariantMap EntryUserModel::averageMoodByWeekday() const
         "воскресенье"
     };
 
+
+
     QVariantMap result;
     result["averages"] = averages;
+    result["bestDayIndex"] = bestIndex;
+    result["secondDayIndex"] = secondIndex;
+    result["thirdDayIndex"] = thirdIndex;
     result["bestDay"] = (bestIndex >= 0) ? QString(dayNames[bestIndex]) : QString("");
+    result["secondDay"] = (secondIndex >= 0) ? QString(dayNames[secondIndex]) : QString("");
+    result["thirdDay"] = (thirdIndex >= 0) ? QString(dayNames[thirdIndex]) : QString("");
 
     return result;
 }
+
+
 
 QVariantMap EntryUserModel::dateWithMostEntries() const
 {
@@ -290,10 +308,11 @@ QVariantMap EntryUserModel::dateWithMostEntries() const
     QVariantMap result;
     if (dateCounts.isEmpty()) {
         qDebug() << "dateCounts is empty!";
-        result["formattedDate"] = "";
+        result["formattedDate"] = "... которых в этом месяце не было!";
         result["rawDate"] = "";
         return result;
     }
+
 
     QDate bestDate;
     int maxCount = 0;

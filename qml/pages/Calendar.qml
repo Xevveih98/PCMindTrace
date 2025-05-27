@@ -98,6 +98,7 @@ Rectangle {
                                             function onMonthChanged(dateString) {
                                                 const dateStr = Qt.formatDate(model.date, "yyyy-MM-dd");
                                                 entriesUser.loadUserEntriesMoodIdies(dateStr);
+                                                entriesUser.clearDateSearchModel()
                                             }
                                         }
 
@@ -471,7 +472,7 @@ Rectangle {
                             Column {
                                 height: 28
                                 width: parent.width
-                                anchors.bottom: parent.bottom //anchors.verticalCenter: parent.verticalCenter
+                                anchors.bottom: parent.bottom
 
                                 Text {
                                     id: han
@@ -592,8 +593,6 @@ Rectangle {
                                 id: iconRow
                                 anchors.horizontalCenter: parent.horizontalCenter
                                 spacing: 18
-
-                                // MoodId = 1
                                 Item {
                                     width: 30
                                     height: 54
@@ -615,8 +614,6 @@ Rectangle {
                                         text: "0"
                                     }
                                 }
-
-                                // MoodId = 2
                                 Item {
                                     width: 30
                                     height: 54
@@ -639,7 +636,6 @@ Rectangle {
                                     }
                                 }
 
-                                // MoodId = 3
                                 Item {
                                     width: 30
                                     height: 54
@@ -726,7 +722,7 @@ Rectangle {
                 Item {
                     id: entryWeekPopular
                     width: parent.width
-                    height: 250
+                    height: 260
 
                     Rectangle {
                         anchors.fill: parent
@@ -862,6 +858,71 @@ Rectangle {
                             }
                         }
                     }
+
+                    Connections {
+                        target: entryCurrentMonthModel
+                        onCountChanged: {
+                            var result = entryCurrentMonthModel.averageMoodByWeekday();
+                            iconsOverlay3.bestIndex = result.bestDayIndex !== undefined ? result.bestDayIndex : -1;
+                            console.log("Обновлён bestIndex:", iconsOverlay3.bestIndex);
+                        }
+                    }
+
+
+                    GridView {
+                        id: iconsOverlay3
+                        width: parent.width
+                        height: 28
+                        anchors.left: entryWeekPopular.left
+                        anchors.bottom: entryWeekPopular.bottom
+                        anchors.leftMargin: 54
+                        anchors.bottomMargin: 6
+
+                        cellWidth: 26 + 18
+                        cellHeight: 28
+                        model: 7
+                        interactive: false
+                        flow: GridView.FlowLeftToRight
+
+                        // Индексы топ-3 дней
+                        property int bestIndex: -1
+                        property int secondIndex: -1
+                        property int thirdIndex: -1
+
+                        delegate: Image {
+                            width: 26
+                            height: 26
+
+                            // Проверяем текущий index и подбираем правильный iconId
+                            property int iconId: {
+                                if (index === iconsOverlay3.bestIndex) return 1;
+                                if (index === iconsOverlay3.secondIndex) return 2;
+                                if (index === iconsOverlay3.thirdIndex) return 3;
+                                return -1;
+                            }
+
+                            visible: iconId > 0
+                            source: visible ? Utils.getIconPathById(iconModelPlaces, iconId) : ""
+
+                            onVisibleChanged: {
+                                if (visible) {
+                                    console.log("Показываем иконку", iconId, "под днём недели:", index);
+                                }
+                            }
+                        }
+
+                        Connections {
+                            target: entryCurrentMonthModel
+                            onCountChanged: {
+                                var result = entryCurrentMonthModel.averageMoodByWeekday();
+                                iconsOverlay3.bestIndex = result.bestDayIndex !== undefined ? result.bestDayIndex : -1;
+                                iconsOverlay3.secondIndex = result.secondDayIndex !== undefined ? result.secondDayIndex : -1;
+                                iconsOverlay3.thirdIndex = result.thirdDayIndex !== undefined ? result.thirdDayIndex : -1;
+
+                                console.log("TOP-3 дни недели:", iconsOverlay3.bestIndex, iconsOverlay3.secondIndex, iconsOverlay3.thirdIndex);
+                            }
+                        }
+                    }
                 }
 
                 Item {
@@ -912,7 +973,7 @@ Rectangle {
                                         target: entryCurrentMonthModel
                                         onCountChanged: {
                                             var richo = entryCurrentMonthModel.dateWithMostEntries();
-                                            daydateo.text = richo.formattedDate;
+                                            daydateo.text = richo.formattedDate + "!";
                                         }
                                     }
                                 }
@@ -942,34 +1003,34 @@ Rectangle {
                         }
                         visible: entriesUser.dateSearchModel.count > 0
                     }
-                }
 
-                Item {
-                    Layout.fillWidth: true
-                    height: 80
-                    visible: entriesUser.dateSearchModel.count === 0
-
-                    Column {
-                        spacing: 8
+                    Item {
                         width: parent.width
+                        height: 80
+                        visible: entriesUser.dateSearchModel.count === 0
 
-                        Image {
-                            width: 60
-                            height: 60
-                            source: "qrc:/images/noentries.png"
-                            fillMode: Image.PreserveAspectFit
-                            anchors.horizontalCenter: parent.horizontalCenter
-                        }
+                        Column {
+                            spacing: 8
+                            width: parent.width
 
-                        Text {
-                            id: emptyText
-                            text: "Записи не найдены.."
-                            font.italic: true
-                            font.bold: true
-                            font.pixelSize: 14
-                            color: "#616161"
-                            anchors.horizontalCenter: parent.horizontalCenter
-                            visible: entriesUser.dateSearchModel.count === 0
+                            Image {
+                                width: 60
+                                height: 60
+                                source: "qrc:/images/noentries.png"
+                                fillMode: Image.PreserveAspectFit
+                                anchors.horizontalCenter: parent.horizontalCenter
+                            }
+
+                            Text {
+                                id: emptyText
+                                text: "Записи не найдены.."
+                                font.italic: true
+                                font.bold: true
+                                font.pixelSize: 14
+                                color: "#616161"
+                                anchors.horizontalCenter: parent.horizontalCenter
+                                visible: entriesUser.dateSearchModel.count === 0
+                            }
                         }
                     }
                 }
@@ -1054,7 +1115,6 @@ Rectangle {
         onCountChanged: {
             var richoraw = entryCurrentMonthModel.dateWithMostEntries();
             var datetoload = richoraw.rawDate;
-            console.log("ПЕРЕДАВАЕМАЯ ДАТА (через Connections):", datetoload);
             entriesUser.loadUserEntriesByDate(datetoload);
         }
     }
