@@ -95,7 +95,7 @@ Popup {
                 CustTxtFldEr {
                     id: regNewPass
                     width: oberInputFieldsEmpty.width
-                    placeholderText: "Введите новый пароль"
+                    placeholderText: "Придумайте новый пароль"
                     maximumLength: 64
                     errorText: "* Ошибка"
                     errorVisible: false
@@ -126,61 +126,17 @@ Popup {
         MouseArea {
             anchors.fill: parent
             onClicked: {
-                let hasError = false
-                if (regOldPass.text.trim().length === 0) {
-                    regOldPass.triggerErrorAnimation()
-                    VibrationUtils.vibrate(200)
-                    hasError = true
+                let hasEmptyError = false;
+                let hasFormatError = false;
+                hasEmptyError = Utils.validateEmptyField(regOldPass) || hasEmptyError;
+                hasEmptyError = Utils.validateEmptyField(regNewPass) || hasEmptyError;
+                hasEmptyError = Utils.validateEmptyField(regNewPassCheck) || hasEmptyError;
+                if (!hasEmptyError) {
+                    hasFormatError = Utils.validateEmailField(regOldPass) || hasFormatError;
+                    hasFormatError = Utils.validatePasswordField(regNewPass) || hasFormatError;
+                    hasFormatError = Utils.validatePasswordMatch(regNewPass, regNewPassCheck) || hasFormatError;
                 }
-
-                let password = regNewPass.text.trim()
-                let errors = []
-                if (password.length === 0) {
-                    regNewPass.triggerErrorAnimation()
-                    VibrationUtils.vibrate(200)
-                    hasError = true
-                } else {
-                    if (/[а-яА-ЯёЁ]/.test(password)) {
-                        errors.push("* Пароль не должен содержать русские буквы")
-                    }
-                    if (!/[a-zA-Z]/.test(password)) {
-                        errors.push("* Пароль должен содержать хотя бы одну латинскую букву")
-                    }
-                    if (!/[-&]/.test(password)) {
-                        errors.push("* Пароль должен содержать хотя бы один спецсимвол: '-' или '&'")
-                    }
-                    if (password.length < 8) {
-                        errors.push("* Пароль должен содержать минимум 8 символов")
-                    }
-
-                    if (errors.length > 0) {
-                        regNewPass.errorText = errors.join("<br>")
-                        regNewPass.errorVisible = true
-                        regNewPass.triggerErrorAnimation()
-                        VibrationUtils.vibrate(200)
-                        hasError = true
-                    } else {
-                        regNewPass.errorVisible = false
-                    }
-                }
-
-                if (regNewPassCheck.text.trim().length === 0) {
-                    regNewPassCheck.triggerErrorAnimation()
-                    VibrationUtils.vibrate(200)
-                    hasError = true
-                }
-
-                if (regNewPass.text.trim() !== regNewPassCheck.text.trim()) {
-                    regNewPassCheck.errorText = "* Пароли не совпадают"
-                    regNewPassCheck.errorVisible = true
-                    regNewPassCheck.triggerErrorAnimation()
-                    VibrationUtils.vibrate(200)
-                    hasError = true
-                } else {
-                    regNewPassCheck.errorVisible = false
-                }
-
-                if (!hasError) {
+                if (!hasEmptyError && !hasFormatError) {
                     authUser.changePassword(regOldPass.text, regNewPass.text);
                 }
             }

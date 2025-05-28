@@ -38,6 +38,12 @@ Item {
                 radius: 0
             }
             padding: 10
+            onTextChanged: {
+                if (root.errorVisible && text.trim().length > 0) {
+                    root.errorVisible = false
+                    root.errorText = ""
+                }
+            }
 
             Text {
                 id: custPlaceholder

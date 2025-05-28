@@ -15,6 +15,8 @@ AuthUser::AuthUser(QObject *parent)
             onLoginReply(reply);
         } else if (endpoint.path().contains("/changepassword")) {
             onPasswordChangeReply(reply);
+        } else if (endpoint.path().contains("/recoverpassword")) {
+            onPasswordRecoverReply(reply);
         } else if (endpoint.path().contains("/changemail")) {
             onEmailChangeReply(reply);
         } else {
@@ -135,6 +137,73 @@ void AuthUser::onLoginReply(QNetworkReply *reply)
         emit loginSuccess();
     } else {
         emit loginFailed(loginError, passwordError);
+    }
+
+    reply->deleteLater();
+}
+
+//----------- восттановление пароля --------
+
+void AuthUser::recoverPassword(const QString &email, const QString &newPassword)
+{
+    qDebug() << "Изменение пароля для пользователя " << email.trimmed() <<" with:";
+    qDebug() << "  newPassword:" << newPassword.trimmed();
+
+    QUrl serverUrl = AppConfig::apiUrl("/recoverpassword");
+
+    QNetworkRequest request(serverUrl);
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+
+    QJsonObject json;
+    json["email"] = email.trimmed();
+    json["newPassword"] = newPassword.trimmed();
+
+    QJsonDocument doc(json);
+    QByteArray data = doc.toJson();
+
+    QNetworkReply *reply = m_networkManager.post(request, data);
+}
+
+void AuthUser::onPasswordRecoverReply(QNetworkReply *reply)
+{
+    qDebug() << "[AuthUser] onPasswordRecoverReply called";
+    AppSave appSave;
+
+    const QByteArray responseData = reply->readAll();
+    QJsonParseError parseError;
+    const QJsonDocument jsonDoc = QJsonDocument::fromJson(responseData, &parseError);
+
+    if (parseError.error != QJsonParseError::NoError) {
+        const QString errorMsg = "Ошибка парсинга JSON: " + parseError.errorString();
+        qWarning() << "[AuthUser] JSON parse error:" << parseError.errorString();
+        emit passwordRecoverFailed(errorMsg);
+        reply->deleteLater();
+        return;
+    }
+
+    if (!jsonDoc.isObject()) {
+        const QString errorMsg = "Неверный формат ответа сервера. Ожидался объект JSON.";
+        qWarning() << "[AuthUser] Invalid JSON format";
+        emit passwordRecoverFailed(errorMsg);
+        reply->deleteLater();
+        return;
+    }
+
+    const QJsonObject json = jsonDoc.object();
+    const QString status = json.value("status").toString();
+    const QString message = json.value("message").toString("Неизвестная ошибка");
+
+    if (status == "ok") {
+        const QString login = json.value("login").toString();
+        const QString email = json.value("email").toString();
+
+        qDebug() << "[AuthUser] Password recovery successful for login:" << login << ", email:" << email;
+
+        appSave.saveUser(login, email);
+        emit passwordRecoverSuccess();
+    } else {
+        qWarning() << "[AuthUser] Password recovery failed:" << message;
+        emit passwordRecoverFailed(message);
     }
 
     reply->deleteLater();

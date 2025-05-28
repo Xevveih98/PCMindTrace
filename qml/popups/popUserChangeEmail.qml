@@ -77,25 +77,12 @@ Popup {
         MouseArea {
             anchors.fill: parent
             onClicked: {
-                let hasError = false
-                let email = regEmail.text.trim()
-                if (email.length === 0) {
-                    regEmail.triggerErrorAnimation()
-                    VibrationUtils.vibrate(200)
-                    hasError = true
-                } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-                    regEmail.errorText = "* Некорректный формат email"
-                    regEmail.errorVisible = true
-                    regEmail.triggerErrorAnimation()
-                    VibrationUtils.vibrate(200)
-                    hasError = true
-                } else {
-                    regEmail.errorVisible = false
-                }
-
-                if (!hasError) {
-                    authUser.changeEmail(regEmail.text)
-                    exitPopup.close();
+                let hasEmptyError = false;
+                let hasFormatError = false;
+                hasEmptyError = Utils.validateEmptyField(regEmail) || hasEmptyError;
+                if (!hasEmptyError) {hasFormatError = Utils.validateEmailField(regEmail) || hasFormatError;}
+                if (!hasEmptyError && !hasFormatError) {
+                    authUser.changeEmail(regEmail.text); exitPopup.close();
                 }
             }
         }

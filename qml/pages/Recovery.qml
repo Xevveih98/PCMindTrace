@@ -58,10 +58,10 @@ Rectangle {
 
             Column {
                 anchors.fill: parent
-                spacing: 20
+                spacing: 6
 
                 Column {
-                    spacing: 5
+                    spacing: 3
 
                     Text {
                         text: "Почта"
@@ -69,117 +69,61 @@ Rectangle {
                         color: "#D9D9D9"
                     }
 
-                    TextField {
-                        id: regEmail
+                    CustTxtFldEr {
+                        id: regEnail
                         width: oberInputFieldsEmpty.width
-                        height: 30
-                        font.pixelSize: 11
-                        color: "#D9D9D9"
-                        maximumLength: 120
-                        wrapMode: Text.NoWrap
-                        horizontalAlignment: TextInput.AlignLeft
-                        verticalAlignment: TextInput.AlignVCenter
-                        background: Rectangle {
-                            color: "#292729"
-                            border.color: "#4D4D4D"
-                            border.width: 1
-                            radius: 0
-                        }
-                        padding: 10
+                        placeholderText: "Введите вашу почту"
+                        maximumLength: 64
+                        errorText: "* Ошибка"
+                        errorVisible: false
 
-                        Text {
-                            anchors.fill: regEmail
-                            anchors.margins: 10
-                            font.pixelSize: 11
-                            text: "Введите почту аккаунта"
-                            color: "#4d4d4d"
-                            verticalAlignment: Text.AlignVCenter
-                            horizontalAlignment: Text.AlignLeft
-                            opacity: (!regEmail.text && !regEmail.activeFocus) ? 1.0 : 0.0
-                            Behavior on opacity { NumberAnimation { duration: 150 } }
+                        Connections {
+                            target: authUser
+                            onPasswordRecoverFailed: function(message) {
+                                regEnail.errorText = message
+                                regEnail.errorVisible = true
+                                regEnail.triggerErrorAnimation()
+                                VibrationUtils.vibrate(200)
+                                console.log("СООБЩЕНИЕ", message)
+                            }
                         }
                     }
                 }
 
                 Column {
-                    spacing: 5
+                    spacing: 3
+
                     Text {
-                        text: "Придумайте новый пароль"
+                        text: "Проверка"
                         font.pixelSize: 12
                         color: "#D9D9D9"
                     }
 
-                    TextField {
-                        id: regPassword
+                    CustTxtFldEr {
+                        id: regNewPassCheck
                         width: oberInputFieldsEmpty.width
-                        height: 30
-                        font.pixelSize: 6
-                        color: "#D9D9D9"
+                        placeholderText: "Повторно введите новый пароль"
                         maximumLength: 64
-                        wrapMode: Text.NoWrap
-                        echoMode: TextInput.Password
-                        horizontalAlignment: TextInput.AlignLeft
-                        verticalAlignment: TextInput.AlignVCenter
-                        background: Rectangle {
-                            color: "#292729"
-                            border.color: "#4D4D4D"
-                            border.width: 1
-                            radius: 0
-                        }
-                        padding: 10
-
-                        Text {
-                            anchors.fill: regPassword
-                            anchors.margins: 10
-                            font.pixelSize: 11
-                            text: "Придумайте новый пароль"
-                            color: "#4d4d4d"
-                            verticalAlignment: Text.AlignVCenter
-                            horizontalAlignment: Text.AlignLeft
-                            opacity: (!regPassword.text && !regPassword.activeFocus) ? 1.0 : 0.0
-                            Behavior on opacity { NumberAnimation { duration: 150 } }
-                        }
+                        errorText: "* Ошибка"
+                        errorVisible: false
                     }
                 }
 
                 Column {
-                    spacing: 5
+                    spacing: 3
                     Text {
-                        text: "Повторите новый пароль"
+                        text: "Новый пароль"
                         font.pixelSize: 12
                         color: "#D9D9D9"
                     }
 
-                    TextField {
-                        id: regPasswordCheck
+                    CustTxtFldEr {
+                        id: regNewPass
                         width: oberInputFieldsEmpty.width
-                        height: 30
-                        font.pixelSize: 6
-                        color: "#D9D9D9"
+                        placeholderText: "Придумайте новый пароль"
                         maximumLength: 64
-                        wrapMode: Text.NoWrap
-                        echoMode: TextInput.Password
-                        horizontalAlignment: TextInput.AlignLeft
-                        verticalAlignment: TextInput.AlignVCenter
-                        background: Rectangle {
-                            color: "#292729"
-                            border.color: "#4D4D4D"
-                            border.width: 1
-                            radius: 0
-                        }
-                        padding: 10
-
-                        Text {
-                            anchors.fill: regPasswordCheck
-                            anchors.margins: 10
-                            font.pixelSize: 11
-                            text: "Повторите новый пароль"
-                            color: "#4d4d4d"
-                            verticalAlignment: Text.AlignVCenter
-                            horizontalAlignment: Text.AlignLeft
-                            opacity: (!regPasswordCheck.text && !regPasswordCheck.activeFocus) ? 1.0 : 0.0
-                            Behavior on opacity { NumberAnimation { duration: 150 } }
-                        }
+                        errorText: "* Ошибка"
+                        errorVisible: false
                     }
                 }
             }
@@ -222,7 +166,19 @@ Rectangle {
         MouseArea {
             anchors.fill: buttPassCheck
             onClicked: {
-               authUser.changePassword(regEmail.text, regPassword.text, regPasswordCheck.text)
+                let hasEmptyError = false;
+                let hasFormatError = false;
+                hasEmptyError = Utils.validateEmptyField(regEnail) || hasEmptyError;
+                hasEmptyError = Utils.validateEmptyField(regNewPass) || hasEmptyError;
+                hasEmptyError = Utils.validateEmptyField(regNewPassCheck) || hasEmptyError;
+                if (!hasEmptyError) {
+                    hasFormatError = Utils.validateEmailField(regEnail) || hasFormatError;
+                    hasFormatError = Utils.validatePasswordField(regNewPass) || hasFormatError;
+                    hasFormatError = Utils.validatePasswordMatch(regNewPass, regNewPassCheck) || hasFormatError;
+                }
+                if (!hasEmptyError && !hasFormatError) {
+                    authUser.recoverPassword(regEnail.text, regNewPass.text);
+                }
             }
         }
     }
@@ -243,8 +199,8 @@ Rectangle {
         Text {
             text: "Вернуться."
             font.pixelSize: 14
-            color: "#957EBD"
-            font.underline: true
+            color: "#DA446A"
+            font.bold: true
             MouseArea {
                 anchors.fill: parent
                 onClicked: (parent.StackView.view || stackViewAuthWindow).pop()

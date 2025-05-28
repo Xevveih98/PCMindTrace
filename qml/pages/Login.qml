@@ -146,19 +146,10 @@ Rectangle {
         MouseArea {
             anchors.fill: buttAuthCheck
             onClicked: {
-                let hasError = false
-                if (regLogin.text.trim().length === 0) {
-                    regLogin.triggerErrorAnimation()
-                    VibrationUtils.vibrate(200)
-                    hasError = true
-                }
-                if (regPassword.text.trim().length === 0) {
-                    regPassword.triggerErrorAnimation()
-                    VibrationUtils.vibrate(200)
-                    hasError = true
-                }
-
-                if (!hasError) {
+                let hasEmptyError = false;
+                hasEmptyError = Utils.validateEmptyField(regLogin) || hasEmptyError;
+                hasEmptyError = Utils.validateEmptyField(regPassword) || hasEmptyError;
+                if (!hasEmptyError) {
                     authUser.loginUser(regLogin.text, regPassword.text)
                 }
             }

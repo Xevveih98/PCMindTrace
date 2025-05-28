@@ -53,6 +53,17 @@ Window {
             })
         }
     }
+
+    Connections {
+        target: authUser
+        onPasswordRecoverSuccess: {
+            Qt.callLater(function() {
+                notify.notificationTitle = "Аккаунт восстановлен!"
+                notify.triggerAnimation()
+                pageLoader.source = "qrc:/pages/mainContent.qml";
+            })
+        }
+    }
 }
 
 

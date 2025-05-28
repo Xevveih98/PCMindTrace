@@ -167,63 +167,17 @@ Rectangle {
         MouseArea {
             anchors.fill: buttAuthCreateCheck
             onClicked: {
-                let hasError = false
-
-                if (regLogin.text.trim().length === 0) {
-                    regLogin.triggerErrorAnimation()
-                    VibrationUtils.vibrate(200)
-                    hasError = true
+                let hasEmptyError = false;
+                let hasFormatError = false;
+                hasEmptyError = Utils.validateEmptyField(regLogin) || hasEmptyError;
+                hasEmptyError = Utils.validateEmptyField(regEmail) || hasEmptyError;
+                hasEmptyError = Utils.validateEmptyField(regPassword) || hasEmptyError;
+                if (!hasEmptyError) {
+                    hasFormatError = Utils.validateEmailField(regEmail) || hasFormatError;
+                    hasFormatError = Utils.validatePasswordField(regPassword) || hasFormatError;
                 }
-
-                let email = regEmail.text.trim()
-                if (email.length === 0) {
-                    regEmail.triggerErrorAnimation()
-                    VibrationUtils.vibrate(200)
-                    hasError = true
-                } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-                    regEmail.errorText = "* Некорректный формат email"
-                    regEmail.errorVisible = true
-                    regEmail.triggerErrorAnimation()
-                    VibrationUtils.vibrate(200)
-                    hasError = true
-                } else {
-                    regEmail.errorVisible = false
-                }
-
-                let password = regPassword.text.trim()
-                let errors = []
-
-                if (password.length === 0) {
-                    regPassword.triggerErrorAnimation()
-                    VibrationUtils.vibrate(200)
-                    hasError = true
-                } else {
-                    if (/[а-яА-ЯёЁ]/.test(password)) {
-                        errors.push("* Пароль не должен содержать русские буквы")
-                    }
-                    if (!/[a-zA-Z]/.test(password)) {
-                        errors.push("* Пароль должен содержать хотя бы одну латинскую букву")
-                    }
-                    if (!/[-&]/.test(password)) {
-                        errors.push("* Пароль должен содержать хотя бы один спецсимвол: '-' или '&'")
-                    }
-                    if (password.length < 8) {
-                        errors.push("* Пароль должен содержать минимум 8 символов")
-                    }
-
-                    if (errors.length > 0) {
-                        regPassword.errorText = errors.join("<br>")
-                        regPassword.errorVisible = true
-                        regPassword.triggerErrorAnimation()
-                        VibrationUtils.vibrate(200)
-                        hasError = true
-                    } else {
-                        regPassword.errorVisible = false
-                    }
-                }
-
-                if (!hasError) {
-                    authUser.registerUser(regLogin.text, regEmail.text, password)
+                if (!hasEmptyError && !hasFormatError) {
+                    authUser.registerUser(regLogin.text.trim(), regEmail.text.trim(), regPassword.text.trim())
                 }
             }
         }
