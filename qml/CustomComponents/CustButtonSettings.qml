@@ -6,7 +6,6 @@ Item {
     width: buttonWidth
     height: 36
 
-    // Настраиваемая ширина кнопки
     property int buttonWidth: 120
     property string buttonText: "Button"
     property url iconSource: ""
@@ -80,7 +79,7 @@ Item {
             onClicked: {
                 if (popupTarget !== "") {
                     popupLoader.active = false
-                    popupLoader.active = true  // перезагрузка при повторных нажатиях
+                    popupLoader.active = true
                 }
                 wrapper.clicked()
             }

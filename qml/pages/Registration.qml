@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import PCMindTrace 1.0
+import CustomComponents
 
 Rectangle {
     id: pageRegistration
@@ -9,7 +10,9 @@ Rectangle {
     Row {
         id: rowRegHeader
         spacing: 10
+        height: 70
         anchors.horizontalCenter: parent.horizontalCenter
+
         Column {
             spacing: 5
 
@@ -42,33 +45,23 @@ Rectangle {
         id: recInputFieldsBG
         color: "#2D292C"
         width: parent.width
-        height: parent.height * 0.36
+        height: 280
         radius: 8
         z: 2
-        anchors {
-            top: rowRegHeader.bottom
-            topMargin: 10
-        }
+        anchors.top: rowRegHeader.bottom
 
         Item {
             id: oberInputFieldsEmpty
-            width: parent.width
-            height: parent.height
-            anchors{
-                top: parent.top
-                left: parent.left
-                topMargin: parent.height * 0.14
-                leftMargin: parent.width * 0.08
-                horizontalCenter: parent.horizontalCenter
-                verticalCenter: parent.verticalCenter
-            }
+            width: parent.width * 0.88
+            height: parent.height * 0.8
+            anchors.centerIn: parent
 
             Column {
                 anchors.fill: parent
-                spacing: 12
+                spacing: 6
 
                 Column {
-                    spacing: 6
+                    spacing: 3
 
                     Text {
                         text: "Логин"
@@ -76,83 +69,62 @@ Rectangle {
                         color: "#D9D9D9"
                     }
 
-                    TextField {
+                    CustTxtFldEr {
                         id: regLogin
                         width: oberInputFieldsEmpty.width
-                        height: 30
-                        font.pixelSize: 11
-                        color: "#D9D9D9"
-                        placeholderText: ""
-                        maximumLength: 120
-                        wrapMode: Text.NoWrap
-                        horizontalAlignment: TextInput.AlignLeft
-                        verticalAlignment: TextInput.AlignVCenter
-                        background: Rectangle {
-                            color: "#292729"
-                            border.color: "#4D4D4D"
-                            border.width: 1
-                            radius: 0
+                        placeholderText: "Введите логин"
+                        maximumLength: 64
+                        errorText: "* Ошибка"
+                        errorVisible: false
+                    }
+
+                    Connections {
+                        target: authUser
+                        onRegistrationFailed: function(message) {
+                            regLogin.errorText = message
+                            regLogin.errorVisible = true
+                            regLogin.triggerErrorAnimation()
+                            VibrationUtils.vibrate(200)
+                            console.log("СООБЩЕНИЕ", message)
                         }
-                        padding: 10
                     }
                 }
 
                 Column {
-                    spacing: 6
+                    spacing: 3
+
                     Text {
                         text: "Почта"
                         font.pixelSize: 12
                         color: "#D9D9D9"
                     }
 
-                    TextField {
+                    CustTxtFldEr {
                         id: regEmail
                         width: oberInputFieldsEmpty.width
-                        height: 30
-                        font.pixelSize: 11
-                        color: "#D9D9D9"
-                        placeholderText: ""
-                        maximumLength: 120
-                        wrapMode: Text.NoWrap
-                        horizontalAlignment: TextInput.AlignLeft
-                        verticalAlignment: TextInput.AlignVCenter
-                        background: Rectangle {
-                            color: "#292729"
-                            border.color: "#4D4D4D"
-                            border.width: 1
-                            radius: 0
-                        }
-                        padding: 10
+                        placeholderText: "Введите почту"
+                        maximumLength: 64
+                        errorText: "* Ошибка"
+                        errorVisible: false
                     }
                 }
 
                 Column {
-                    spacing: 6
+                    spacing: 3
                     Text {
                         text: "Пароль"
                         font.pixelSize: 12
                         color: "#D9D9D9"
                     }
 
-                    TextField {
+                    CustTxtFldEr {
                         id: regPassword
                         width: oberInputFieldsEmpty.width
-                        height: 30
-                        font.pixelSize: 6
-                        color: "#D9D9D9"
-                        //placeholderText: ""
+                        placeholderText: "Придумайте пароль"
                         maximumLength: 64
-                        wrapMode: Text.NoWrap
-                        echoMode: TextInput.Password
-                        horizontalAlignment: TextInput.AlignLeft
-                        verticalAlignment: TextInput.AlignVCenter
-                        background: Rectangle {
-                            color: "#292729"
-                            border.color: "#4D4D4D"
-                            border.width: 1
-                            radius: 0
-                        }
-                        padding: 10
+                        errorText: ""
+                        errorVisible: false
+
                     }
                 }
             }
@@ -176,7 +148,7 @@ Rectangle {
         color: "#474448"
         radius: 8
         width: parent.width
-        height: parent.height * 0.070
+        height: 50
         z: 1
         anchors {
             top: recHideline.bottom
@@ -189,15 +161,73 @@ Rectangle {
            color: "#D9D9D9"
            anchors.horizontalCenter: parent.horizontalCenter
            anchors.top: parent.top
-           anchors.topMargin: 20
+           anchors.topMargin: 18
         }
 
         MouseArea {
             anchors.fill: buttAuthCreateCheck
             onClicked: {
-               authUser.registerUser(regLogin.text, regEmail.text, regPassword.text)
+                let hasError = false
+
+                if (regLogin.text.trim().length === 0) {
+                    regLogin.triggerErrorAnimation()
+                    VibrationUtils.vibrate(200)
+                    hasError = true
+                }
+
+                let email = regEmail.text.trim()
+                if (email.length === 0) {
+                    regEmail.triggerErrorAnimation()
+                    VibrationUtils.vibrate(200)
+                    hasError = true
+                } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                    regEmail.errorText = "* Некорректный формат email"
+                    regEmail.errorVisible = true
+                    regEmail.triggerErrorAnimation()
+                    VibrationUtils.vibrate(200)
+                    hasError = true
+                } else {
+                    regEmail.errorVisible = false
+                }
+
+                let password = regPassword.text.trim()
+                let errors = []
+
+                if (password.length === 0) {
+                    regPassword.triggerErrorAnimation()
+                    VibrationUtils.vibrate(200)
+                    hasError = true
+                } else {
+                    if (/[а-яА-ЯёЁ]/.test(password)) {
+                        errors.push("* Пароль не должен содержать русские буквы")
+                    }
+                    if (!/[a-zA-Z]/.test(password)) {
+                        errors.push("* Пароль должен содержать хотя бы одну латинскую букву")
+                    }
+                    if (!/[-&]/.test(password)) {
+                        errors.push("* Пароль должен содержать хотя бы один спецсимвол: '-' или '&'")
+                    }
+                    if (password.length < 8) {
+                        errors.push("* Пароль должен содержать минимум 8 символов")
+                    }
+
+                    if (errors.length > 0) {
+                        regPassword.errorText = errors.join("<br>")
+                        regPassword.errorVisible = true
+                        regPassword.triggerErrorAnimation()
+                        VibrationUtils.vibrate(200)
+                        hasError = true
+                    } else {
+                        regPassword.errorVisible = false
+                    }
+                }
+
+                if (!hasError) {
+                    authUser.registerUser(regLogin.text, regEmail.text, password)
+                }
             }
         }
+
     }
 
     Row {
@@ -216,57 +246,11 @@ Rectangle {
         Text {
             text: "Войдите."
             font.pixelSize: 14
-            color: "#957EBD"
-            font.underline: true
+            color: "#DA446A"
+            font.bold: true
             MouseArea {
                 anchors.fill: parent
                 onClicked: (parent.StackView.view || stackViewAuthWindow).push("Login.qml")
-            }
-        }
-    }
-
-    Item {
-        id: iemgog
-        width: parent.width
-        height: parent.height * 0.061
-        anchors {
-            top: rowAuthLoginOffer.bottom
-            topMargin: parent.height * 0.2
-            left: rowAuthLoginOffer.left
-        }
-
-        Item {
-            id: imgGoogleIcon
-            width: 62
-            height: 62
-            anchors.left: parent.left
-            anchors.verticalCenter: parent.verticalCenter
-            z: 2
-            Image {
-               anchors.fill: parent
-               source: "qrc:/images/GoogleIcon.png"
-               fillMode: Image.PreserveAspectFit
-            }
-        }
-
-        Rectangle {
-            id: buttgog
-            color: "#474448"
-            radius: 8
-            width: parent.width - 24
-            height: parent.height
-            anchors.left: parent.left
-            anchors.leftMargin: 12
-            anchors.verticalCenter: parent.verticalCenter
-            z:1
-
-            Text {
-               text: "Войти через аккаунт Google"
-               font.pixelSize: 16
-               color: "#D9D9D9"
-               anchors.left: parent.left
-               anchors.leftMargin: 62
-               anchors.verticalCenter: parent.verticalCenter
             }
         }
     }

@@ -4,12 +4,12 @@ import PCMindTrace 1.0
 
 Popup {
     id: exitPopup
-    width: Screen.width * 0.66
-    height: Screen.height * 0.12
+    width: Screen.width * 0.9
+    height: 140
     modal: true
     padding: 0
     focus: true
-    dim: true  // автоматическое затемнение заднего фона
+    dim: true
     closePolicy: Popup.CloseOnPressOutside | Popup.CloseOnEscape
     anchors.centerIn: Overlay.overlay
     Overlay.modal: Rectangle {
@@ -18,7 +18,7 @@ Popup {
     }
     background: Rectangle {
         color: "#2D292C"
-        radius: 10
+        radius: 8
         border.color: "#474448"
         border.width: 1
     }

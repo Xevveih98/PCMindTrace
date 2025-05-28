@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import PCMindTrace 1.0
+import CustomComponents
 
 Rectangle {
     id: pageRecovery
@@ -9,7 +10,9 @@ Rectangle {
     Row {
         id: rowAuthHeader
         spacing: 10
+        height: 70
         anchors.horizontalCenter: parent.horizontalCenter
+
         Column {
             spacing: 5
 
@@ -42,33 +45,23 @@ Rectangle {
         id: recInputFieldsBG
         color: "#2D292C"
         width: parent.width
-        height: parent.height * 0.36
+        height: 280
         radius: 8
         z: 2
-        anchors {
-            top: rowAuthHeader.bottom
-            topMargin: 10
-        }
+        anchors.top: rowAuthHeader.bottom
 
         Item {
             id: oberInputFieldsEmpty
-            width: parent.width
-            height: parent.height
-            anchors{
-                top: parent.top
-                left: parent.left
-                topMargin: parent.height * 0.14
-                leftMargin: parent.width * 0.08
-                horizontalCenter: parent.horizontalCenter
-                verticalCenter: parent.verticalCenter
-            }
+            width: parent.width * 0.88
+            height: parent.height * 0.8
+            anchors.centerIn: parent
 
             Column {
                 anchors.fill: parent
-                spacing: 12
+                spacing: 20
 
                 Column {
-                    spacing: 6
+                    spacing: 5
 
                     Text {
                         text: "Почта"
@@ -93,11 +86,23 @@ Rectangle {
                             radius: 0
                         }
                         padding: 10
+
+                        Text {
+                            anchors.fill: regEmail
+                            anchors.margins: 10
+                            font.pixelSize: 11
+                            text: "Введите почту аккаунта"
+                            color: "#4d4d4d"
+                            verticalAlignment: Text.AlignVCenter
+                            horizontalAlignment: Text.AlignLeft
+                            opacity: (!regEmail.text && !regEmail.activeFocus) ? 1.0 : 0.0
+                            Behavior on opacity { NumberAnimation { duration: 150 } }
+                        }
                     }
                 }
 
                 Column {
-                    spacing: 6
+                    spacing: 5
                     Text {
                         text: "Придумайте новый пароль"
                         font.pixelSize: 12
@@ -122,11 +127,23 @@ Rectangle {
                             radius: 0
                         }
                         padding: 10
+
+                        Text {
+                            anchors.fill: regPassword
+                            anchors.margins: 10
+                            font.pixelSize: 11
+                            text: "Придумайте новый пароль"
+                            color: "#4d4d4d"
+                            verticalAlignment: Text.AlignVCenter
+                            horizontalAlignment: Text.AlignLeft
+                            opacity: (!regPassword.text && !regPassword.activeFocus) ? 1.0 : 0.0
+                            Behavior on opacity { NumberAnimation { duration: 150 } }
+                        }
                     }
                 }
 
                 Column {
-                    spacing: 6
+                    spacing: 5
                     Text {
                         text: "Повторите новый пароль"
                         font.pixelSize: 12
@@ -151,6 +168,18 @@ Rectangle {
                             radius: 0
                         }
                         padding: 10
+
+                        Text {
+                            anchors.fill: regPasswordCheck
+                            anchors.margins: 10
+                            font.pixelSize: 11
+                            text: "Повторите новый пароль"
+                            color: "#4d4d4d"
+                            verticalAlignment: Text.AlignVCenter
+                            horizontalAlignment: Text.AlignLeft
+                            opacity: (!regPasswordCheck.text && !regPasswordCheck.activeFocus) ? 1.0 : 0.0
+                            Behavior on opacity { NumberAnimation { duration: 150 } }
+                        }
                     }
                 }
             }
@@ -174,7 +203,7 @@ Rectangle {
         color: "#474448"
         radius: 8
         width: parent.width
-        height: parent.height * 0.070
+        height: 50
         z: 1
         anchors {
             top: recHideline.bottom
@@ -187,7 +216,7 @@ Rectangle {
            color: "#D9D9D9"
            anchors.horizontalCenter: parent.horizontalCenter
            anchors.top: parent.top
-           anchors.topMargin: 20
+           anchors.topMargin: 18
         }
 
         MouseArea {

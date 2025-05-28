@@ -34,6 +34,8 @@ qt_add_executable(appPCMindTrace
     src/UserItem.h
     src/ComputeUser.h
     src/ComputeUser.cpp
+    src/vibrationutils.h
+    src/vibrationutils.cpp
 )
 
 qt_add_qml_module(appPCMindTrace
@@ -41,6 +43,7 @@ qt_add_qml_module(appPCMindTrace
     VERSION 1.0
     QML_FILES
         Main.qml
+        RESOURCES android/build.gradle android/res/values/libs.xml android/res/xml/qtprovider_paths.xml android/gradle/wrapper/gradle-wrapper.jar android/gradle/wrapper/gradle-wrapper.properties android/gradle.properties android/gradlew android/gradlew.bat
 )
 
 set_target_properties(appPCMindTrace PROPERTIES
@@ -49,6 +52,10 @@ set_target_properties(appPCMindTrace PROPERTIES
     MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
     MACOSX_BUNDLE TRUE
     WIN32_EXECUTABLE TRUE
+)
+
+set_property(TARGET appPCMindTrace APPEND PROPERTY
+    QT_ANDROID_PACKAGE_SOURCE_DIR ${CMAKE_SOURCE_DIR}/android
 )
 
 target_link_libraries(appPCMindTrace

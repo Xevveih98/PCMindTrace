@@ -1,11 +1,12 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import PCMindTrace 1.0
+import CustomComponents
 
 Popup {
     id: exitPopup
     width: Screen.width * 0.9
-    height: Screen.height * 0.28
+    height: 280
     modal: true
     focus: true
     dim: true
@@ -18,96 +19,77 @@ Popup {
     }
     background: Rectangle {
         color: "#2D292C"
-        radius: 10
+        radius: 8
         border.color: "#474448"
         border.width: 1
     }
 
-    Column {
-        id: columnpop
-        spacing: 4
-        anchors {
-            top: parent.top
-            horizontalCenter: parent.horizontalCenter
-            topMargin: 20
-        }
-        width: parent.width * 0.85
+    Item {
+        id: oberInputFieldsEmpty
+        anchors.centerIn: parent
+        width: parent.width * 0.86
+        height: parent.height * 0.86
 
-        Text {
-            text: "Почта"
-            font.pixelSize: 12
-            color: "#D9D9D9"
-        }
+        Column {
+            anchors.fill: parent
+            spacing: 6
 
-        TextField {
-            id: regEmail
-            height: 30
-            font.pixelSize: 11
-            color: "#D9D9D9"
-            placeholderText: ""
-            maximumLength: 120
-            wrapMode: Text.NoWrap
-            horizontalAlignment: TextInput.AlignLeft
-            verticalAlignment: TextInput.AlignVCenter
-            background: Rectangle {
-                color: "#292729"
-                border.color: "#4D4D4D"
-                border.width: 1
+            Column {
+                spacing: 3
+
+                Text {
+                    text: "Сарый пароль"
+                    font.pixelSize: 12
+                    color: "#D9D9D9"
+                }
+
+                CustTxtFldEr {
+                    id: regOldPass
+                    width: oberInputFieldsEmpty.width
+                    placeholderText: "Введите старый пароль"
+                    maximumLength: 64
+                    errorText: "* Ошибка"
+                    errorVisible: false
+                }
             }
-            anchors.left: parent.left
-            anchors.right: parent.right
-        }
 
-        Text {
-            text: "Новый пароль"
-            font.pixelSize: 12
-            color: "#D9D9D9"
-        }
+            Column {
+                spacing: 3
 
-        TextField {
-            id: regPassword
-            height: 30
-            font.pixelSize: 6
-            color: "#D9D9D9"
-            placeholderText: ""
-            maximumLength: 120
-            wrapMode: Text.NoWrap
-            echoMode: TextInput.Password
-            horizontalAlignment: TextInput.AlignLeft
-            verticalAlignment: TextInput.AlignVCenter
-            background: Rectangle {
-                color: "#292729"
-                border.color: "#4D4D4D"
-                border.width: 1
+                Text {
+                    text: "Проверка"
+                    font.pixelSize: 12
+                    color: "#D9D9D9"
+                }
+
+                CustTxtFldEr {
+                    id: regNewPassCheck
+                    width: oberInputFieldsEmpty.width
+                    placeholderText: "Повторно введите новый пароль"
+                    maximumLength: 64
+                    errorText: "* Ошибка"
+                    errorVisible: false
+                }
             }
-            anchors.left: parent.left
-            anchors.right: parent.right
-        }
 
-        Text {
-            text: "Старый пароль"
-            font.pixelSize: 12
-            color: "#D9D9D9"
-        }
+            Column {
+                spacing: 3
 
-        TextField {
-            id: regPasswordCheck
-            height: 30
-            font.pixelSize: 6
-            color: "#D9D9D9"
-            placeholderText: ""
-            maximumLength: 120
-            wrapMode: Text.NoWrap
-            echoMode: TextInput.Password
-            horizontalAlignment: TextInput.AlignLeft
-            verticalAlignment: TextInput.AlignVCenter
-            background: Rectangle {
-                color: "#292729"
-                border.color: "#4D4D4D"
-                border.width: 1
+                Text {
+                    text: "Новый пароль"
+                    font.pixelSize: 12
+                    color: "#D9D9D9"
+                }
+
+                CustTxtFldEr {
+                    id: regNewPass
+                    width: oberInputFieldsEmpty.width
+                    placeholderText: "Введите новый пароль"
+                    maximumLength: 64
+                    errorText: "* Ошибка"
+                    errorVisible: false
+                }
             }
-            anchors.left: parent.left
-            anchors.right: parent.right
         }
     }
 
@@ -133,8 +115,64 @@ Popup {
         MouseArea {
             anchors.fill: parent
             onClicked: {
-                authUser.changePassword(regEmail.text, regPassword.text, regPasswordCheck.text);
-                exitPopup.close();
+                let hasError = false
+                if (regOldPass.text.trim().length === 0) {
+                    regOldPass.triggerErrorAnimation()
+                    VibrationUtils.vibrate(200)
+                    hasError = true
+                }
+
+                let password = regNewPass.text.trim()
+                let errors = []
+                if (password.length === 0) {
+                    regNewPass.triggerErrorAnimation()
+                    VibrationUtils.vibrate(200)
+                    hasError = true
+                } else {
+                    if (/[а-яА-ЯёЁ]/.test(password)) {
+                        errors.push("* Пароль не должен содержать русские буквы")
+                    }
+                    if (!/[a-zA-Z]/.test(password)) {
+                        errors.push("* Пароль должен содержать хотя бы одну латинскую букву")
+                    }
+                    if (!/[-&]/.test(password)) {
+                        errors.push("* Пароль должен содержать хотя бы один спецсимвол: '-' или '&'")
+                    }
+                    if (password.length < 8) {
+                        errors.push("* Пароль должен содержать минимум 8 символов")
+                    }
+
+                    if (errors.length > 0) {
+                        regNewPass.errorText = errors.join("<br>")
+                        regNewPass.errorVisible = true
+                        regNewPass.triggerErrorAnimation()
+                        VibrationUtils.vibrate(200)
+                        hasError = true
+                    } else {
+                        regNewPass.errorVisible = false
+                    }
+                }
+
+                if (regNewPassCheck.text.trim().length === 0) {
+                    regNewPassCheck.triggerErrorAnimation()
+                    VibrationUtils.vibrate(200)
+                    hasError = true
+                }
+
+                if (regNewPass.text.trim() !== regNewPassCheck.text.trim()) {
+                    regNewPassCheck.errorText = "* Пароли не совпадают"
+                    regNewPassCheck.errorVisible = true
+                    regNewPassCheck.triggerErrorAnimation()
+                    VibrationUtils.vibrate(200)
+                    hasError = true
+                } else {
+                    regNewPassCheck.errorVisible = false
+                }
+
+                if (!hasError) {
+                    authUser.changePassword(regOldPass.text, regNewPass.text);
+                    exitPopup.close();
+                }
             }
         }
     }

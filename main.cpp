@@ -14,10 +14,11 @@
 #include "src/EntryUserModel.h"
 #include "src/EntriesUser.h"
 #include "src/ComputeUser.h"
+#include "src/vibrationutils.h"
 
 int main(int argc, char *argv[])
 {
-    QApplication app(argc, argv);  // заменили QGuiApplication
+    QApplication app(argc, argv);
 
     QQmlApplicationEngine engine;
     QObject::connect(
@@ -27,14 +28,12 @@ int main(int argc, char *argv[])
         []() { QCoreApplication::exit(-1); },
         Qt::QueuedConnection);
 
-    // Регистрация синглтонов
     qmlRegisterSingletonInstance("PCMindTrace", 1, 0, "AppSave", new AppSave);
     qmlRegisterSingletonType<CustomComponentsSingleton>("CustomComponents", 1, 0, "CustomComponents",
                                                         [](QQmlEngine *, QJSEngine *) -> QObject * {
                                                             return CustomComponentsSingleton::instance();
                                                         });
 
-    // Создание и установка контекстных свойств
     AuthUser authUser;
     TodoUser todoUser;
     CategoriesUser categoriesUser;
@@ -42,6 +41,8 @@ int main(int argc, char *argv[])
     EntriesUser entriesUser;
     EntryUserModel entryUserModel;
     ComputeUser computeUser;
+    VibrationUtils vibra;
+    engine.rootContext()->setContextProperty("VibrationUtils", &vibra);
     engine.rootContext()->setContextProperty("entryCurrentMonthModel", computeUser.entryCurrentMonthModel());
     engine.rootContext()->setContextProperty("entryLastMonthModel", computeUser.entryLastMonthModel());
     engine.rootContext()->setContextProperty("computeUser", &computeUser);

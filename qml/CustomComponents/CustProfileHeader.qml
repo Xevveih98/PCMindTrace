@@ -11,8 +11,8 @@ Item {
     property url iconSource: ""
     property Item popupTarget: null
     property url avatarSource: "qrc:/images/avatar.png"
-    property string userName: userName
-    property string userEmail: userEmail
+    property string userName: AppSave.getSavedLogin()
+    property string userEmail: AppSave.getSavedEmail()
 
     signal clicked()
 
@@ -55,10 +55,9 @@ Item {
                 clip: true
             }
 
-            // Имя пользователя
             Text {
                 id: nameText
-                text: userName
+                text: wrapper.userName
                 color: "#D9D9D9"
                 font.pixelSize: 16
                 anchors.left: avatar.right
@@ -68,10 +67,9 @@ Item {
                 elide: Text.ElideRight
             }
 
-            // Почта пользователя
             Text {
                 id: emailText
-                text: userEmail
+                text: wrapper.userEmail
                 color: "#B9B9B9"
                 font.pixelSize: 13
                 anchors.left: nameText.left
@@ -81,7 +79,6 @@ Item {
                 elide: Text.ElideRight
             }
 
-            // Стрелка справа
             Text {
                 id: arrow
                 text: ">"
@@ -94,10 +91,12 @@ Item {
         }
     }
 
-    Component.onCompleted: {
-        if (AppSave.isUserLoggedIn()) {
-            userName = AppSave.getSavedLogin()
-            userEmail = AppSave.getSavedEmail()
+    Connections {
+        target: authUser
+        onEmailChangeSuccess: {
+            console.log("Email change success! New email:", AppSave.getSavedEmail());
+            wrapper.userName = AppSave.getSavedLogin();
+            wrapper.userEmail = AppSave.getSavedEmail();
         }
     }
 }

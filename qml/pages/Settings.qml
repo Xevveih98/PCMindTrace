@@ -49,8 +49,8 @@ Rectangle {
                         buttonWidth: parent.width
                         buttonText: "Открыть профиль"
                         avatarSource: "qrc:/images/ecalm.png"
-                        userName: "Эльвира Тимощенко"
-                        userEmail: "elvira@example.com"
+                        userName: AppSave.getSavedLogin()
+                        userEmail: AppSave.getSavedEmail()
                         onClicked: {
                             console.log("Кнопка нажата!")
                         }

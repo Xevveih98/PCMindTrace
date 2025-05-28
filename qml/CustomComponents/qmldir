@@ -21,4 +21,5 @@ CustMenuButn 1.0 CustMenuButton.qml
 CustMenuProf 1.0 CustMenuProfile.qml
 CustEntrBttn 1.0 CustEntryButton.qml
 CustDateIcon 1.0 CustDateIcon.qml
+CustTxtFldEr 1.0 CustTextFieldError.qml
 Utils 1.0 Utils.js

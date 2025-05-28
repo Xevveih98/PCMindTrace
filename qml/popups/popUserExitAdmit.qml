@@ -4,12 +4,12 @@ import PCMindTrace 1.0
 
 Popup {
     id: exitPopup
-    width: Screen.width * 0.66
-    height: Screen.height * 0.12
+    width: Screen.width * 0.9
+    height: 140
     modal: true
     focus: true
     padding: 0
-    dim: true  // автоматическое затемнение заднего фона
+    dim: true
     closePolicy: Popup.CloseOnPressOutside | Popup.CloseOnEscape
     anchors.centerIn: Overlay.overlay
     Overlay.modal: Rectangle {
@@ -17,17 +17,13 @@ Popup {
         opacity: 0.9
     }
     background: Rectangle {
-        color: "#2D292C"
-        radius: 10
-        border.color: "#474448"
-        border.width: 1
+        color: "#2D292C"; radius: 8; border.color: "#474448"; border.width: 1
     }
 
     Column {
         spacing: 16
         anchors.centerIn: parent
-        width: parent.width
-        padding: 20
+        width: parent.width * 0.9
 
         Text {
             text: "Вы уверены, что хотите выйти?"
@@ -35,7 +31,6 @@ Popup {
             font.pixelSize: 14
             wrapMode: Text.Wrap
             width: parent.width
-
         }
     }
 

@@ -78,7 +78,13 @@ Item {
     }
 
     Component.onCompleted: {
-        if (AppSave.isUserLoggedIn()) {
+        userName = AppSave.getSavedLogin()
+        userEmail = AppSave.getSavedEmail()
+    }
+
+    Connections {
+        target: authUser
+        onEmailChangeSuccess: {
             userName = AppSave.getSavedLogin()
             userEmail = AppSave.getSavedEmail()
         }

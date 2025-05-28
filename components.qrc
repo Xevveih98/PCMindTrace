@@ -24,5 +24,6 @@
         <file alias="CustMenuProfile.qml">qml/CustomComponents/CustMenuProfile.qml</file>
         <file alias="CustEntryButton.qml">qml/CustomComponents/CustEntryButton.qml</file>
         <file alias="CustDateIcon.qml">qml/CustomComponents/CustDateIcon.qml</file>
+        <file alias="CustTextFieldError.qml">qml/CustomComponents/CustTextFieldError.qml</file>
     </qresource>
 </RCC>

@@ -231,12 +231,12 @@ Rectangle {
                             delegate: CustTagButon {
                                 tagText: model.tag
                                 buttonWidth: implicitWidth
-                                selected: pageResearchScreen.selectedTags.some(t => t.id === model.tagId) // ← исправлено
+                                selected: pageResearchScreen.selectedTags.some(t => t.id === model.tagId)
                                 onClicked: {
-                                    let index = pageResearchScreen.selectedTags.findIndex(t => t.id === model.tagId); // ← уже верно
+                                    let index = pageResearchScreen.selectedTags.findIndex(t => t.id === model.tagId);
                                     if (index === -1) {
                                         pageResearchScreen.selectedTags.push({
-                                            id: Number(model.tagId), // ← на всякий случай явно
+                                            id: Number(model.tagId),
                                             tag: model.tag
                                         });
                                     } else {
@@ -251,7 +251,6 @@ Rectangle {
                                     }
                                 }
                             }
-
                         }
                     }
 
