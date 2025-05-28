@@ -207,14 +207,7 @@ void AuthUser::onPasswordChangeReply(QNetworkReply *reply)
 
 // ----------- Удаление аккаунта -----------
 
-void AuthUser::triggerSendSavedLogin()
-{
-    qDebug() << "triggerSendSavedLogin called.";
-    sendSavedLoginToServer();
-
-}
-
-void AuthUser::sendSavedLoginToServer()
+void AuthUser::deleteUser()
 {
     AppSave appSave;
     if (appSave.isUserLoggedIn()) {
@@ -225,6 +218,8 @@ void AuthUser::sendSavedLoginToServer()
         QJsonDocument jsonDoc(json);
         QUrl serverUrl = AppConfig::apiUrl("/deleteuser");
         sendToServer(jsonDoc, serverUrl);
+        appSave.clearUser();
+        emit deleteUserSuccess();
     } else {
         qWarning() << "No saved login found.";
     }
@@ -307,6 +302,15 @@ void AuthUser::onEmailChangeReply(QNetworkReply *reply)
     reply->deleteLater();
 }
 
+//---------- ds
+
+void AuthUser::logout()
+{
+    qDebug() << "Logging out user...";
+    AppSave appSave;
+    appSave.clearUser();
+    emit logoutSuccess();
+}
 
 // ----------- Общий метод отправки (используется для регистрации) -----------
 void AuthUser::sendToServer(const QJsonDocument &jsonDoc, const QUrl &url)

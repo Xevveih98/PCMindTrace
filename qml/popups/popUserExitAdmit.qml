@@ -1,6 +1,8 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import PCMindTrace 1.0
+import QtQuick.Layouts
+import CustomComponents
 
 Popup {
     id: exitPopup
@@ -20,19 +22,35 @@ Popup {
         color: "#2D292C"; radius: 8; border.color: "#474448"; border.width: 1
     }
 
-    signal logoutSuccess();
-
-    Column {
-        spacing: 16
+    Item {
+        id: oberInputFieldsEmpty
         anchors.centerIn: parent
-        width: parent.width * 0.9
+        width: parent.width * 0.86
+        height: parent.height * 0.7
 
-        Text {
-            text: "Вы уверены, что хотите выйти?"
-            color: "#D9D9D9"
-            font.pixelSize: 14
-            wrapMode: Text.Wrap
-            width: parent.width
+        ColumnLayout {
+            anchors.fill: parent
+            spacing: 0
+
+            Text {
+                text: "Выход из аккаунта"
+                Layout.fillWidth: true
+                color: "#D9D9D9"
+                font.pixelSize: 18
+                font.bold: true
+                Layout.alignment: Qt.AlignHCenter
+                horizontalAlignment: Text.AlignHCenter
+            }
+
+            Text {
+                textFormat: Text.RichText
+                text: "Вы уверены, что хотите <b><font color='#DA446A'>выйти</font></b>? Это ни на что не повлияет, но мы будем скучать!"
+                Layout.fillWidth: true
+                horizontalAlignment: Text.AlignHCenter
+                wrapMode: Text.Wrap
+                font.pixelSize: 14
+                color: "#D9D9D9"
+            }
         }
     }
 
@@ -58,14 +76,12 @@ Popup {
         MouseArea {
             anchors.fill: parent
             onClicked: {
+                authUser.logout();
                 exitPopup.close();
-                AppSave.clearUser();
-                Qt.callLater(function() {
-                    pageLoader.source = "qrc:/pages/AuthWindow.qml";
-                });
-
-                logoutSuccess();
             }
         }
     }
 }
+
+
+

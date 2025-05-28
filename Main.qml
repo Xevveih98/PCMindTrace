@@ -25,39 +25,47 @@ Window {
         target: authUser
         onLoginSuccess: {
             Qt.callLater(function() {
-                notify.notificationTitle = "Вход прошел успешно!!"
+                notify.notificationTitle = "Вход прошел успешно!"
                 notify.triggerAnimation()
                 pageLoader.source = "qrc:/pages/mainContent.qml"
             })
         }
     }
 
-    // Connections {
-    //     target: authUser
-    //     onlogoutSuccess: {
-    //         Qt.callLater(function() {
-    //             notify.notificationTitle = "Аккаунт успешно удален!"
-    //             notify.triggerAnimation()
-    //         })
-    //     }
-    // }
+    Connections {
+        target: authUser
+        onLogoutSuccess: {
+            Qt.callLater(function() {
+                notify.notificationTitle = "Успешный выход!"
+                notify.triggerAnimation()
+                pageLoader.source = "qrc:/pages/AuthWindow.qml";
+            })
+        }
+    }
 
-    // Connections {
-    //     target: authUser
-    //     onlogoutSuccess: {
-    //         Qt.callLater(function() {
-    //             notify.notificationTitle = "Успешный выход из аккаунта!"
-    //             notify.triggerAnimation()
-    //         })
-    //     }
-    // }
+    Connections {
+        target: authUser
+        onDeleteUserSuccess: {
+            Qt.callLater(function() {
+                notify.notificationTitle = "Аккаунт удален!"
+                notify.triggerAnimation()
+                pageLoader.source = "qrc:/pages/AuthWindow.qml";
+            })
+        }
+    }
 }
 
 
+//------------------ ПОТОМ
 // 1. Сделать статистику (попап) --
-// 2. Уведомления для смены почты и пароля!!!!!!!
+
+//------------------ СДЕЛАНО
+// 2. Уведомления для смены почты и пароля
 // 3. Смену пароля
 // 4. Уведомления для выхода из аккаунта и удаления
+
+//------------------ СДЕЛАТЬ
+
 // 5. Пин код
 // 6. Поправить категории
 // 7. Смена логина

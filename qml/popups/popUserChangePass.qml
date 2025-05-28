@@ -182,9 +182,17 @@ Popup {
 
                 if (!hasError) {
                     authUser.changePassword(regOldPass.text, regNewPass.text);
-                    exitPopup.close();
                 }
             }
+        }
+    }
+
+    Connections {
+        target: authUser
+        onPasswordChangeSuccess: {
+            Qt.callLater(function() {
+                exitPopup.close();
+            })
         }
     }
 }

@@ -19,7 +19,8 @@ public:
     Q_INVOKABLE void loginUser(const QString &login, const QString &password);
     Q_INVOKABLE void changePassword(const QString &oldPassword, const QString &newPassword);
     Q_INVOKABLE void changeEmail(const QString &email);
-    Q_INVOKABLE void triggerSendSavedLogin();
+    Q_INVOKABLE void logout();
+    Q_INVOKABLE void deleteUser();
 
 
 
@@ -36,6 +37,9 @@ signals:
     void emailChangeSuccess();
     void emailChangeFailed(const QString &error);
 
+    void logoutSuccess();
+    void deleteUserSuccess();
+
 
 private slots:
     void onRegistrationReply(QNetworkReply *reply);
@@ -49,7 +53,6 @@ private:
     void sendLoginRequest(const QJsonDocument &jsonDoc, const QUrl &url);
     void sendPasswordChangeRequest(const QJsonDocument &jsonDoc, const QUrl &url);
     void sendEmailChangeRequest(const QJsonDocument &jsonDoc, const QUrl &url);
-    void sendSavedLoginToServer();
 
     QNetworkAccessManager m_networkManager;
 };

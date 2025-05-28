@@ -28,7 +28,7 @@ Popup {
         id: oberInputFieldsEmpty
         anchors.centerIn: parent
         width: parent.width * 0.86
-        height: parent.height * 0.86
+        height: parent.height * 0.7
 
         ColumnLayout {
             anchors.fill: parent
@@ -38,17 +38,20 @@ Popup {
                 text: "Удаление аккаунта"
                 Layout.fillWidth: true
                 color: "#D9D9D9"
-                font.pixelSize: 16
+                font.pixelSize: 18
+                font.bold: true
                 Layout.alignment: Qt.AlignHCenter
+                horizontalAlignment: Text.AlignHCenter
             }
 
             Text {
-                text: "Вы уверены, что хотите удалить аккаунт? Все записи и ваши категории безвозвратно исчезнут!"
+                textFormat: Text.RichText
+                text: "Вы уверены, что хотите <b><font color='#DA446A'>удалить аккаунт</font></b>? Все ваши записи и категории <b><font color='#DA446A'>безвозвратно</font></b> исчезнут!"
                 Layout.fillWidth: true
-                color: "#D9D9D9"
-                font.pixelSize: 14
+                horizontalAlignment: Text.AlignHCenter
                 wrapMode: Text.Wrap
-                Layout.alignment: Qt.AlignHCenter
+                font.pixelSize: 14
+                color: "#D9D9D9"
             }
         }
     }
@@ -75,12 +78,8 @@ Popup {
         MouseArea {
             anchors.fill: parent
             onClicked: {
+                authUser.deleteUser();
                 exitPopup.close();
-                authUser.triggerSendSavedLogin();
-                AppSave.clearUser();
-                Qt.callLater(function() {
-                    pageLoader.source = "qrc:/pages/AuthWindow.qml";
-                });
             }
         }
     }
