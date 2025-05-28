@@ -1,6 +1,7 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import PCMindTrace 1.0
+import QtQuick.Layouts
 
 Popup {
     id: exitPopup
@@ -23,18 +24,32 @@ Popup {
         border.width: 1
     }
 
-    Column {
-        spacing: 16
+    Item {
+        id: oberInputFieldsEmpty
         anchors.centerIn: parent
-        width: parent.width
-        padding: 20
+        width: parent.width * 0.86
+        height: parent.height * 0.86
 
-        Text {
-            text: "Вы уверены, что хотите удалить аккаунт?"
-            width: parent.width
-            color: "#D9D9D9"
-            font.pixelSize: 14
-            wrapMode: Text.Wrap
+        ColumnLayout {
+            anchors.fill: parent
+            spacing: 0
+
+            Text {
+                text: "Удаление аккаунта"
+                Layout.fillWidth: true
+                color: "#D9D9D9"
+                font.pixelSize: 16
+                Layout.alignment: Qt.AlignHCenter
+            }
+
+            Text {
+                text: "Вы уверены, что хотите удалить аккаунт? Все записи и ваши категории безвозвратно исчезнут!"
+                Layout.fillWidth: true
+                color: "#D9D9D9"
+                font.pixelSize: 14
+                wrapMode: Text.Wrap
+                Layout.alignment: Qt.AlignHCenter
+            }
         }
     }
 

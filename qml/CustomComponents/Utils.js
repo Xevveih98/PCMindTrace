@@ -13,17 +13,14 @@ function formatTodayDate() {
     return d.getDate() + " " + months[d.getMonth()] + " " + d.getFullYear();
 }
 
-// Получает количество дней в указанном месяце
 function getDaysInMonth(year, month) {
-    return new Date(year, month, 0).getDate();  // month: 1-12
+    return new Date(year, month, 0).getDate();
 }
 
-// Форматирует месяц в виде строки yyyy-mm
 function formatMonthKey(year, month) {
     return year + "-" + (month < 10 ? "0" + month : month);
 }
 
-// Возвращает ключ предыдущего месяца (yyyy-mm) и его год
 function getPreviousMonthKey(year, month) {
     var prevMonth = month - 1;
     var prevYear = year;

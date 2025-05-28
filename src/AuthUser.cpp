@@ -67,6 +67,7 @@ void AuthUser::onRegistrationReply(QNetworkReply *reply)
 
 
 // ----------- Вход (Login) -----------
+
 void AuthUser::loginUser(const QString &login, const QString &password)
 {
     qDebug() << "loginUser called with:";
@@ -93,31 +94,7 @@ void AuthUser::onLoginReply(QNetworkReply *reply)
     qDebug() << "Обработка ответа на запрос авторизации.";
 
     QString path = reply->request().url().path();
-
-    if (!path.contains("/login")) {
-        qWarning() << "Неизвестный путь в onLoginReply:" << path;
-        reply->deleteLater();
-        return;
-    }
-
-    if (reply->error() != QNetworkReply::NoError) {
-        qWarning() << "Ошибка сети при авторизации:" << reply->errorString();
-        emit loginFailed("Ошибка сети: " + reply->errorString(), "");
-        reply->deleteLater();
-        return;
-    }
-
     QByteArray responseData = reply->readAll();
-    qDebug() << "Raw response data from server:" << responseData;
-
-
-    if (responseData.isEmpty()) {
-        qWarning() << "Пустой ответ от сервера при авторизации.";
-        emit loginFailed("Пустой ответ от сервера.", "");
-        reply->deleteLater();
-        return;
-    }
-
     QJsonParseError parseError;
     QJsonDocument jsonDoc = QJsonDocument::fromJson(responseData, &parseError);
 
@@ -165,71 +142,89 @@ void AuthUser::onLoginReply(QNetworkReply *reply)
 
 
 // ----------- Смена пароля -----------
-void AuthUser::changePassword(const QString &email, const QString &newPassword, const QString &newPasswordCheck)
+
+void AuthUser::changePassword(const QString &oldPassword, const QString &newPassword)
 {
-    qDebug() << "changePassword called with:";
-    qDebug() << "  email:" << email;
-    qDebug() << "  newPassword:" << newPassword;
-    qDebug() << "  newPasswordCheck:" << newPasswordCheck;
+    AppSave appSave;
+    QString login = appSave.getSavedLogin();
+    qDebug() << "Изменение пароля для пользователя " << login.trimmed() <<" with:";
+    qDebug() << "  oldPassword:" << oldPassword.trimmed();
+    qDebug() << "  newPassword:" << newPassword.trimmed();
 
-    QJsonObject json;
-    json["email"] = email.trimmed();
-    json["password"] = newPassword.trimmed();
-    json["password_check"] = newPasswordCheck.trimmed();
-
-    QJsonDocument jsonDoc(json);
     QUrl serverUrl = AppConfig::apiUrl("/changepassword");
-    sendPasswordChangeRequest(jsonDoc, serverUrl);
-}
 
-void AuthUser::sendPasswordChangeRequest(const QJsonDocument &jsonDoc, const QUrl &url)
-{
-    qDebug() << "sendPasswordChangeRequest called.";
-    QNetworkRequest request(url);
+    QNetworkRequest request(serverUrl);
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 
-    QByteArray data = jsonDoc.toJson();
-    qDebug() << "Request payload (password change):" << data;
+    QJsonObject json;
+    json["login"] = login.trimmed();
+    json["oldPassword"] = oldPassword.trimmed();
+    json["newPassword"] = newPassword.trimmed();
+
+    QJsonDocument doc(json);
+    QByteArray data = doc.toJson();
 
     QNetworkReply *reply = m_networkManager.post(request, data);
-    connect(reply, &QNetworkReply::finished, this, [this, reply]() {
-        onPasswordChangeReply(reply);
-    });
 }
 
 void AuthUser::onPasswordChangeReply(QNetworkReply *reply)
 {
     qDebug() << "onPasswordChangeReply called.";
-    if (reply->error() == QNetworkReply::NoError) {
-        qDebug() << "Password change successful. Server response:" << reply->readAll();
+
+    QByteArray responseData = reply->readAll();
+    QJsonParseError parseError;
+    QJsonDocument jsonDoc = QJsonDocument::fromJson(responseData, &parseError);
+
+    if (parseError.error != QJsonParseError::NoError) {
+        qWarning() << "Ошибка парсинга JSON при смене пароля:" << parseError.errorString();
+        emit passwordChangeFailed("Неверный ответ сервера: " + parseError.errorString());
+        reply->deleteLater();
+        return;
+    }
+
+    if (!jsonDoc.isObject()) {
+        qWarning() << "Неверный формат JSON: ожидался объект.";
+        emit passwordChangeFailed("Неверный формат ответа сервера.");
+        reply->deleteLater();
+        return;
+    }
+
+    QJsonObject json = jsonDoc.object();
+    QString status = json.value("status").toString();
+    QString message = json.value("message").toString("Неизвестная ошибка");
+
+    if (status == "ok") {
+        qDebug() << "Password change successful:" << message;
         emit passwordChangeSuccess();
     } else {
-        qDebug() << "Password change failed. Error:" << reply->errorString();
-        emit passwordChangeFailed(reply->errorString());
+        qWarning() << "Password change failed:" << message;
+        emit passwordChangeFailed(message);
     }
+
     reply->deleteLater();
 }
+
 
 // ----------- Удаление аккаунта -----------
 
 void AuthUser::triggerSendSavedLogin()
 {
     qDebug() << "triggerSendSavedLogin called.";
-    sendSavedLoginToServer();  // Вызов метода отправки сохраненного логина
+    sendSavedLoginToServer();
+
 }
 
 void AuthUser::sendSavedLoginToServer()
 {
-    AppSave appSave;  // Создаем объект для работы с QSettings
+    AppSave appSave;
     if (appSave.isUserLoggedIn()) {
-        QString savedLogin = appSave.getSavedLogin();  // Получаем сохраненный логин
-
+        QString savedLogin = appSave.getSavedLogin();
         QJsonObject json;
-        json["login"] = savedLogin;  // Упаковываем логин в JSON объект
+        json["login"] = savedLogin;
 
-        QJsonDocument jsonDoc(json);  // Создаем JSON документ
-        QUrl serverUrl = AppConfig::apiUrl("/deleteuser");  // Замените на правильный URL
-        sendToServer(jsonDoc, serverUrl);  // Отправляем на сервер
+        QJsonDocument jsonDoc(json);
+        QUrl serverUrl = AppConfig::apiUrl("/deleteuser");
+        sendToServer(jsonDoc, serverUrl);
     } else {
         qWarning() << "No saved login found.";
     }
@@ -292,21 +287,6 @@ void AuthUser::onEmailChangeReply(QNetworkReply *reply)
 
     QJsonParseError parseError;
     QJsonDocument jsonDoc = QJsonDocument::fromJson(responseData, &parseError);
-
-    // if (parseError.error != QJsonParseError::NoError) {
-    //     qWarning() << "Ошибка парсинга JSON при смене email:" << parseError.errorString();
-    //     emit emailChangeFailed(reply->errorString());
-    //     reply->deleteLater();
-    //     return;
-    // }
-
-    // if (!jsonDoc.isObject()) {
-    //     qWarning() << "Неверный формат JSON: ожидался объект при смене email.";
-    //     emit emailChangeFailed(reply->errorString());
-    //     reply->deleteLater();
-    //     return;
-    // }
-
     QJsonObject json = jsonDoc.object();
     QString email = json.value("email").toString().trimmed();
 

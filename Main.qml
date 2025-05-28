@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import PCMindTrace 1.0
+import CustomComponents
 
 Window {
     id: mainLoader
@@ -15,53 +16,60 @@ Window {
         source: AppSave.isUserLoggedIn() ? "qrc:/pages/mainContent.qml" : "qrc:/pages/AuthWindow.qml"
     }
 
-    Rectangle {
-        id: refreshIndicator
-        width: parent.width * 0.74
-        height: 30
-        radius: 16
-        border.width: 1
-        border.color: "#3E3A40"
-        color: "#2D292C"
-        anchors.horizontalCenter: parent.horizontalCenter
-        y: 30
-        opacity: 0
-        visible: false
-
-        Text {
-            anchors.centerIn: parent
-            color: "#d9d9d9"
-            font.bold: true
-            font.pixelSize: 14
-            text: "Регистрация прошла успешно!"
-        }
-
-        SequentialAnimation on y {
-            id: showHideAnim
-            running: false
-            PropertyAnimation { to: 80; duration: 300; easing.type: Easing.OutCubic }
-            PauseAnimation { duration: 1500 }
-            PropertyAnimation { to: 0; duration: 300; easing.type: Easing.InCubic }
-            onStopped: {
-                refreshIndicator.visible = false
-                refreshIndicator.opacity = 0
-            }
-        }
-
-        Behavior on opacity {
-            NumberAnimation { duration: 300 }
-        }
+    CustNtfyAntn {
+        id: notify
+        notificationTitle: "уведомление"
     }
 
     Connections {
         target: authUser
         onLoginSuccess: {
             Qt.callLater(function() {
-                refreshIndicator.visible = true
-                refreshIndicator.opacity = 1
-                showHideAnim.start()
+                notify.notificationTitle = "Вход прошел успешно!!"
+                notify.triggerAnimation()
                 pageLoader.source = "qrc:/pages/mainContent.qml"
             })
         }
     }
+
+    // Connections {
+    //     target: authUser
+    //     onlogoutSuccess: {
+    //         Qt.callLater(function() {
+    //             notify.notificationTitle = "Аккаунт успешно удален!"
+    //             notify.triggerAnimation()
+    //         })
+    //     }
+    // }
+
+    // Connections {
+    //     target: authUser
+    //     onlogoutSuccess: {
+    //         Qt.callLater(function() {
+    //             notify.notificationTitle = "Успешный выход из аккаунта!"
+    //             notify.triggerAnimation()
+    //         })
+    //     }
+    // }
 }
+
+
+// 1. Сделать статистику (попап) --
+// 2. Уведомления для смены почты и пароля!!!!!!!
+// 3. Смену пароля
+// 4. Уведомления для выхода из аккаунта и удаления
+// 5. Пин код
+// 6. Поправить категории
+// 7. Смена логина
+// 8. Добавить фильтр по эмоциям и активностям
+// 9. Сделать очистку фильтров
+// 10. Сделать сравнение по неделям(горизонтальные бары)
+// 11. Переделать насыщенный день под самый счастливый
+// 12. Добавить самый плохой день за месяц
+// 13. Тоггл для менеджера папок
+// 14. Поправить менеджер папок
+// 15. Поправить задачи на сегодня(быстрые задачи)
+// 16. Поправить записи? (дать возможность не заполнять содержание)
+// 17. Добавить раздел "Справка"
+// 18. Подумать что можно впихнуть в профиль
+

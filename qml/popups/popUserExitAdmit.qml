@@ -20,6 +20,8 @@ Popup {
         color: "#2D292C"; radius: 8; border.color: "#474448"; border.width: 1
     }
 
+    signal logoutSuccess();
+
     Column {
         spacing: 16
         anchors.centerIn: parent
@@ -61,6 +63,8 @@ Popup {
                 Qt.callLater(function() {
                     pageLoader.source = "qrc:/pages/AuthWindow.qml";
                 });
+
+                logoutSuccess();
             }
         }
     }

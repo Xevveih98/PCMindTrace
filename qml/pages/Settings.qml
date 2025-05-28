@@ -179,4 +179,29 @@ Rectangle {
             }
         }
     }
+
+    CustNtfyAntn {
+        id: notify
+        notificationTitle: "уведомление"
+    }
+
+    Connections {
+        target: authUser
+        onEmailChangeSuccess: {
+            Qt.callLater(function() {
+                notify.notificationTitle = "Удачная смена почты!"
+                notify.triggerAnimation()
+            })
+        }
+    }
+
+    Connections {
+        target: authUser
+        onPasswordChangeSuccess: {
+            Qt.callLater(function() {
+                notify.notificationTitle = "Удачная смена пароля!"
+                notify.triggerAnimation()
+            })
+        }
+    }
 }

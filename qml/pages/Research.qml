@@ -23,10 +23,10 @@ Rectangle {
         anchors.top: header.bottom
 
         Flickable {
-            property bool refreshing: false
             id: flickable
             anchors.fill: parent
-            contentHeight: eda.height + entryColumn.height
+            contentWidth: width
+            contentHeight: eda.height + 70
             flickableDirection: Flickable.VerticalFlick
             clip: true
 

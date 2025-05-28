@@ -38,7 +38,7 @@ Popup {
                 spacing: 3
 
                 Text {
-                    text: "Сарый пароль"
+                    text: "Старый пароль"
                     font.pixelSize: 12
                     color: "#D9D9D9"
                 }
@@ -50,6 +50,17 @@ Popup {
                     maximumLength: 64
                     errorText: "* Ошибка"
                     errorVisible: false
+
+                    Connections {
+                        target: authUser
+                        onPasswordChangeFailed: function(message) {
+                            regOldPass.errorText = message
+                            regOldPass.errorVisible = true
+                            regOldPass.triggerErrorAnimation()
+                            VibrationUtils.vibrate(200)
+                            console.log("СООБЩЕНИЕ", message)
+                        }
+                    }
                 }
             }
 
