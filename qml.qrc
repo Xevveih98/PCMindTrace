@@ -9,6 +9,7 @@
         <file alias="Settings.qml">qml/pages/Settings.qml</file>
         <file alias="Research.qml">qml/pages/Research.qml</file>
         <file alias="Calendar.qml">qml/pages/Calendar.qml</file>
-        <file alias="Dashboard.qml">qml/pages/Dashboard.qml</file>
+        <file alias="PinCode.qml">qml/pages/PinCode.qml</file>
+        <file alias="PrivacyGate.qml">qml/pages/PrivacyGate.qml</file>
     </qresource>
 </RCC>

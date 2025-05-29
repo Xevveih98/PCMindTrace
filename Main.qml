@@ -13,7 +13,7 @@ Window {
     Loader {
         id: pageLoader
         anchors.fill: parent
-        source: AppSave.isUserLoggedIn() ? "qrc:/pages/mainContent.qml" : "qrc:/pages/AuthWindow.qml"
+        source: AppSave.isUserLoggedIn() ? "qrc:/pages/PrivacyGate.qml" : "qrc:/pages/AuthWindow.qml"
     }
 
     CustNtfyAntn {

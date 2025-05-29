@@ -33,5 +33,6 @@
         <file alias="third.png">assets/images/third.png</file>
         <file alias="second.png">assets/images/second.png</file>
         <file alias="nonemo.png">assets/images/nonemo.png</file>
+        <file alias="remove.png">assets/images/remove.png</file>
     </qresource>
 </RCC>

@@ -4,9 +4,6 @@ import QtQuick.Controls 2.15
 Item {
     id: headertitle
     height: 50
-    width: headerWidth
-
-    property string headerWidth: headertitle.width
     property string titleText: ""
 
     Text {

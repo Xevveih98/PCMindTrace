@@ -12,7 +12,7 @@ Rectangle {
 
     CustPageHead {
         id: header
-        headerWidth: parent.width
+        width: parent.width
         titleText: "Календарь"
     }
 
