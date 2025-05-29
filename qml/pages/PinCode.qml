@@ -74,9 +74,11 @@ Item {
                             anchors.fill: parent
                             onClicked: {
                                 if (enteredPin.length < pinLength) {
-                                    enteredPin += modelData
+                                    enteredPin += modelData;
+                                    console.log("вводимое хз", enteredPin)
                                     if (enteredPin.length === pinLength) {
-                                        //pinCompleted(enteredPin)
+                                        checkPinCode(enteredPin);
+                                        console.log("весь пин", enteredPin)
                                     }
                                 }
                                 glowAnim.restart()
@@ -120,7 +122,8 @@ Item {
                             anchors.fill: parent
                             onClicked: {
                                 if (enteredPin.length > 0) {
-                                    enteredPin = enteredPin.slice(0, -1)
+                                    enteredPin = enteredPin.slice(0, -1);
+                                    errorMessage = "";
                                 }
                             }
 
@@ -166,6 +169,16 @@ Item {
                     }
                 }
             }
+        }
+    }
+
+    function checkPinCode(pin) {
+        var savedPin = AppSave.loadPinCode();
+        console.log("пин", AppSave.loadPinCode())
+        if (pin === savedPin) {
+            pageLoader.source = "qrc:/pages/mainContent.qml";
+        } else {
+            enteredPin = "";
         }
     }
 }

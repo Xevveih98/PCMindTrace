@@ -26,5 +26,6 @@
         <file alias="CustTextFieldError.qml">qml/CustomComponents/CustTextFieldError.qml</file>
         <file alias="CustNotifyAnimation.qml">qml/CustomComponents/CustNotifyAnimation.qml</file>
         <file alias="CustFlickRefresher.qml">qml/CustomComponents/CustFlickRefresher.qml</file>
+        <file alias="CustChecker.qml">qml/CustomComponents/CustChecker.qml</file>
     </qresource>
 </RCC>

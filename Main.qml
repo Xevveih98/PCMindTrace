@@ -13,7 +13,11 @@ Window {
     Loader {
         id: pageLoader
         anchors.fill: parent
-        source: AppSave.isUserLoggedIn() ? "qrc:/pages/PrivacyGate.qml" : "qrc:/pages/AuthWindow.qml"
+        source: AppSave.isUserLoggedIn()
+            ? (AppSave.isUserHasPinCode()
+                ? "qrc:/pages/PrivacyGate.qml"
+                : "qrc:/pages/mainContent.qml")
+            : "qrc:/pages/AuthWindow.qml"
     }
 
     CustNtfyAntn {
@@ -74,10 +78,10 @@ Window {
 // 2. Уведомления для смены почты и пароля
 // 3. Смену пароля
 // 4. Уведомления для выхода из аккаунта и удаления
+// 5. Пин код
 
 //------------------ СДЕЛАТЬ
 
-// 5. Пин код
 // 6. Поправить категории
 // 7. Смена логина
 // 8. Добавить фильтр по эмоциям и активностям
