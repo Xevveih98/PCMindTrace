@@ -9,10 +9,15 @@ Popup {
     property string entryContentText
     property int selectedMoodId
     property var selectedTags
+    property string entryDateCreate
     property var selectedActivities
     property var selectedEmotions
     property var parentPopup
     property int selectedFolderId: -1
+    property int entryId
+    property var entryDate
+    property string mode
+    property var foldersList: []
 
     id: managerFolderPopup
     width: Screen.width * 0.93
@@ -130,20 +135,29 @@ Popup {
             anchors.fill: parent
             onClicked: {
                 console.log("Selected folder ID:", managerFolderPopup.selectedFolderId)
+                let entryDateToSave = (mode === "edit" && entryDate) ? entryDate : entryDateCreate;
 
                 let entryData = {
                     title: entryHeaderText,
                     content: entryContentText,
-                    date: Utils.formatTodayDate(),
+                    date: entryDateToSave,
                     moodId: selectedMoodId,
                     tags: selectedTags,
                     activities: selectedActivities,
                     emotions: selectedEmotions,
-                    folder: managerFolderPopup.selectedFolderId
+                    folder: managerFolderPopup.selectedFolderId,
+                    id: entryId
                 }
 
+                console.log("Режим:", mode)
                 console.log("Отправка записи:", JSON.stringify(entryData, null, 2))
-                entriesUser.saveEntryFromQml(entryData)
+
+                if (mode === "edit") {
+                    entriesUser.updateEntryFromQml(entryData)
+                } else {
+                    entriesUser.saveEntryFromQml(entryData)
+                }
+
                 managerFolderPopup.close()
 
                 if (parentPopup) {
@@ -154,25 +168,17 @@ Popup {
     }
 
     onOpened: {
-        foldersUser.loadFolder()
-    }
-
-    Connections {
-        target: foldersUser
-        onFoldersLoadedSuccess: function(folders) {
-            foldersListModel.clear();
-            console.log("Данные загружены:", folders);
-            for (let i = 0; i < folders.length; ++i) {
-                foldersListModel.append({
-                    id: folders[i].id,
-                    foldername: folders[i].name,
-                });
-            }
-            if (folders.length > 0) {
-                lio.currentIndex = 0;
-                managerFolderPopup.selectedFolderId = folders[0].id;
-                console.log("Установлена папка по умолчанию:", folders[0].id);
-            }
-        }
-    }
+       foldersListModel.clear()
+       for (let i = 0; i < foldersList.length; ++i) {
+           foldersListModel.append({
+               id: foldersList[i].id,
+               foldername: foldersList[i].name,
+           })
+       }
+       if (foldersList.length > 0) {
+           lio.currentIndex = 0;
+           managerFolderPopup.selectedFolderId = foldersList[0].id;
+           console.log("Установлена папка по умолчанию:", foldersList[0].id);
+       }
+   }
 }

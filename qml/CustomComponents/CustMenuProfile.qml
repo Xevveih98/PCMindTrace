@@ -15,9 +15,11 @@ Item {
 
     Rectangle {
         id: buttonRect
-        width: wrapper.width * 0.94
+        width: wrapper.width * 0.93
         height: wrapper.height
         color: "#3E3A40"
+        border.width: 1
+        border.color: "#474448"
         radius: 20
         anchors.horizontalCenter: parent.horizontalCenter
 
@@ -76,7 +78,13 @@ Item {
     }
 
     Component.onCompleted: {
-        if (AppSave.isUserLoggedIn()) {
+        userName = AppSave.getSavedLogin()
+        userEmail = AppSave.getSavedEmail()
+    }
+
+    Connections {
+        target: authUser
+        onEmailChangeSuccess: {
             userName = AppSave.getSavedLogin()
             userEmail = AppSave.getSavedEmail()
         }

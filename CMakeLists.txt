@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_AUTORCC ON)
 
 
-find_package(Qt6 REQUIRED COMPONENTS Quick Sql Core Widgets)
+find_package(Qt6 REQUIRED COMPONENTS Quick Sql Core Charts)
 
 qt_standard_project_setup(REQUIRES 6.8)
 
@@ -32,6 +32,10 @@ qt_add_executable(appPCMindTrace
     src/EntriesUser.h
     src/EntriesUser.cpp
     src/UserItem.h
+    src/ComputeUser.h
+    src/ComputeUser.cpp
+    src/vibrationutils.h
+    src/vibrationutils.cpp
 )
 
 qt_add_qml_module(appPCMindTrace
@@ -39,6 +43,7 @@ qt_add_qml_module(appPCMindTrace
     VERSION 1.0
     QML_FILES
         Main.qml
+        RESOURCES android/build.gradle android/res/values/libs.xml android/res/xml/qtprovider_paths.xml android/gradle/wrapper/gradle-wrapper.jar android/gradle/wrapper/gradle-wrapper.properties android/gradle.properties android/gradlew android/gradlew.bat
 )
 
 set_target_properties(appPCMindTrace PROPERTIES
@@ -49,8 +54,12 @@ set_target_properties(appPCMindTrace PROPERTIES
     WIN32_EXECUTABLE TRUE
 )
 
+set_property(TARGET appPCMindTrace APPEND PROPERTY
+    QT_ANDROID_PACKAGE_SOURCE_DIR ${CMAKE_SOURCE_DIR}/android
+)
+
 target_link_libraries(appPCMindTrace
-    PRIVATE Qt6::Quick Qt6::Sql Qt6::Core Qt6::Widgets
+    PRIVATE Qt6::Quick Qt6::Sql Qt6::Core Qt6::Charts
 )
 
 target_sources(appPCMindTrace PRIVATE images.qrc qml.qrc components.qrc popups.qrc icons2.qrc icons.qrc)

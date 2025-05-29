@@ -190,7 +190,7 @@ Popup {
 
     onOpened: {
         foldersListModel.clear();
-        foldersUser.loadFolder() // Загружаем папки при открытии попапа
+        foldersUser.loadFolder()
     }
 
     Connections {

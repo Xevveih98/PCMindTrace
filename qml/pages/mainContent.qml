@@ -15,7 +15,6 @@ Item {
         ListElement { title: "Главная страница"; page: "qrc:/pages/Home.qml"; icon: "qrc:/images/homemenu.png" }
         ListElement { title: "Поиск"; page: "qrc:/pages/Research.qml"; icon: "qrc:/images/searchmenu.png" }
         ListElement { title: "Календарь"; page: "qrc:/pages/Calendar.qml"; icon: "qrc:/images/calendarmenu.png" }
-        ListElement { title: "Анализ и статистика"; page: "qrc:/pages/Dashboard.qml"; icon: "qrc:/images/dashboardmenu.png" }
         ListElement { title: "Настройки"; page: "qrc:/pages/Settings.qml"; icon: "qrc:/images/settingsmenu.png" }
     }
 
@@ -131,6 +130,6 @@ Item {
     StackView {
         id: stackViewMainContent
         anchors.fill: parent
-        initialItem: "qrc:/pages/Calendar.qml"
+        initialItem: "qrc:/pages/Settings.qml"
     }
 }

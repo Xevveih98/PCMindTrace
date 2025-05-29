@@ -1,11 +1,12 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import PCMindTrace 1.0
+import CustomComponents
 
 Popup {
     id: exitPopup
     width: Screen.width * 0.9
-    height: Screen.height * 0.16
+    height: 280
     modal: true
     padding: 0
     focus: true
@@ -18,44 +19,39 @@ Popup {
     }
     background: Rectangle {
         color: "#2D292C"
-        radius: 10
+        radius: 8
         border.color: "#474448"
         border.width: 1
     }
 
-    Column {
-        id: columnpop
-        spacing: 4
-        anchors {
-            top: parent.top
-            horizontalCenter: parent.horizontalCenter
-            topMargin: 20
-        }
-        width: parent.width * 0.85
+    Item {
+        id: oberInputFieldsEmpty
+        anchors.centerIn: parent
+        width: parent.width * 0.86
+        height: parent.height * 0.86
 
-        Text {
-            text: "Почта"
-            font.pixelSize: 12
-            color: "#D9D9D9"
-        }
+        Column {
+            anchors.fill: parent
+            spacing: 6
 
-        TextField {
-            id: regEmail
-            height: 30
-            font.pixelSize: 11
-            color: "#D9D9D9"
-            placeholderText: ""
-            maximumLength: 120
-            wrapMode: Text.NoWrap
-            horizontalAlignment: TextInput.AlignLeft
-            verticalAlignment: TextInput.AlignVCenter
-            background: Rectangle {
-                color: "#292729"
-                border.color: "#4D4D4D"
-                border.width: 1
+            Column {
+                spacing: 3
+
+                Text {
+                    text: "Новая почта"
+                    font.pixelSize: 12
+                    color: "#D9D9D9"
+                }
+
+                CustTxtFldEr {
+                    id: regEmail
+                    width: oberInputFieldsEmpty.width
+                    placeholderText: "Введите новую почту"
+                    maximumLength: 64
+                    errorText: "* Ошибка"
+                    errorVisible: false
+                }
             }
-            anchors.left: parent.left
-            anchors.right: parent.right
         }
     }
 
@@ -81,8 +77,13 @@ Popup {
         MouseArea {
             anchors.fill: parent
             onClicked: {
-                authUser.changeEmail(regEmail.text)
-                exitPopup.close();
+                let hasEmptyError = false;
+                let hasFormatError = false;
+                hasEmptyError = Utils.validateEmptyField(regEmail) || hasEmptyError;
+                if (!hasEmptyError) {hasFormatError = Utils.validateEmailField(regEmail) || hasFormatError;}
+                if (!hasEmptyError && !hasFormatError) {
+                    authUser.changeEmail(regEmail.text); exitPopup.close();
+                }
             }
         }
     }

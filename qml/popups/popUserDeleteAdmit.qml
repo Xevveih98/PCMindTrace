@@ -1,15 +1,16 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import PCMindTrace 1.0
+import QtQuick.Layouts
 
 Popup {
     id: exitPopup
-    width: Screen.width * 0.66
-    height: Screen.height * 0.12
+    width: Screen.width * 0.9
+    height: 140
     modal: true
     padding: 0
     focus: true
-    dim: true  // автоматическое затемнение заднего фона
+    dim: true
     closePolicy: Popup.CloseOnPressOutside | Popup.CloseOnEscape
     anchors.centerIn: Overlay.overlay
     Overlay.modal: Rectangle {
@@ -18,23 +19,40 @@ Popup {
     }
     background: Rectangle {
         color: "#2D292C"
-        radius: 10
+        radius: 8
         border.color: "#474448"
         border.width: 1
     }
 
-    Column {
-        spacing: 16
+    Item {
+        id: oberInputFieldsEmpty
         anchors.centerIn: parent
-        width: parent.width
-        padding: 20
+        width: parent.width * 0.86
+        height: parent.height * 0.7
 
-        Text {
-            text: "Вы уверены, что хотите удалить аккаунт?"
-            width: parent.width
-            color: "#D9D9D9"
-            font.pixelSize: 14
-            wrapMode: Text.Wrap
+        ColumnLayout {
+            anchors.fill: parent
+            spacing: 0
+
+            Text {
+                text: "Удаление аккаунта"
+                Layout.fillWidth: true
+                color: "#D9D9D9"
+                font.pixelSize: 18
+                font.bold: true
+                Layout.alignment: Qt.AlignHCenter
+                horizontalAlignment: Text.AlignHCenter
+            }
+
+            Text {
+                textFormat: Text.RichText
+                text: "Вы уверены, что хотите <b><font color='#DA446A'>удалить аккаунт</font></b>? Все ваши записи и категории <b><font color='#DA446A'>безвозвратно</font></b> исчезнут!"
+                Layout.fillWidth: true
+                horizontalAlignment: Text.AlignHCenter
+                wrapMode: Text.Wrap
+                font.pixelSize: 14
+                color: "#D9D9D9"
+            }
         }
     }
 
@@ -60,12 +78,8 @@ Popup {
         MouseArea {
             anchors.fill: parent
             onClicked: {
+                authUser.deleteUser();
                 exitPopup.close();
-                authUser.triggerSendSavedLogin();
-                AppSave.clearUser();
-                Qt.callLater(function() {
-                    pageLoader.source = "qrc:/pages/AuthWindow.qml";
-                });
             }
         }
     }

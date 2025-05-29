@@ -13,7 +13,7 @@ Rectangle {
 
         CustPageHead {
             id: header
-            headerWidth: parent.width
+            width: parent.width
             titleText: "Настройки"
         }
 
@@ -49,8 +49,8 @@ Rectangle {
                         buttonWidth: parent.width
                         buttonText: "Открыть профиль"
                         avatarSource: "qrc:/images/ecalm.png"
-                        userName: "Эльвира Тимощенко"
-                        userEmail: "elvira@example.com"
+                        userName: AppSave.getSavedLogin()
+                        userEmail: AppSave.getSavedEmail()
                         onClicked: {
                             console.log("Кнопка нажата!")
                         }
@@ -126,16 +126,65 @@ Rectangle {
 
                     CustButtSett {
                         buttonWidth: parent.width
-                        buttonText: "Настроить пароль"
+                        buttonText: "PIN-код"
                         iconSource: "qrc:/images/DataRecovery.png"
-                        //popupTarget: settingsPopupChangePass
-                    }
+                        //popupTarget: "qrc:/popups/popPinCodeManager.qml"
 
-                    CustButtSett {
-                        buttonWidth: parent.width
-                        buttonText: "Настроить PIN-код"
-                        iconSource: "qrc:/images/DataRecovery.png"
-                        //popupTarget: settingsPopupChangeEmail
+                        CustChck {
+                            id: mySwitch
+                            anchors.right: parent.right
+                            anchors.rightMargin: 10
+                            anchors.verticalCenter: parent.verticalCenter
+                            property var pinPopup: null
+                            property bool pinSetSuccessfully: false
+
+                            onToggled: (value) => {
+                                console.log("Переключатель:", value ? "Включен" : "Выключен")
+                                if (value) {
+                                    const component = Qt.createComponent("qrc:/popups/popPinCodeManager.qml");
+                                    if (component.status === Component.Ready) {
+                                        if (pinPopup) {
+                                            pinPopup.open();
+                                        } else {
+                                            pinPopup = component.createObject(parent);
+                                            if (pinPopup) {
+                                                pinSetSuccessfully = false;
+                                                pinPopup.open();
+                                                pinPopup.pinCodeSet.connect(() => {
+                                                    pinSetSuccessfully = true;
+                                                    notify.notificationTitle = "PIN-код установлен!"
+                                                    notify.triggerAnimation()
+                                                    pinPopup.close();
+                                                });
+
+                                                pinPopup.onVisibleChanged.connect(() => {
+                                                    if (!pinPopup.visible) {
+                                                        if (!pinSetSuccessfully) {
+                                                            AppSave.clearPinCode()
+                                                            notify.notificationTitle = "PIN-код отменен"
+                                                            notify.triggerAnimation()
+                                                            mySwitch.checked = false;
+                                                        }
+                                                        pinPopup.destroy();
+                                                        pinPopup = null;
+                                                    }
+                                                });
+                                            } else {
+                                                mySwitch.checked = false;
+                                            }
+                                        }
+                                    } else {
+                                        console.error("Ошибка загрузки компонента:", component.errorString());
+                                        mySwitch.checked = false;
+                                    }
+                                } else {
+                                    if (pinPopup) {
+                                        pinPopup.close();
+                                        pinPopup = null;
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
 
@@ -157,7 +206,7 @@ Rectangle {
 
                     CustButtSett {
                         buttonWidth: parent.width
-                        buttonText: "Редактировать активности"
+                        buttonText: "Редактировать события"
                         iconSource: "qrc:/images/DataRecovery.png"
                         popupTarget: "qrc:/popups/popCategoryActivitiesManage.qml"
                     }
@@ -177,6 +226,31 @@ Rectangle {
                     }
                 }
             }
+        }
+    }
+
+    CustNtfyAntn {
+        id: notify
+        notificationTitle: "уведомление"
+    }
+
+    Connections {
+        target: authUser
+        onEmailChangeSuccess: {
+            Qt.callLater(function() {
+                notify.notificationTitle = "Удачная смена почты!"
+                notify.triggerAnimation()
+            })
+        }
+    }
+
+    Connections {
+        target: authUser
+        onPasswordChangeSuccess: {
+            Qt.callLater(function() {
+                notify.notificationTitle = "Удачная смена пароля!"
+                notify.triggerAnimation()
+            })
         }
     }
 }

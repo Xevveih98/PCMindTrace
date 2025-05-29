@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import PCMindTrace 1.0
+import CustomComponents
 
 Rectangle {
     id: pageRecovery
@@ -9,7 +10,9 @@ Rectangle {
     Row {
         id: rowAuthHeader
         spacing: 10
+        height: 70
         anchors.horizontalCenter: parent.horizontalCenter
+
         Column {
             spacing: 5
 
@@ -42,33 +45,23 @@ Rectangle {
         id: recInputFieldsBG
         color: "#2D292C"
         width: parent.width
-        height: parent.height * 0.36
+        height: 280
         radius: 8
         z: 2
-        anchors {
-            top: rowAuthHeader.bottom
-            topMargin: 10
-        }
+        anchors.top: rowAuthHeader.bottom
 
         Item {
             id: oberInputFieldsEmpty
-            width: parent.width
-            height: parent.height
-            anchors{
-                top: parent.top
-                left: parent.left
-                topMargin: parent.height * 0.14
-                leftMargin: parent.width * 0.08
-                horizontalCenter: parent.horizontalCenter
-                verticalCenter: parent.verticalCenter
-            }
+            width: parent.width * 0.88
+            height: parent.height * 0.8
+            anchors.centerIn: parent
 
             Column {
                 anchors.fill: parent
-                spacing: 12
+                spacing: 6
 
                 Column {
-                    spacing: 6
+                    spacing: 3
 
                     Text {
                         text: "Почта"
@@ -76,81 +69,61 @@ Rectangle {
                         color: "#D9D9D9"
                     }
 
-                    TextField {
-                        id: regEmail
+                    CustTxtFldEr {
+                        id: regEnail
                         width: oberInputFieldsEmpty.width
-                        height: 30
-                        font.pixelSize: 11
-                        color: "#D9D9D9"
-                        maximumLength: 120
-                        wrapMode: Text.NoWrap
-                        horizontalAlignment: TextInput.AlignLeft
-                        verticalAlignment: TextInput.AlignVCenter
-                        background: Rectangle {
-                            color: "#292729"
-                            border.color: "#4D4D4D"
-                            border.width: 1
-                            radius: 0
+                        placeholderText: "Введите вашу почту"
+                        maximumLength: 64
+                        errorText: "* Ошибка"
+                        errorVisible: false
+
+                        Connections {
+                            target: authUser
+                            onPasswordRecoverFailed: function(message) {
+                                regEnail.errorText = message
+                                regEnail.errorVisible = true
+                                regEnail.triggerErrorAnimation()
+                                VibrationUtils.vibrate(200)
+                                console.log("СООБЩЕНИЕ", message)
+                            }
                         }
-                        padding: 10
                     }
                 }
 
                 Column {
-                    spacing: 6
+                    spacing: 3
+
                     Text {
-                        text: "Придумайте новый пароль"
+                        text: "Проверка"
                         font.pixelSize: 12
                         color: "#D9D9D9"
                     }
 
-                    TextField {
-                        id: regPassword
+                    CustTxtFldEr {
+                        id: regNewPassCheck
                         width: oberInputFieldsEmpty.width
-                        height: 30
-                        font.pixelSize: 6
-                        color: "#D9D9D9"
+                        placeholderText: "Повторно введите новый пароль"
                         maximumLength: 64
-                        wrapMode: Text.NoWrap
-                        echoMode: TextInput.Password
-                        horizontalAlignment: TextInput.AlignLeft
-                        verticalAlignment: TextInput.AlignVCenter
-                        background: Rectangle {
-                            color: "#292729"
-                            border.color: "#4D4D4D"
-                            border.width: 1
-                            radius: 0
-                        }
-                        padding: 10
+                        errorText: "* Ошибка"
+                        errorVisible: false
                     }
                 }
 
                 Column {
-                    spacing: 6
+                    spacing: 3
                     Text {
-                        text: "Повторите новый пароль"
+                        text: "Новый пароль"
                         font.pixelSize: 12
                         color: "#D9D9D9"
                     }
 
-                    TextField {
-                        id: regPasswordCheck
+                    CustTxtFldEr {
+                        id: regNewPass
                         width: oberInputFieldsEmpty.width
-                        height: 30
-                        font.pixelSize: 6
-                        color: "#D9D9D9"
+                        placeholderText: "Придумайте новый пароль"
                         maximumLength: 64
-                        wrapMode: Text.NoWrap
-                        echoMode: TextInput.Password
-                        horizontalAlignment: TextInput.AlignLeft
-                        verticalAlignment: TextInput.AlignVCenter
-                        background: Rectangle {
-                            color: "#292729"
-                            border.color: "#4D4D4D"
-                            border.width: 1
-                            radius: 0
-                        }
-                        padding: 10
+                        errorText: "* Ошибка"
+                        errorVisible: false
                     }
                 }
             }
@@ -174,7 +147,7 @@ Rectangle {
         color: "#474448"
         radius: 8
         width: parent.width
-        height: parent.height * 0.070
+        height: 50
         z: 1
         anchors {
             top: recHideline.bottom
@@ -187,13 +160,25 @@ Rectangle {
            color: "#D9D9D9"
            anchors.horizontalCenter: parent.horizontalCenter
            anchors.top: parent.top
-           anchors.topMargin: 20
+           anchors.topMargin: 18
         }
 
         MouseArea {
             anchors.fill: buttPassCheck
             onClicked: {
-               authUser.changePassword(regEmail.text, regPassword.text, regPasswordCheck.text)
+                let hasEmptyError = false;
+                let hasFormatError = false;
+                hasEmptyError = Utils.validateEmptyField(regEnail) || hasEmptyError;
+                hasEmptyError = Utils.validateEmptyField(regNewPass) || hasEmptyError;
+                hasEmptyError = Utils.validateEmptyField(regNewPassCheck) || hasEmptyError;
+                if (!hasEmptyError) {
+                    hasFormatError = Utils.validateEmailField(regEnail) || hasFormatError;
+                    hasFormatError = Utils.validatePasswordField(regNewPass) || hasFormatError;
+                    hasFormatError = Utils.validatePasswordMatch(regNewPass, regNewPassCheck) || hasFormatError;
+                }
+                if (!hasEmptyError && !hasFormatError) {
+                    authUser.recoverPassword(regEnail.text, regNewPass.text);
+                }
             }
         }
     }
@@ -214,8 +199,8 @@ Rectangle {
         Text {
             text: "Вернуться."
             font.pixelSize: 14
-            color: "#957EBD"
-            font.underline: true
+            color: "#DA446A"
+            font.bold: true
             MouseArea {
                 anchors.fill: parent
                 onClicked: (parent.StackView.view || stackViewAuthWindow).pop()

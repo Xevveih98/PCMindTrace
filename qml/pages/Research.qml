@@ -11,7 +11,7 @@ Rectangle {
 
     CustPageHead {
         id: header
-        headerWidth: parent.width
+        width: parent.width
         titleText: "Поиск"
     }
 
@@ -23,10 +23,10 @@ Rectangle {
         anchors.top: header.bottom
 
         Flickable {
-            property bool refreshing: false
             id: flickable
             anchors.fill: parent
-            contentHeight: eda.height + entryColumn.height
+            contentWidth: width
+            contentHeight: eda.height + 70
             flickableDirection: Flickable.VerticalFlick
             clip: true
 
@@ -231,12 +231,12 @@ Rectangle {
                             delegate: CustTagButon {
                                 tagText: model.tag
                                 buttonWidth: implicitWidth
-                                selected: pageResearchScreen.selectedTags.some(t => t.id === model.tagId) // ← исправлено
+                                selected: pageResearchScreen.selectedTags.some(t => t.id === model.tagId)
                                 onClicked: {
-                                    let index = pageResearchScreen.selectedTags.findIndex(t => t.id === model.tagId); // ← уже верно
+                                    let index = pageResearchScreen.selectedTags.findIndex(t => t.id === model.tagId);
                                     if (index === -1) {
                                         pageResearchScreen.selectedTags.push({
-                                            id: Number(model.tagId), // ← на всякий случай явно
+                                            id: Number(model.tagId),
                                             tag: model.tag
                                         });
                                     } else {
@@ -251,7 +251,6 @@ Rectangle {
                                     }
                                 }
                             }
-
                         }
                     }
 

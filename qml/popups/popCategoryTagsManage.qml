@@ -1,12 +1,13 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import PCMindTrace 1.0
-import CustomComponents
+import CustomComponents 1.0
+import QtQuick.Layouts
 
 Popup {
     id: managerPopup
-    width: Screen.width * 0.9
-    height: Screen.height * 0.5
+    width: Screen.width * 0.93
+    height: Screen.height * 0.8
     modal: true
     focus: true
     dim: true
@@ -19,103 +20,163 @@ Popup {
     }
     background: Rectangle {
         color: "#2D292C"
-        radius: 10
+        radius: 8
         border.color: "#474448"
         border.width: 1
     }
+    onOpened: {
+        categoriesUser.loadTags()
+    }
+
 
     Item {
-        anchors.fill: parent
+        anchors.top: parent.top
+        anchors.topMargin: 15
+        width: parent.width * 0.9
+        height: parent.height * 0.9
+        anchors.horizontalCenter: parent.horizontalCenter
 
-        Item{
-            width: parent.width * 0.9
-            height: parent.height * 0.93
-            anchors.centerIn: parent
+        ColumnLayout {
+            anchors.fill: parent
 
             Text {
-                id: header
                 text: "Управление тегами"
                 color: "#D9D9D9"
-                font.pixelSize: 22
+                font.pixelSize: 20
                 font.bold: true
                 wrapMode: Text.Wrap
-                anchors.horizontalCenter: parent.horizontalCenter
+                Layout.fillWidth: true
+                horizontalAlignment: Text.AlignHCenter
             }
 
             Text {
-                id: text1
-                text: "Укажите теги через пробел."
-                color: "#D9D9D9"
-                font.pixelSize: 15
-                anchors.top: header.bottom
-                anchors.topMargin: 14
+                textFormat: Text.RichText
+                text: "Укажите теги через <b><font color='#DA446A'>пробел</font></b>. Чтобы <b><font color='#DA446A'>убрать</font></b> тег - намите на него."
+                Layout.fillWidth: true
+                horizontalAlignment: Text.AlignHCenter
                 wrapMode: Text.Wrap
-                width: parent.width
-                horizontalAlignment: Text.AlignLeft
-            }
-
-            Text {
-                id: text2
-                text: "Чтобы убрать тег - намите на него."
+                font.pixelSize: 14
                 color: "#D9D9D9"
-                font.pixelSize: 15
-                anchors.top: text1.bottom
-                anchors.topMargin: 1
-                wrapMode: Text.Wrap
-                width: parent.width
-                horizontalAlignment: Text.AlignLeft
             }
 
-            CustTextFild {
-                id: tagInput
-                anchors.top: text2.bottom
-                anchors.topMargin: 14
-                customWidth: parent.width
-                customHeight: parent.height
-            }
-        }
+            Item {
+                Layout.preferredHeight: 50
+                Layout.fillWidth: true
 
-        Rectangle {
-            id: buttAdmit
-            color: "#474448"
-            radius: 8
-            width: parent.width
-            height: 50
-            anchors {
-                bottom: parent.bottom
-                horizontalCenter: parent.horizontalCenter
+                RowLayout {
+                    anchors.fill: parent
+                    spacing: 7
+
+                    CustTxtFldEr {
+                        id: catName
+                        Layout.fillWidth: true
+                        placeholderText: "Дайте название впечатлению"
+                        maximumLength: 64
+                        errorText: "* Ошибка"
+                        errorVisible: false
+                        property string previousText: ""
+                    }
+
+                    Item {
+                        width: 30
+                        height: 30
+
+                        MouseArea {
+                            anchors.fill: parent
+                            onClicked: {
+
+                            }
+
+                            Image {
+                                anchors.centerIn: parent
+                                width: parent.height
+                                height: parent.width
+                                source: "qrc:/images/addbuttplus.png"
+                                fillMode: Image.PreserveAspectFit
+                            }
+                        }
+                    }
+                }
             }
 
-            Text {
-                text: "Подтвердить"
-                font.pixelSize: 18
-                color: "#D9D9D9"
-                anchors.centerIn: parent
-            }
+            Item {
+                Layout.fillWidth: true
+                Layout.fillHeight: true
 
-            MouseArea {
-                anchors.fill: parent
-                onClicked: {
-                    tagInput.confirmCurrentTag()
-                    Qt.callLater(() => {
-                        const tags = tagInput.getTags()
-                        console.log("Final tags for saving:", tags)
-                        categoriesUser.saveTags(tags)
-                        managerPopup.close()
-                    })
+                Rectangle {
+                    anchors.fill: parent
+                    color: "#262326"
+                    radius: 8
+
+                    Text {
+                        anchors.centerIn: parent
+                        text: "Добавьте новые теги.."
+                        color: "#4d4d4d"
+                        font.pixelSize: 11
+                        font.italic: true
+                        visible: emotionListModel.count === 0
+                    }
+                }
+
+                Item{
+                    width: parent.width * 0.97
+                    height: parent.height * 0.99
+                    anchors.centerIn: parent
+
+                    Flickable {
+                        width: parent.width
+                        height: parent.height
+                        contentWidth: flowContent.implicitWidth
+                        contentHeight: flowContent.implicitHeight
+                        clip: true
+
+                        Flow {
+                            id: flowContent
+                            width: parent.width
+                            spacing: 6
+
+                            Repeater {
+                                model: tagListModel
+                                delegate: CustTagButon {
+                                    tagText: model.tag
+                                    buttonWidth: implicitWidth
+                                    onClicked: {
+                                        categoriesUser.deleteTag(model.tag);
+                                        tagListModel.remove(index);
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
     }
 
-    onOpened: {
-        categoriesUser.loadTags()
+    ListModel {
+        id: tagListModel
     }
 
-    Connections {
-        target: categoriesUser
-        onTagsLoaded: (tags) => {
-            tagInput.loadTagsFromServer(tags)
+    Rectangle {
+        id: buttAdmit
+        color: "#474448"
+        radius: 8
+        width: parent.width
+        anchors.bottom: parent.bottom
+        height: 40
+
+        Text {
+            text: "Подтвердить"
+            font.pixelSize: 18
+            color: "#D9D9D9"
+            anchors.centerIn: parent
+        }
+
+        MouseArea {
+            anchors.fill: parent
+            onClicked: {
+                managerPopup.close()
+            }
         }
     }
 }

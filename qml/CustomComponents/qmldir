@@ -19,4 +19,10 @@ IconModelMod 1.0 IconModelMood.qml
 CustEntrBlok 1.0 CustEntryBlock.qml
 CustMenuButn 1.0 CustMenuButton.qml
 CustMenuProf 1.0 CustMenuProfile.qml
+CustEntrBttn 1.0 CustEntryButton.qml
+CustDateIcon 1.0 CustDateIcon.qml
+CustTxtFldEr 1.0 CustTextFieldError.qml
+CustNtfyAntn 1.0 CustNotifyAnimation.qml
+CustFlkRfshr 1.0 CustFlickRefresher.qml
+CustChck 1.0 CustChecker.qml
 Utils 1.0 Utils.js

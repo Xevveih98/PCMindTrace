@@ -7,7 +7,7 @@ EntriesUser::EntriesUser(QObject *parent)
 {
     connect(&m_networkUser, &QNetworkAccessManager::finished, this, [=](QNetworkReply *reply) {
         QUrl endpoint = reply->request().url();
-        qDebug() << "Network reply received from:" << endpoint.toString();
+        //qDebug() << "Network reply received from:" << endpoint.toString();
 
         if (endpoint.path().contains("/saveentry")) {
             onEntrySaveReply(reply);
@@ -17,6 +17,10 @@ EntriesUser::EntriesUser(QObject *parent)
             onUserEntryFetchReply(reply);
         } else if (endpoint.path().contains("/searchentriesbytags")) {
             onUserEntryFetchReply(reply);
+        } else if (endpoint.path().contains("/searchentriesbydate")) {
+            onUserEntryFetchReply(reply);
+        } else if (endpoint.path().contains("/getmoodidies")) {
+            onUserMoodIdsFetchReply(reply);
         } else {
             qWarning() << "Unhandled endpoint in EntriesUser:" << endpoint.toString();
             reply->deleteLater();
@@ -25,6 +29,7 @@ EntriesUser::EntriesUser(QObject *parent)
 
     m_entryUserModel = new EntryUserModel(this);
     m_searchModel = new EntryUserModel(this);
+    m_dateSearchModel = new EntryUserModel(this);
     qDebug() << "EntriesUser initialized and connected to network manager.";
 }
 
@@ -185,6 +190,8 @@ void EntriesUser::onUserEntryFetchReply(QNetworkReply *reply)
         targetModel = m_entryUserModel;
     } else if (path.contains("/searchentriesbywords") || path.contains("/searchentriesbytags")) {
         targetModel = m_searchModel;
+    } else if (path.contains("/searchentriesbydate")) {
+        targetModel = m_dateSearchModel;
     } else {
         qWarning() << "Unknown path in onUserEntryFetchReply:" << path;
         reply->deleteLater();
@@ -193,7 +200,7 @@ void EntriesUser::onUserEntryFetchReply(QNetworkReply *reply)
 
     if (reply->error() == QNetworkReply::NoError) {
         QByteArray response = reply->readAll();
-        qDebug() << "Entries loaded successfully. Server response:" << QString::fromUtf8(response);
+        qDebug() << "Entries loaded successfully.";
 
         if (response.isEmpty()) {
             qWarning() << "Empty entry response received.";
@@ -311,6 +318,211 @@ void EntriesUser::loadUserEntriesByTags(const QList<int> &tagIds)
     QNetworkReply *reply = m_networkUser.post(request, data);
 }
 
+//--------------------------------- загрзука записей (дата) ------------------------
+
+void EntriesUser::loadUserEntriesByDate(const QString &date)
+{
+    AppSave appSave;
+    QString login = appSave.getSavedLogin();
+    qDebug() << "Ищем записи для пользователя:" << login
+             << " | По дате:" << date;
+
+    QUrl serverUrl = AppConfig::apiUrl("/searchentriesbydate");
+
+    QNetworkRequest request(serverUrl);
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+    QJsonObject json;
+    json["login"] = login;
+    json["date"] = date;
+
+    QJsonDocument doc(json);
+    QByteArray data = doc.toJson();
+
+    QNetworkReply *reply = m_networkUser.post(request, data);
+}
+
+//------------------------------ загрузка настроения -------------------------------
+
+void EntriesUser::loadUserEntriesMoodIdies(const QString &date)
+{
+    AppSave appSave;
+    QString login = appSave.getSavedLogin();
+
+    QUrl serverUrl = AppConfig::apiUrl("/getmoodidies");
+
+    QNetworkRequest request(serverUrl);
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+    QJsonObject json;
+    json["login"] = login;
+    json["date"] = date;
+
+    QJsonDocument doc(json);
+    QByteArray data = doc.toJson();
+
+    QNetworkReply *reply = m_networkUser.post(request, data);
+}
+
+void EntriesUser::onUserMoodIdsFetchReply(QNetworkReply *reply)
+{
+    if (reply->error() != QNetworkReply::NoError) {
+        emit moodIdsLoadFailed(reply->errorString());
+        reply->deleteLater();
+        return;
+    }
+
+    QByteArray response = reply->readAll();
+    QJsonDocument doc = QJsonDocument::fromJson(response);
+    if (!doc.isObject()) {
+        emit moodIdsLoadFailed("Invalid JSON format");
+        reply->deleteLater();
+        return;
+    }
+
+    QJsonArray moodIdsArray = doc.object().value("moodIds").toArray();
+    QString date = doc.object().value("date").toString();
+    QList<int> moodIds;
+    for (const auto &val : moodIdsArray) {
+        if (val.isDouble())
+            moodIds.append(val.toInt());
+    }
+    emit moodIdsLoadSuccess(moodIds, date);
+    reply->deleteLater();
+}
+
+
+//-------------------------- удаление и изменение записи --------------------------
+
+void EntriesUser::deleteUserEntry(int entryId)
+{
+    AppSave appSave;
+    QString login = appSave.getSavedLogin();
+
+    QJsonObject json;
+    json["id"] = entryId;
+    json["login"] = login;
+
+    qDebug() << "клиент айди" << entryId;
+
+    QJsonDocument jsonDoc(json);
+    QUrl serverUrl = AppConfig::apiUrl("/deleteentry");
+
+    QNetworkRequest request(serverUrl);
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+
+    QNetworkReply *reply = m_networkUser.post(request, jsonDoc.toJson());
+
+    connect(reply, &QNetworkReply::finished, this, [=]() {
+        if (reply->error() == QNetworkReply::NoError) {
+            qDebug() << "Entry deleted successfully with ID:" << entryId;
+            if (m_dateSearchModel->removeEntryById(entryId)) {
+                qDebug() << "Entry removed from local model.";
+                emit entryDeleted(entryId);
+            } else {
+                qWarning() << "Entry ID not found in local model.";
+            }
+
+        } else {
+            qWarning() << "Failed to delete entry:" << reply->errorString();
+        }
+        reply->deleteLater();
+    });
+}
+
+void EntriesUser::updateEntryFromQml(const QVariant &entryDataVariant)
+{
+    QVariantMap entryData = entryDataVariant.toMap();
+
+    int id = entryData.value("id", -1).toInt();
+    if (id < 0) {
+        qWarning() << "Invalid entry id for update!";
+        return;
+    }
+
+    QString title = entryData.value("title").toString();
+    QString content = entryData.value("content").toString();
+    QString dateStr = entryData.value("date").toString();
+    int moodId = entryData.value("moodId").toInt();
+    int folderId = entryData.contains("folder") ? entryData.value("folder").toInt() : -1;
+
+    // Парсим дату
+    QDate date = QDate::fromString(dateStr, Qt::ISODate);
+    if (!date.isValid()) {
+        qWarning() << "Invalid date format:" << dateStr << ", using current date.";
+        date = QDate::currentDate();
+    }
+
+    QTime time = QTime::currentTime();
+
+    auto convertIdsToUserItems = [](const QVariantList &idList) -> QVector<UserItem> {
+        QVector<UserItem> items;
+        for (const QVariant &v : idList) {
+            int id = v.toInt();
+            if (id > 0) {
+                UserItem item;
+                item.id = id;
+                item.iconId = 0;
+                item.label = "";
+                items.append(item);
+            }
+        }
+        return items;
+    };
+
+    QVector<UserItem> tags = convertIdsToUserItems(entryData.value("tags").toList());
+    QVector<UserItem> activities = convertIdsToUserItems(entryData.value("activities").toList());
+    QVector<UserItem> emotions = convertIdsToUserItems(entryData.value("emotions").toList());
+
+    QString currentUserLogin = AppSave().getSavedLogin();
+
+    EntryUser entry(
+        id,
+        currentUserLogin,
+        title,
+        content,
+        moodId,
+        folderId,
+        date,
+        time,
+        tags,
+        activities,
+        emotions
+        );
+
+    updateEntry(entry);
+}
+
+void EntriesUser::updateEntry(const EntryUser &entry)
+{
+    QString login = entry.getUserLogin();
+    if (login.isEmpty()) {
+        qWarning() << "No user login set for entry update!";
+        return;
+    }
+
+    QJsonObject json = entry.toJson();
+    json["login"] = login;
+    json["id"] = entry.getId();
+
+    QJsonDocument doc(json);
+    QByteArray data = doc.toJson();
+
+    QUrl serverUrl = AppConfig::apiUrl("/updateentry");
+
+    QNetworkRequest request(serverUrl);
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+
+    QNetworkReply *reply = m_networkUser.post(request, data);
+
+    connect(reply, &QNetworkReply::finished, this, [reply]() {
+        if (reply->error() == QNetworkReply::NoError) {
+            qInfo() << "Entry updated successfully.";
+        } else {
+            qWarning() << "Failed to update entry:" << reply->errorString();
+        }
+        reply->deleteLater();
+    });
+}
+
 
 //--------------------------------------------- геттеры ----------------------------
 
@@ -324,11 +536,21 @@ EntryUserModel* EntriesUser::searchModel() const
     return m_searchModel;
 }
 
+EntryUserModel* EntriesUser::dateSearchModel() const
+{
+    return m_dateSearchModel;
+}
+
 void EntriesUser::clearSearchModel() {
     if (m_searchModel) {
         m_searchModel->clear();
-        emit searchModelChanged();  // чтобы QML понял, что модель изменилась
+        emit searchModelChanged();
     }
 }
 
-
+void EntriesUser::clearDateSearchModel() {
+    if (m_dateSearchModel) {
+        m_dateSearchModel->clear();
+        emit dateSearchModelChanged();
+    }
+}
