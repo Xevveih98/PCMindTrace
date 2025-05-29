@@ -7,7 +7,11 @@ Rectangle {
     id: pageResearchScreen
     color: "#181718"
 
-    property var selectedTags: []
+    property var selectedTags: [272, 273, 274]
+    property var selectedEmotions: [47, 48, 49]
+    property var selectedActivities: [72, 73, 74]
+
+
 
     CustPageHead {
         id: header
@@ -298,9 +302,13 @@ Rectangle {
                             MouseArea {
                                 anchors.fill: parent
                                 onClicked: {
-                                    let tagIds = selectedTags.map(t => Number(t.id));
-                                    console.log("Отправляем id-шники тегов:", tagIds);
-                                    entriesUser.loadUserEntriesByTags(tagIds);
+                                    // let tagIds = selectedTags.map(t => Number(t.id));
+                                    // let emotionIds = selectedTags.map(t => Number(t.id));
+                                    // let activityIds = selectedTags.map(t => Number(t.id));
+                                    console.log("Отправляем id-шники тегов:", selectedTags);
+                                    console.log("------------------ эмоций:", selectedEmotions);
+                                    console.log("------------- активностей:", selectedActivities);
+                                    entriesUser.loadUserEntriesByTags(selectedTags, selectedEmotions, selectedActivities);
 
                                 }
                             }
