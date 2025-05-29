@@ -32,24 +32,22 @@ CategoriesUser::CategoriesUser(QObject *parent)
 
 // ----------- Сохранение тегов -----------
 
-void CategoriesUser::saveTags(const QStringList &tags)
+void CategoriesUser::saveTag(const QString &tag)
 {
     AppSave appSave;
     QString savedLogin = appSave.getSavedLogin().trimmed();
 
-    qDebug() << "saveTags called with login:" << savedLogin;
-    qDebug() << "tags:" << tags;
+    qDebug() << "saveTag called with login:" << savedLogin;
+    qDebug() << "tag:" << tag;
+
+    if (tag.trimmed().isEmpty()) {
+        qWarning() << "Empty tag, nothing to save";
+        return;
+    }
 
     QJsonObject json;
     json["login"] = savedLogin;
-
-    QJsonArray jsonTags;
-    for (const QString &tag : tags) {
-        if (!tag.trimmed().isEmpty())
-            jsonTags.append(tag.trimmed());
-    }
-
-    json["tags"] = jsonTags;
+    json["tag"] = tag.trimmed();
 
     QJsonDocument jsonDoc(json);
     QUrl serverUrl = AppConfig::apiUrl("/savetags");
@@ -66,23 +64,25 @@ void CategoriesUser::sendTagsSaveRequest(const QJsonDocument &jsonDoc, const QUr
     qDebug() << "Request payload (save tags):" << data;
 
     QNetworkReply *reply = m_networkUser.post(request, data);
-    connect(reply, &QNetworkReply::finished, this, [this, reply]() {
-        onTagsSaveReply(reply);
-    });
 }
 
 void CategoriesUser::onTagsSaveReply(QNetworkReply *reply)
 {
     qDebug() << "onTagsSaveReply called.";
+    QByteArray responseData = reply->readAll();
+    QString responseString = QString::fromUtf8(responseData);
+
     if (reply->error() == QNetworkReply::NoError) {
-        qDebug() << "Tags saved successfully. Server response:" << reply->readAll();
+        qDebug() << "Tags saved successfully. Server response:" << responseString;
         emit tagsSavedSuccess();
     } else {
-        qWarning() << "Tags save failed. Error:" << reply->errorString();
-        emit tagsSavedFailed(reply->errorString());
+        QString errorMessage = !responseString.isEmpty() ? responseString : reply->errorString();
+        qWarning() << "Tags save failed. Error:" << errorMessage;
+        emit tagsSavedFailed(errorMessage);
     }
     reply->deleteLater();
 }
+
 
 // ----------- Выгрузка тегов -----------
 

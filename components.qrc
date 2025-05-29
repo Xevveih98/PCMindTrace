@@ -7,7 +7,6 @@
         <file alias="CustProfileHeader.qml">qml/CustomComponents/CustProfileHeader.qml</file>
         <file alias="CustPageHeader.qml">qml/CustomComponents/CustPageHeader.qml</file>
         <file alias="CustButtonTurnBack.qml">qml/CustomComponents/CustButtonTurnBack.qml</file>
-        <file alias="CustTextField.qml">qml/CustomComponents/CustTextField.qml</file>
         <file alias="CustTagButton.qml">qml/CustomComponents/CustTagButton.qml</file>
         <file alias="CustActivityButton.qml">qml/CustomComponents/CustActivityButton.qml</file>
         <file alias="CustEmotionButton.qml">qml/CustomComponents/CustEmotionButton.qml</file>

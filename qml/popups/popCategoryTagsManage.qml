@@ -51,7 +51,7 @@ Popup {
 
             Text {
                 textFormat: Text.RichText
-                text: "Укажите теги через <b><font color='#DA446A'>пробел</font></b>. Чтобы <b><font color='#DA446A'>убрать</font></b> тег - намите на него."
+                text: "Теги помогают <b><font color='#DA446A'>быстро</font></b> находить записи — добавляйте как можно больше релевантных. Чтобы <b><font color='#DA446A'>убрать</font></b> тег, просто нажмите на него."
                 Layout.fillWidth: true
                 horizontalAlignment: Text.AlignHCenter
                 wrapMode: Text.Wrap
@@ -70,11 +70,18 @@ Popup {
                     CustTxtFldEr {
                         id: catName
                         Layout.fillWidth: true
-                        placeholderText: "Дайте название впечатлению"
+                        placeholderText: "Дайте название тегу"
                         maximumLength: 64
                         errorText: "* Ошибка"
                         errorVisible: false
                         property string previousText: ""
+                        onTextChanged: {
+                            if (text !== previousText) {
+                                let newText = text.replace(/\s+/g, "_");
+                                previousText = newText;
+                                text = newText;
+                            }
+                        }
                     }
 
                     Item {
@@ -84,7 +91,11 @@ Popup {
                         MouseArea {
                             anchors.fill: parent
                             onClicked: {
-
+                                let hasEmptyError = false;
+                                hasEmptyError = Utils.validateEmptyField(catName) || hasEmptyError;
+                                if (!hasEmptyError) {
+                                    categoriesUser.saveTag(catName.text.trim())
+                                }
                             }
 
                             Image {
@@ -114,7 +125,7 @@ Popup {
                         color: "#4d4d4d"
                         font.pixelSize: 11
                         font.italic: true
-                        visible: emotionListModel.count === 0
+                        visible: tagListModel.count === 0
                     }
                 }
 
@@ -177,6 +188,30 @@ Popup {
             onClicked: {
                 managerPopup.close()
             }
+        }
+    }
+
+    Connections {
+        target: categoriesUser
+        onTagsSavedSuccess: {
+            categoriesUser.loadTags()
+            catName.text = ""
+        }
+        onTagsLoaded: function(tags) {
+            tagListModel.clear();
+            for (var i = 0; i < tags.length; ++i) {
+                tagListModel.append({
+                    id: tags[i].id,
+                    tag: tags[i].tag
+                });
+            }
+        }
+        onTagsSavedFailed:function(message) {
+            catName.errorText = message
+            catName.errorVisible = true
+            catName.triggerErrorAnimation()
+            VibrationUtils.vibrate(200)
+            console.log("СООБЩЕНИЕ", message)
         }
     }
 }

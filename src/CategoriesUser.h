@@ -17,7 +17,7 @@ class CategoriesUser : public QObject
 public:
     explicit CategoriesUser(QObject *parent = nullptr);
 
-    Q_INVOKABLE void saveTags(const QStringList &tags);
+    Q_INVOKABLE void saveTag(const QString &tag);
     Q_INVOKABLE void loadTags();
     Q_INVOKABLE void deleteTag(const QString &tag);
 
