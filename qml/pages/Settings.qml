@@ -160,7 +160,7 @@ Rectangle {
                                                 pinPopup.onVisibleChanged.connect(() => {
                                                     if (!pinPopup.visible) {
                                                         if (!pinSetSuccessfully) {
-                                                            AppSave.clearPinCode();
+                                                            AppSave.clearPinCode()
                                                             notify.notificationTitle = "PIN-код отменен"
                                                             notify.triggerAnimation()
                                                             mySwitch.checked = false;
@@ -206,7 +206,7 @@ Rectangle {
 
                     CustButtSett {
                         buttonWidth: parent.width
-                        buttonText: "Редактировать активности"
+                        buttonText: "Редактировать события"
                         iconSource: "qrc:/images/DataRecovery.png"
                         popupTarget: "qrc:/popups/popCategoryActivitiesManage.qml"
                     }

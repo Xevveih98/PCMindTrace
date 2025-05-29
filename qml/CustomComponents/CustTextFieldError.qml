@@ -23,7 +23,7 @@ Item {
             id: inputFill
             Layout.fillWidth: true
             Layout.preferredHeight: 30
-            Layout.maximumHeight: 40
+            Layout.alignment: Qt.AlignCenter
             font.pixelSize: 11
             color: "#D9D9D9"
             placeholderText: ""
@@ -35,7 +35,7 @@ Item {
                 color: "#292729"
                 border.color: root.borderColor
                 border.width: 1
-                radius: 0
+                radius: 2
             }
             padding: 10
             onTextChanged: {
@@ -66,9 +66,8 @@ Item {
             font.pixelSize: 11
             color: "#C04753"
             visible: errorVisible
-            wrapMode: Text.WrapAnywhere
+            wrapMode: Text.Wrap
             Layout.preferredWidth: root.width
-            //Layout.fillWidth: true
         }
     }
 

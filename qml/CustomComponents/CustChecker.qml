@@ -10,6 +10,7 @@ Item {
     signal toggled(bool checked)
 
     onCheckedChanged: {
+        AppSave.clearPinCode()
         AppSave.clearSwitchState()
         AppSave.saveSwitchState(checked)
     }
