@@ -290,19 +290,20 @@ void EntriesUser::loadUserEntriesByKeywords(const QStringList &keywords)
     QNetworkReply *reply = m_networkUser.post(request, data);
 }
 
-void EntriesUser::loadUserEntriesByTags(const QList<int> &tagIds)
+void EntriesUser::loadUserEntriesByTags(const QList<int> &tagIds, const QList<int> &emotionIds, const QList<int> &activityIds)
 {
     AppSave appSave;
     QString login = appSave.getSavedLogin();
     qDebug() << "Ищем записи для пользователя:" << login
-             << " | По тегам:" << tagIds;
+             << " | По тегам:" << tagIds
+             << " | По эмоциям:" << emotionIds
+             << " | По активностям:" << activityIds;
 
     QUrl serverUrl = AppConfig::apiUrl("/searchentriesbytags");
 
     QNetworkRequest request(serverUrl);
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 
-    // Формируем JSON-объект
     QJsonObject json;
     json["login"] = login;
 
@@ -310,7 +311,19 @@ void EntriesUser::loadUserEntriesByTags(const QList<int> &tagIds)
     for (int tagId : tagIds) {
         tagsArray.append(tagId);
     }
-    json["tag_ids"] = tagsArray;
+    json["tagIds"] = tagsArray;
+
+    QJsonArray emotionsArray;
+    for (int emotionId : emotionIds) {
+        emotionsArray.append(emotionId);
+    }
+    json["emotionIds"] = emotionsArray;
+
+    QJsonArray activityArray;
+    for (int activityId : activityIds) {
+        activityArray.append(activityId);
+    }
+    json["activityIds"] = activityArray;
 
     QJsonDocument doc(json);
     QByteArray data = doc.toJson();

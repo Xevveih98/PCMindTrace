@@ -28,7 +28,7 @@ public:
 
     Q_INVOKABLE void loadUserEntries(int folderId, int year, int month);
     Q_INVOKABLE void loadUserEntriesByKeywords(const QStringList &keywords);
-    Q_INVOKABLE void loadUserEntriesByTags(const QList<int> &tagIds);
+    Q_INVOKABLE void loadUserEntriesByTags(const QList<int> &tagIds, const QList<int> &emotionIds, const QList<int> &activityIds);
     Q_INVOKABLE void loadUserEntriesByDate(const QString &date);
     Q_INVOKABLE void loadUserEntriesMoodIdies(const QString &date);
 
