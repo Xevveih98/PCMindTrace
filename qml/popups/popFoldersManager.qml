@@ -20,172 +20,187 @@ Popup {
     }
     background: Rectangle {
         color: "#2D292C"
-        radius: 10
+        radius: 8
         border.color: "#474448"
         border.width: 1
     }
 
-    Column {
-        width: parent.width * 0.91
-        anchors.centerIn: parent
-        spacing: 6
+    Item {
+        anchors.top: parent.top
+        anchors.topMargin: 15
+        width: parent.width * 0.9
+        height: parent.height * 0.9
+        anchors.horizontalCenter: parent.horizontalCenter
 
-        Text {
-            id: header
-            text: "Управление папками"
-            color: "#D9D9D9"
-            font.pixelSize: 22
-            font.bold: true
-            wrapMode: Text.Wrap
-            anchors.horizontalCenter: parent.horizontalCenter
-        }
+        ColumnLayout {
+            anchors.fill: parent
 
-        Text {
-            id: text1
-            text: "Добавьте новую папку или удалите старую"
-            color: "#D9D9D9"
-            font.pixelSize: 15
-            wrapMode: Text.Wrap
-            width: parent.width
-            horizontalAlignment: Text.AlignHCenter
-        }
+            Text {
+                text: "Управление папками"
+                color: "#D9D9D9"
+                font.pixelSize: 20
+                font.bold: true
+                wrapMode: Text.Wrap
+                Layout.fillWidth: true
+                horizontalAlignment: Text.AlignHCenter
+            }
 
-        Item {
-            id: textfieldinputrow
-            height: 40
-            width: parent.width
+            Text {
+                textFormat: Text.RichText
+                text: "Папки помогают <b><font color='#DA446A'>организовать</font></b> записи — добавляйте нужные, чтобы было проще находить их позже."
+                Layout.fillWidth: true
+                horizontalAlignment: Text.AlignHCenter
+                wrapMode: Text.Wrap
+                font.pixelSize: 12
+                color: "#D9D9D9"
+            }
 
-            RowLayout {
-                spacing: 16
-                height: 30
-                anchors.centerIn: parent
+            Item {
+                Layout.preferredHeight: 50
+                Layout.fillWidth: true
 
-                Item {
-                    width: textfieldinputrow.width * 0.68
-                    height: parent.height
-                    Layout.alignment: Qt.AlignHCenter
+                RowLayout {
+                    anchors.fill: parent
+                    spacing: 7
 
-                    TextField {
-                        id: folderNameInput
-                        anchors.fill: parent
-                        font.pixelSize: 12
-                        color: "#D9D9D9"
-                        placeholderText: "Название папки"
-                        placeholderTextColor: "#a9a9a9"
-                        wrapMode: Text.NoWrap
-                        maximumLength: 30
-                        padding: 10
-                        horizontalAlignment: TextInput.AlignLeft
-                        verticalAlignment: TextInput.AlignVCenter
-                        background: Rectangle {
-                            color: "#292729"
-                            border.color: "#4D4D4D"
-                            border.width: 1
-                            radius: 6
+                    CustTxtFldEr {
+                        id: catName
+                        Layout.fillWidth: true
+                        placeholderText: "Придумайте название новой папке"
+                        maximumLength: 64
+                        errorText: "* Ошибка"
+                        errorVisible: false
+                    }
+
+                    Item {
+                        width: 30
+                        height: 30
+
+                        MouseArea {
+                            anchors.fill: parent
+                            onClicked: {
+                                let hasEmptyError = false;
+                                hasEmptyError = Utils.validateEmptyField(catName) || hasEmptyError;
+                                if (!hasEmptyError) {
+                                    foldersUser.saveFolder(catName.text.trim())
+                                    catName.text = ""
+                                }
+                            }
+
+                            Image {
+                                anchors.centerIn: parent
+                                width: parent.height
+                                height: parent.width
+                                source: "qrc:/images/addbuttplus.png"
+                                fillMode: Image.PreserveAspectFit
+                            }
                         }
                     }
+                }
+            }
+
+            Item {
+                id: foldersView
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+
+                Rectangle {
+                    anchors.fill: parent
+                    color: "#262326"
+                    radius: 8
                 }
 
                 Item {
-                    width: height
-                    height: parent.height
-                    Layout.alignment: Qt.AlignCenter
+                    id: mama
+                    width: parent.width *0.98
+                    height: parent.height * 0.98
+                    anchors.centerIn: parent
 
-                    MouseArea {
+                    ListView {
                         anchors.fill: parent
-                        onClicked: {
-                            const name = folderNameInput.text.trim()
-                            if (name.length > 0) {
-                                foldersUser.saveFolder(name)
-                                folderNameInput.text = ""
-                            }
-                        }
+                        model: foldersListModel
+                        spacing: 6
+                        clip: true
+                        delegate: CustFoldBlok {
+                            width: ListView.view.width
+                            folderName: model.foldername
+                            itemCount: model.itemCount
 
-                        Image {
-                            anchors.centerIn: parent
-                            width: 20
-                            height: 20
-                            source: "qrc:/images/addbuttplus.png"
-                            fillMode: Image.PreserveAspectFit
+                            Component.onCompleted: {
+                                console.log("Загружен в менеджер папок делегат с папкой:", model.foldername, "и количеством элементов:", model.itemCount);
+                            }
+
+                            onDeleteClicked: {
+                                console.log("Попытка создать компонент qrc:/popups/popFolderDeleteAdmit.qml");
+                                var component = Qt.createComponent("qrc:/popups/popFolderDeleteAdmit.qml");
+                                if (component.status === Component.Ready) {
+                                    console.log("Компонент успешно загружен.");
+                                    var popup = component.createObject(parent);
+                                    if (popup) {
+                                        console.log("Попап успешно создан.");
+                                        popup.folderName = model.foldername; // Передаем имя папки в попап
+                                        popup.open(); // Открываем попап
+                                    } else {
+                                        console.error("Не удалось создать объект попапа.");
+                                    }
+                                } else if (component.status === Component.Error) {
+                                    console.error("Ошибка при загрузке компонента: " + component.errorString());
+                                } else {
+                                    console.log("Компонент еще не готов.");
+                                }
+                            }
+
+                            onEditClicked: {
+                                console.log("Попытка создать компонент popFolderChangeName.qml");
+                                var component = Qt.createComponent("qrc:/popups/popFolderChangeName.qml");
+                                if (component.status === Component.Ready) {
+                                    console.log("Компонент успешно загружен.");
+                                    var popup = component.createObject(parent);
+                                    if (popup) {
+                                        console.log("Попап успешно создан.");
+                                        popup.folderName = model.foldername; // Передаем имя папки в попап
+                                        popup.open(); // Открываем попап
+                                    } else {
+                                        console.error("Не удалось создать объект попапа.");
+                                    }
+                                } else if (component.status === Component.Error) {
+                                    console.error("Ошибка при загрузке компонента: " + component.errorString());
+                                } else {
+                                    console.log("Компонент еще не готов.");
+                                }
+                            }
                         }
                     }
                 }
             }
         }
+    }
 
-        ListModel {
-            id: foldersListModel
+    Rectangle {
+        id: buttAdmit
+        color: "#474448"
+        radius: 8
+        width: parent.width
+        anchors.bottom: parent.bottom
+        height: 40
+
+        Text {
+            text: "Подтвердить"
+            font.pixelSize: 18
+            color: "#D9D9D9"
+            anchors.centerIn: parent
         }
 
-        Item {
-            id: foldersView
-            width: parent.width
-            height: parent.height * 0.77
-
-            Rectangle {
-                anchors.centerIn: parent
-                width: parent.width * 1.02
-                height: parent.height * 1.03
-                color: "#262326"
-                radius: 8
-            }
-
-            ListView {
-                anchors.fill: parent
-                model: foldersListModel
-                spacing: 6
-                clip: true
-                delegate: CustFoldBlok {
-                    width: ListView.view.width
-                    folderName: model.foldername
-                    itemCount: model.itemCount
-
-                    Component.onCompleted: {
-                        console.log("Загружен в менеджер папок делегат с папкой:", model.foldername, "и количеством элементов:", model.itemCount);
-                    }
-
-                    onDeleteClicked: {
-                        console.log("Попытка создать компонент qrc:/popups/popFolderDeleteAdmit.qml");
-                        var component = Qt.createComponent("qrc:/popups/popFolderDeleteAdmit.qml");
-                        if (component.status === Component.Ready) {
-                            console.log("Компонент успешно загружен.");
-                            var popup = component.createObject(parent);
-                            if (popup) {
-                                console.log("Попап успешно создан.");
-                                popup.folderName = model.foldername; // Передаем имя папки в попап
-                                popup.open(); // Открываем попап
-                            } else {
-                                console.error("Не удалось создать объект попапа.");
-                            }
-                        } else if (component.status === Component.Error) {
-                            console.error("Ошибка при загрузке компонента: " + component.errorString());
-                        } else {
-                            console.log("Компонент еще не готов.");
-                        }
-                    }
-
-                    onEditClicked: {
-                        console.log("Попытка создать компонент popFolderChangeName.qml");
-                        var component = Qt.createComponent("qrc:/popups/popFolderChangeName.qml");
-                        if (component.status === Component.Ready) {
-                            console.log("Компонент успешно загружен.");
-                            var popup = component.createObject(parent);
-                            if (popup) {
-                                console.log("Попап успешно создан.");
-                                popup.folderName = model.foldername; // Передаем имя папки в попап
-                                popup.open(); // Открываем попап
-                            } else {
-                                console.error("Не удалось создать объект попапа.");
-                            }
-                        } else if (component.status === Component.Error) {
-                                console.error("Ошибка при загрузке компонента: " + component.errorString());
-                        } else {
-                                console.log("Компонент еще не готов.");
-                        }
-                    }
-                }
+        MouseArea {
+            anchors.fill: parent
+            onClicked: {
+                managerPopup.close()
             }
         }
+    }
+
+    ListModel {
+        id: foldersListModel
     }
 
     onOpened: {
@@ -194,22 +209,22 @@ Popup {
     }
 
     Connections {
-        target: foldersUser    
+        target: foldersUser
         onFoldersLoadedSuccess: function(folders) {
             foldersListModel.clear();
             console.log("Данные загружены:", folders);
             for (let i = 0; i < folders.length; ++i) {
                 foldersListModel.append({
-                    id: folders[i].id,
-                    foldername: folders[i].name,
-                    itemCount: folders[i].itemCount
-                });
+                                            id: folders[i].id,
+                                            foldername: folders[i].name,
+                                            itemCount: folders[i].itemCount
+                                        });
             }
         }
-
         onClearFolderList: {
             console.log("Папка успешно изменена. Перезагрузка папок...");
             foldersListModel.clear();  // Очищаем модель перед обновлением
         }
     }
 }
+

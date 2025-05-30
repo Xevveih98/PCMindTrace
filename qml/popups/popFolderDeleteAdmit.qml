@@ -1,14 +1,12 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import PCMindTrace 1.0
+import QtQuick.Layouts
 
 Popup {
-
-    property string folderName: ""
-
     id: exitPopup
-    width: Screen.width * 0.7
-    height: Screen.height * 0.14
+    width: Screen.width * 0.93
+    height: 140
     modal: true
     padding: 0
     focus: true
@@ -21,23 +19,43 @@ Popup {
     }
     background: Rectangle {
         color: "#2D292C"
-        radius: 10
+        radius: 8
         border.color: "#474448"
         border.width: 1
     }
 
-    Column {
-        spacing: 16
-        anchors.centerIn: parent
-        width: parent.width
-        padding: 20
+    property string folderName: ""
+    signal deleteClicked()
 
-        Text {
-            text: "Вы уверены, что хотите удалить папку? Все записи в этой папке будут удалены."
-            width: parent.width * 0.8
-            color: "#D9D9D9"
-            font.pixelSize: 14
-            wrapMode: Text.Wrap
+    Item {
+        id: oberInputFieldsEmpty
+        anchors.centerIn: parent
+        width: parent.width * 0.86
+        height: parent.height * 0.7
+
+        ColumnLayout {
+            anchors.fill: parent
+            spacing: 0
+
+            Text {
+                text: "Удаление папки"
+                Layout.fillWidth: true
+                color: "#D9D9D9"
+                font.pixelSize: 18
+                font.bold: true
+                Layout.alignment: Qt.AlignHCenter
+                horizontalAlignment: Text.AlignHCenter
+            }
+
+            Text {
+                textFormat: Text.RichText
+                text: "Вы уверены, что хотите <b><font color='#DA446A'>удалить папку</font></b>? Все записи, находящиеся в ней, <b><font color='#DA446A'>безвозвратно</font></b> исчезнут!"
+                Layout.fillWidth: true
+                horizontalAlignment: Text.AlignHCenter
+                wrapMode: Text.Wrap
+                font.pixelSize: 14
+                color: "#D9D9D9"
+            }
         }
     }
 
@@ -69,6 +87,4 @@ Popup {
             }
         }
     }
-
-    signal deleteClicked()
 }

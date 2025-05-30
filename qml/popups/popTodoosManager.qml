@@ -1,12 +1,13 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import PCMindTrace 1.0
+import CustomComponents
+import QtQuick.Layouts
 
 Popup {
-
     id: exitPopup
-    width: Screen.width * 0.9
-    height: Screen.height * 0.16
+    width: Screen.width * 0.93
+    height: 120
     modal: true
     padding: 0
     focus: true
@@ -19,44 +20,39 @@ Popup {
     }
     background: Rectangle {
         color: "#2D292C"
-        radius: 10
+        radius: 8
         border.color: "#474448"
         border.width: 1
     }
 
-    Column {
-        id: columnpop
-        spacing: 4
-        anchors {
-            top: parent.top
-            horizontalCenter: parent.horizontalCenter
-            topMargin: 20
-        }
-        width: parent.width * 0.85
+    Item {
+        id: oberInputFieldsEmpty
+        anchors.centerIn: parent
+        width: parent.width * 0.86
+        height: parent.height * 0.86
 
-        Text {
-            text: "Введите название задачи"
-            font.pixelSize: 12
-            color: "#D9D9D9"
-        }
+        ColumnLayout {
+            anchors.fill: parent
+            spacing: 0
 
-        TextField {
-            id: todoName
-            height: 30
-            font.pixelSize: 11
-            color: "#D9D9D9"
-            placeholderText: ""
-            maximumLength: 80
-            wrapMode: Text.NoWrap
-            horizontalAlignment: TextInput.AlignLeft
-            verticalAlignment: TextInput.AlignVCenter
-            background: Rectangle {
-                color: "#292729"
-                border.color: "#4D4D4D"
-                border.width: 1
+            Text {
+                text: "Название задачи"
+                Layout.fillWidth: true
+                color: "#D9D9D9"
+                font.pixelSize: 18
+                font.bold: true
+                Layout.alignment: Qt.AlignHCenter
+                horizontalAlignment: Text.AlignHCenter
             }
-            anchors.left: parent.left
-            anchors.right: parent.right
+
+            CustTxtFldEr {
+                id: catName
+                Layout.fillWidth: true
+                placeholderText: "Введите вашу задачу"
+                maximumLength: 64
+                errorText: "* Ошибка"
+                errorVisible: false
+            }
         }
     }
 
@@ -82,8 +78,12 @@ Popup {
         MouseArea {
             anchors.fill: parent
             onClicked: {
-                todoUser.saveTodo(todoName.text);
-                exitPopup.close();
+                let hasEmptyError = false;
+                hasEmptyError = Utils.validateEmptyField(catName) || hasEmptyError;
+                if (!hasEmptyError) {
+                    todoUser.saveTodo(catName.text);
+                    exitPopup.close();
+                }
             }
         }
     }
