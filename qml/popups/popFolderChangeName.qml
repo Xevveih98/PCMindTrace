@@ -51,7 +51,7 @@ Popup {
                 id: catName
                 Layout.fillWidth: true
                 placeholderText: "Придумайте новое название папки"
-                maximumLength: 64
+                maximumLength: 26
                 errorText: "* Ошибка"
                 errorVisible: false
             }

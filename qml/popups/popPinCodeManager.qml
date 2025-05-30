@@ -21,8 +21,6 @@ Popup {
     background: Rectangle {
         color: "#2D292C"
         radius: 8
-        border.color: "#474448"
-        border.width: 1
     }
 
     property int pinLength: 4

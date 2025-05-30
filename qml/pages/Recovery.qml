@@ -73,7 +73,7 @@ Rectangle {
                         id: regEnail
                         width: oberInputFieldsEmpty.width
                         placeholderText: "Введите вашу почту"
-                        maximumLength: 64
+                        maximumLength: 45
                         errorText: "* Ошибка"
                         errorVisible: false
 

@@ -73,7 +73,7 @@ Rectangle {
                         id: regLogin
                         width: oberInputFieldsEmpty.width
                         placeholderText: "Введите логин"
-                        maximumLength: 64
+                        maximumLength: 30
                         errorText: "* Ошибка"
                         errorVisible: false
                     }
@@ -103,7 +103,7 @@ Rectangle {
                         id: regEmail
                         width: oberInputFieldsEmpty.width
                         placeholderText: "Введите почту"
-                        maximumLength: 64
+                        maximumLength: 45
                         errorText: "* Ошибка"
                         errorVisible: false
                     }

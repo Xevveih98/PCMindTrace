@@ -36,5 +36,6 @@
         <file alias="remove.png">assets/images/remove.png</file>
         <file alias="addtodoos.png">assets/images/addtodoos.png</file>
         <file alias="addfolders.png">assets/images/addfolders.png</file>
+        <file alias="addcategoru.png">assets/images/addcategoru.png</file>
     </qresource>
 </RCC>

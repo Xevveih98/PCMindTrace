@@ -20,8 +20,6 @@ Popup {
     background: Rectangle {
         color: "#2D292C"
         radius: 8
-        border.color: "#474448"
-        border.width: 1
     }
 
     Item {
@@ -47,7 +45,7 @@ Popup {
                     id: regEmail
                     width: oberInputFieldsEmpty.width
                     placeholderText: "Введите новую почту"
-                    maximumLength: 64
+                    maximumLength: 45
                     errorText: "* Ошибка"
                     errorVisible: false
                 }

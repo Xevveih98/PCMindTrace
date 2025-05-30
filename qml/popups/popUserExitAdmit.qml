@@ -19,7 +19,8 @@ Popup {
         opacity: 0.9
     }
     background: Rectangle {
-        color: "#2D292C"; radius: 8; border.color: "#474448"; border.width: 1
+        color: "#2D292C";
+        radius: 8;
     }
 
     Item {

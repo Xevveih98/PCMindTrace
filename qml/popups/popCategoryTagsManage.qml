@@ -21,144 +21,163 @@ Popup {
     background: Rectangle {
         color: "#2D292C"
         radius: 8
-        border.color: "#474448"
-        border.width: 1
     }
     onOpened: {
         categoriesUser.loadTags()
     }
 
+    ColumnLayout {
+        anchors.fill: parent
 
-    Item {
-        anchors.top: parent.top
-        anchors.topMargin: 15
-        width: parent.width * 0.9
-        height: parent.height * 0.9
-        anchors.horizontalCenter: parent.horizontalCenter
+        Item {
+            Layout.preferredHeight: 10
+            Layout.fillWidth: true
+        }
 
-        ColumnLayout {
-            anchors.fill: parent
+        Text {
+            text: "Управление тегами"
+            color: "#D9D9D9"
+            font.pixelSize: 20
+            font.bold: true
+            wrapMode: Text.Wrap
+            Layout.preferredWidth: parent.width*0.93
+            horizontalAlignment: Text.AlignHCenter
+            Layout.alignment: Qt.AlignHCenter
+        }
 
-            Text {
-                text: "Управление тегами"
-                color: "#D9D9D9"
-                font.pixelSize: 20
-                font.bold: true
-                wrapMode: Text.Wrap
-                Layout.fillWidth: true
-                horizontalAlignment: Text.AlignHCenter
-            }
+        Text {
+            textFormat: Text.RichText
+            text: "Теги помогают <b><font color='#DA446A'>быстро</font></b> находить записи — добавляйте как можно больше релевантных. Чтобы <b><font color='#DA446A'>убрать</font></b> тег, просто нажмите на него."
+            Layout.preferredWidth: parent.width*0.93
+            horizontalAlignment: Text.AlignHCenter
+            Layout.alignment: Qt.AlignHCenter
+            wrapMode: Text.Wrap
+            font.pixelSize: 14
+            color: "#D9D9D9"
+        }
 
-            Text {
-                textFormat: Text.RichText
-                text: "Теги помогают <b><font color='#DA446A'>быстро</font></b> находить записи — добавляйте как можно больше релевантных. Чтобы <b><font color='#DA446A'>убрать</font></b> тег, просто нажмите на него."
-                Layout.fillWidth: true
-                horizontalAlignment: Text.AlignHCenter
-                wrapMode: Text.Wrap
-                font.pixelSize: 14
-                color: "#D9D9D9"
-            }
+        Item {
+            Layout.preferredHeight: 50
+            Layout.preferredWidth: parent.width*0.93
+            Layout.alignment: Qt.AlignHCenter
 
-            Item {
-                Layout.preferredHeight: 50
-                Layout.fillWidth: true
+            RowLayout {
+                anchors.fill: parent
+                spacing: 7
 
-                RowLayout {
-                    anchors.fill: parent
-                    spacing: 7
-
-                    CustTxtFldEr {
-                        id: catName
-                        Layout.fillWidth: true
-                        placeholderText: "Дайте название тегу"
-                        maximumLength: 64
-                        errorText: "* Ошибка"
-                        errorVisible: false
-                        property string previousText: ""
-                        onTextChanged: {
-                            if (text !== previousText) {
-                                let newText = text.replace(/\s+/g, "_");
-                                previousText = newText;
-                                text = newText;
-                            }
+                CustTxtFldEr {
+                    id: catName
+                    Layout.fillWidth: true
+                    placeholderText: "Дайте название тегу"
+                    maximumLength: 34
+                    errorText: "* Ошибка"
+                    errorVisible: false
+                    property string previousText: ""
+                    onTextChanged: {
+                        if (text !== previousText) {
+                            let newText = text.replace(/\s+/g, "_");
+                            previousText = newText;
+                            text = newText;
                         }
                     }
+                }
 
-                    Item {
-                        width: 30
-                        height: 30
+                Item {
+                    width: 30
+                    height: 30
 
-                        MouseArea {
-                            anchors.fill: parent
-                            onClicked: {
-                                let hasEmptyError = false;
-                                hasEmptyError = Utils.validateEmptyField(catName) || hasEmptyError;
-                                if (!hasEmptyError) {
-                                    categoriesUser.saveTag(catName.text.trim())
-                                }
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: {
+                            let hasEmptyError = false;
+                            hasEmptyError = Utils.validateEmptyField(catName) || hasEmptyError;
+                            if (!hasEmptyError) {
+                                categoriesUser.saveTag(catName.text.trim())
                             }
+                        }
 
-                            Image {
-                                anchors.centerIn: parent
-                                width: parent.height
-                                height: parent.width
-                                source: "qrc:/images/addbuttplus.png"
-                                fillMode: Image.PreserveAspectFit
-                            }
+                        Image {
+                            anchors.centerIn: parent
+                            width: parent.height
+                            height: parent.width
+                            source: "qrc:/images/addbuttplus.png"
+                            fillMode: Image.PreserveAspectFit
                         }
                     }
                 }
             }
+        }
 
-            Item {
-                Layout.fillWidth: true
-                Layout.fillHeight: true
+        Item {
+            Layout.fillWidth: true
+            Layout.fillHeight: true
 
-                Rectangle {
-                    anchors.fill: parent
-                    color: "#262326"
-                    radius: 8
+            Rectangle {
+                anchors.fill: parent
+                color: "#262326"
 
-                    Text {
-                        anchors.centerIn: parent
-                        text: "Добавьте новые теги.."
-                        color: "#4d4d4d"
-                        font.pixelSize: 11
-                        font.italic: true
-                        visible: tagListModel.count === 0
-                    }
-                }
-
-                Item{
-                    width: parent.width * 0.97
-                    height: parent.height * 0.99
+                Text {
                     anchors.centerIn: parent
+                    text: "Добавьте новые теги.."
+                    color: "#4d4d4d"
+                    font.pixelSize: 11
+                    font.italic: true
+                    visible: tagListModel.count === 0
+                }
+            }
 
-                    Flickable {
+            Item{
+                width: parent.width * 0.97
+                height: parent.height * 0.99
+                anchors.centerIn: parent
+
+                Flickable {
+                    width: parent.width
+                    height: parent.height
+                    contentWidth: parent.width
+                    contentHeight: flowContent.implicitHeight
+                    clip: true
+
+                    Flow {
+                        id: flowContent
                         width: parent.width
-                        height: parent.height
-                        contentWidth: flowContent.implicitWidth
-                        contentHeight: flowContent.implicitHeight
-                        clip: true
+                        spacing: 6
 
-                        Flow {
-                            id: flowContent
-                            width: parent.width
-                            spacing: 6
-
-                            Repeater {
-                                model: tagListModel
-                                delegate: CustTagButon {
-                                    tagText: model.tag
-                                    buttonWidth: implicitWidth
-                                    onClicked: {
-                                        categoriesUser.deleteTag(model.tag);
-                                        tagListModel.remove(index);
-                                    }
+                        Repeater {
+                            model: tagListModel
+                            delegate: CustTagButon {
+                                tagText: model.tag
+                                buttonWidth: implicitWidth
+                                onClicked: {
+                                    categoriesUser.deleteTag(model.tag);
+                                    tagListModel.remove(index);
                                 }
                             }
                         }
                     }
+                }
+            }
+        }
+
+        Rectangle {
+            id: buttAdmit
+            color: "#474448"
+            radius: 8
+            Layout.fillWidth: true
+            Layout.preferredHeight: 40
+            Layout.alignment: Qt.AlignBottom
+
+            Text {
+                text: "Подтвердить"
+                font.pixelSize: 18
+                color: "#D9D9D9"
+                anchors.centerIn: parent
+            }
+
+            MouseArea {
+                anchors.fill: parent
+                onClicked: {
+                    managerPopup.close()
                 }
             }
         }
@@ -166,29 +185,6 @@ Popup {
 
     ListModel {
         id: tagListModel
-    }
-
-    Rectangle {
-        id: buttAdmit
-        color: "#474448"
-        radius: 8
-        width: parent.width
-        anchors.bottom: parent.bottom
-        height: 40
-
-        Text {
-            text: "Подтвердить"
-            font.pixelSize: 18
-            color: "#D9D9D9"
-            anchors.centerIn: parent
-        }
-
-        MouseArea {
-            anchors.fill: parent
-            onClicked: {
-                managerPopup.close()
-            }
-        }
     }
 
     Connections {
@@ -201,9 +197,9 @@ Popup {
             tagListModel.clear();
             for (var i = 0; i < tags.length; ++i) {
                 tagListModel.append({
-                    id: tags[i].id,
-                    tag: tags[i].tag
-                });
+                                        id: tags[i].id,
+                                        tag: tags[i].tag
+                                    });
             }
         }
         onTagsSavedFailed:function(message) {

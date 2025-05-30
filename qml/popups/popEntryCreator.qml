@@ -224,7 +224,7 @@ Popup {
                     anchors.fill: parent
                     anchors.margins: 8
                     font.pixelSize: 11
-                    text: "Введите текст..."
+                    text: "Напишите, как прошел ваш день"
                     color: "#4d4d4d"
                     opacity: (!textEdit.text && !textEdit.activeFocus) ? 1.0 : 0.0
                     Behavior on opacity { NumberAnimation { duration: 150 } }
@@ -250,6 +250,7 @@ Popup {
                     font.pixelSize: 15
                     font.bold: true
                     color: "#d9d9d9"
+                    anchors.verticalCenter: parent.verticalCenter
                 }
 
                 Item {
@@ -261,7 +262,7 @@ Popup {
                         anchors.centerIn: parent
                         width: 20
                         height: 20
-                        source: "qrc:/images/addbuttplus.png"
+                        source: "qrc:/images/addcategoru.png"
                         fillMode: Image.PreserveAspectFit
                     }
 
@@ -374,6 +375,7 @@ Popup {
                     font.pixelSize: 15
                     font.bold: true
                     color: "#d9d9d9"
+                    anchors.verticalCenter: parent.verticalCenter
                 }
 
                 Item {
@@ -385,7 +387,7 @@ Popup {
                         anchors.centerIn: parent
                         width: 20
                         height: 20
-                        source: "qrc:/images/addbuttplus.png"
+                        source: "qrc:/images/addcategoru.png"
                         fillMode: Image.PreserveAspectFit
                     }
 
@@ -495,6 +497,7 @@ Popup {
                     font.pixelSize: 15
                     font.bold: true
                     color: "#d9d9d9"
+                    anchors.verticalCenter: parent.verticalCenter
                 }
 
                 Item {
@@ -506,7 +509,7 @@ Popup {
                         anchors.centerIn: parent
                         width: 20
                         height: 20
-                        source: "qrc:/images/addbuttplus.png"
+                        source: "qrc:/images/addcategoru.png"
                         fillMode: Image.PreserveAspectFit
                     }
 

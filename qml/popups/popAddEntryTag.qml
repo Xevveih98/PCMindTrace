@@ -23,9 +23,7 @@ Popup {
     }
     background: Rectangle {
         color: "#2D292C"
-        radius: 10
-        border.color: "#474448"
-        border.width: 1
+        radius: 8
     }
 
     Item {
