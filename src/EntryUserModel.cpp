@@ -113,14 +113,12 @@ void EntryUserModel::clear()
     endResetModel();
 }
 
-bool EntryUserModel::removeEntryById(int id)
-{
+bool EntryUserModel::removeEntryById(int entryId) {
     for (int i = 0; i < m_entries.size(); ++i) {
-        if (m_entries[i].getId() == id) {
+        if (m_entries[i].getId() == entryId) {
             beginRemoveRows(QModelIndex(), i, i);
             m_entries.removeAt(i);
             endRemoveRows();
-            emit countChanged();
             return true;
         }
     }

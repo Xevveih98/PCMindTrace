@@ -10,7 +10,6 @@ Item {
             idImages[i].visible = false;
         }
     }
-
     required property var modelmonth
     required property int currentMonth
     required property var locale

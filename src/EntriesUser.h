@@ -50,6 +50,7 @@ signals:
     void entryUserModelChanged();
     void searchModelChanged();
     void dateSearchModelChanged();
+    void entryChangeSuccess();
 
 private:
     void sendEntrySaveRequest(const QJsonDocument &jsonDoc, const QUrl &url);

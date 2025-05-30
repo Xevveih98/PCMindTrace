@@ -29,17 +29,17 @@ Rectangle {
             flickableDirection: Flickable.VerticalFlick
             clip: true
 
-            Column {
+            ColumnLayout {
                 id: eda
                 width: parent.width
                 spacing: 12
 
-// ---------------- менеджер папок -----------------
+                // ---------------- менеджер папок -----------------
 
                 Item {
                     id: folderTabs
-                    width: parent.width
-                    height: 45
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 45
 
                     Rectangle {
                         color: "#090809"
@@ -80,9 +80,9 @@ Rectangle {
 
                                 Image {
                                     anchors.centerIn: parent
-                                    width: 20
-                                    height: 20
-                                    source: "qrc:/images/addbuttplus.png"
+                                    width: 18
+                                    height: 18
+                                    source: "qrc:/images/addfolders.png"
                                     fillMode: Image.PreserveAspectFit
                                 }
                             }
@@ -126,98 +126,98 @@ Rectangle {
                     }
                 }
 
-// ---------------- менеджер тудейс ------------------
+                // ---------------- менеджер тудейс ------------------
 
                 Item {
                     id: todayTasksView
-                    width:  parent.width
-                    height: 240
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 210
 
                     Rectangle {
                         color: "#2D292C"
                         radius: 8
                         anchors.fill: parent
+                    }
 
-                        Item {
-                            height: 40
-                            width: parent.width
+                    Item {
+                        height: 40
+                        width: parent.width
 
-                            Text{
-                                color: "#d9d9d9"
-                                text: "Задачи на сегодня"
-                                font.pixelSize: 16
-                                font.bold: true
-                                anchors.horizontalCenter: parent.horizontalCenter
-                                anchors.verticalCenter: parent.verticalCenter
-                            }
-                        }
-
-                        Item {
-                            id: plusminitodo
-                            width: height
-                            height: 40
-                            anchors.left: parent.left
-                            anchors.leftMargin: 16
-
-                            MouseArea {
-                                anchors.fill: parent
-                                onClicked: {
-                                    console.log("Попытка вызвать менеджер задач");
-                                    var component = Qt.createComponent("qrc:/popups/popTodoosManager.qml");
-                                    if (component.status === Component.Ready) {
-                                        console.log("Компонент успешно загружен.");
-
-                                        var popup = component.createObject(parent);
-                                        if (popup) {
-                                            console.log("Попап успешно создан.");
-                                            popup.open(); // Открываем попап
-                                        } else {
-                                            console.error("Не удалось создать объект попапа.");
-                                        }
-                                    } else if (component.status === Component.Error) {
-                                        console.error("Ошибка при загрузке компонента: " + component.errorString());
-                                    } else {
-                                        console.log("Компонент еще не готов.");
-                                    }
-                                }
-
-                                Image {
-                                    anchors.centerIn: parent
-                                    width: 20
-                                    height: 20
-                                    source: "qrc:/images/addbuttplus.png"
-                                    fillMode: Image.PreserveAspectFit
-                                }
-                            }
-                        }
-
-                        ListModel {
-                            id: todoListModel
-                        }
-
-                        Item {
-                            id: sdeer
-                            anchors.top: plusminitodo.bottom
-                            width: parent.width * 0.9
-                            height: parent.height * 0.77
+                        Text{
+                            color: "#d9d9d9"
+                            text: "Задачи на сегодня"
+                            font.pixelSize: 16
+                            font.bold: true
                             anchors.horizontalCenter: parent.horizontalCenter
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
+                    }
 
-                            Rectangle {
-                                anchors.centerIn: parent
-                                width: parent.width * 1.02
-                                height: parent.height * 1.03
-                                color: "#262326"
-                                radius: 8
+                    Item {
+                        id: plusminitodo
+                        width: height
+                        height: 36
+                        anchors.left: parent.left
+                        anchors.leftMargin: 16
 
-                                Text {
-                                    anchors.centerIn: parent
-                                    text: "Список задач пуст.."
-                                    color: "#4d4d4d"
-                                    font.pixelSize: 11
-                                    font.italic: true
-                                    visible: todoListModel.count === 0
+                        MouseArea {
+                            anchors.fill: parent
+                            onClicked: {
+                                console.log("Попытка вызвать менеджер задач");
+                                var component = Qt.createComponent("qrc:/popups/popTodoosManager.qml");
+                                if (component.status === Component.Ready) {
+                                    console.log("Компонент успешно загружен.");
+
+                                    var popup = component.createObject(parent);
+                                    if (popup) {
+                                        console.log("Попап успешно создан.");
+                                        popup.open(); // Открываем попап
+                                    } else {
+                                        console.error("Не удалось создать объект попапа.");
+                                    }
+                                } else if (component.status === Component.Error) {
+                                    console.error("Ошибка при загрузке компонента: " + component.errorString());
+                                } else {
+                                    console.log("Компонент еще не готов.");
                                 }
                             }
+
+                            Image {
+                                anchors.centerIn: parent
+                                width: 20
+                                height: 20
+                                source: "qrc:/images/addtodoos.png"
+                                fillMode: Image.PreserveAspectFit
+                            }
+                        }
+                    }
+
+                    Item {
+                        id: sdeer
+                        anchors.top: plusminitodo.bottom
+                        width: parent.width
+                        height: parent.height * 0.77
+                        anchors.horizontalCenter: parent.horizontalCenter
+
+                        Rectangle {
+                            anchors.fill: parent
+                            color: "#262326"
+
+                            Text {
+                                anchors.centerIn: parent
+                                text: "Список задач пуст.."
+                                color: "#4d4d4d"
+                                font.pixelSize: 11
+                                font.italic: true
+                                visible: todoListModel.count === 0
+                            }
+                        }
+
+                        Item {
+                            id: mama
+                            width: parent.width *0.96
+                            height: parent.height * 0.9
+                            anchors.centerIn: parent
 
                             ListView {
                                 anchors.fill: parent
@@ -227,7 +227,7 @@ Rectangle {
 
                                 delegate: CustChbxHome {
                                     todoName: model.todoname
-                                    buttonWidth: sdeer.width
+                                    buttonWidth: mama.width
                                     buttonHeight: 32
                                     todoIndex: index
 
@@ -241,13 +241,13 @@ Rectangle {
                     }
                 }
 
-// ---------------- менеджер записей ------------------
+                // ---------------- менеджер записей ------------------
 
                 Item {
                     id: newEntryPanel
-                    width:  parent.width * 0.86
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    height: 100
+                    Layout.preferredWidth: parent.width * 0.9
+                    Layout.preferredHeight: 100
+                    Layout.alignment: Qt.AlignHCenter
 
                     Rectangle {
                         color: "#2D292C"
@@ -293,9 +293,9 @@ Rectangle {
                                                 var component = Qt.createComponent("qrc:/popups/popEntryCreator.qml");
                                                 if (component.status === Component.Ready) {
                                                     var popup = component.createObject(parent, {
-                                                        selectedIconId: model.iconId,
-                                                        foldersList: pageHomeScreen.folderu
-                                                    });
+                                                                                           selectedIconId: model.iconId,
+                                                                                           foldersList: pageHomeScreen.folderu
+                                                                                       });
                                                     if (popup) {
                                                         popup.open();
                                                     } else {
@@ -319,13 +319,13 @@ Rectangle {
                     }
                 }
 
-// ---------------- менеджер фильтрации записей по дате
+                // ---------------- менеджер фильтрации записей по дате
 
                 Item {
                     id: monthSwitchButton
-                    width: contro.implicitWidth
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    height: 60
+                    Layout.preferredWidth: contro.implicitWidth
+                    Layout.preferredHeight: 70
+                    Layout.alignment: Qt.AlignHCenter
 
                     property var monthsNom: ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"]
                     property int selectedYear: new Date().getFullYear()
@@ -435,13 +435,13 @@ Rectangle {
 
 
 
-// ---------------- менеджер отображения записей ------
+                // ---------------- менеджер отображения записей ------
 
                 Item {
                     id:entryFeed
-                    width:  parent.width
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    implicitHeight: entryColumn.implicitHeight
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: entryColumn.implicitHeight
+                    Layout.alignment: Qt.AlignHCenter
 
                     Column {
                         id: entryColumn
@@ -450,6 +450,8 @@ Rectangle {
 
                         Repeater {
                             model: entriesUser.entryUserModel
+                            onItemAdded: console.log("Запись добавлена, теперь элементов:", count)
+                            onItemRemoved: console.log("Запись удалена, теперь элементов:", count)
                             delegate: CustEntrBlok {
                                 width: entryColumn.width
                                 entryTitle: model.title
@@ -462,43 +464,59 @@ Rectangle {
                                 emotionItems: model.emotions
                                 entryId: model.id
                                 foldersList: pageHomeScreen.folderu
+                                Component.onDestruction: console.log("Удаляется запись с ID:", entryId)
                             }
-                            visible: entriesUser.entryUserModel.count > 0
                         }
+
+                        visible: entriesUser.entryUserModel.count > 0
                     }
+                }
 
-                    Item {
-                        width: 80
-                        //height: 80
+                Item {
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 100
+                    visible: entriesUser.entryUserModel.count === 0
+
+                    Column {
+                        spacing: 8
+                        width: parent.width
                         anchors.centerIn: parent
-                        visible: entriesUser.entryUserModel.count === 0
 
-                        Column {
-                            spacing: 8
-                            width: parent.width
+                        Image {
+                            width: 60
+                            height: 60
+                            source: "qrc:/images/noentries.png"
+                            fillMode: Image.PreserveAspectFit
+                            anchors.horizontalCenter: parent.horizontalCenter
+                        }
 
-                            Image {
-                                width: 60
-                                height: 60
-                                source: "qrc:/images/noentries.png"
-                                fillMode: Image.PreserveAspectFit
-                                anchors.horizontalCenter: parent.horizontalCenter
-                            }
-
-                            Text {
-                                id: emptyText
-                                text: "Записи не найдены.."
-                                font.italic: true
-                                font.bold: true
-                                font.pixelSize: 14
-                                color: "#616161"
-                                anchors.horizontalCenter: parent.horizontalCenter
-                                visible: entriesUser.entryUserModel.count === 0
-                            }
+                        Text {
+                            id: emptyText
+                            text: "Записи не найдены.."
+                            font.italic: true
+                            font.bold: true
+                            font.pixelSize: 14
+                            color: "#616161"
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            visible: entriesUser.entryUserModel.count === 0
                         }
                     }
                 }
             }
+        }
+    }
+
+
+    Connections {
+        target: entriesUser
+        onEntrySavedSuccess: {
+            pageHomeScreen.loadEntriesForCurrentFilter();
+        }
+        onEntryChangeSuccess: {
+            pageHomeScreen.loadEntriesForCurrentFilter();
+        }
+        onEntryDeleted: function(entryId) {
+            loadEntriesForCurrentFilter();
         }
     }
 
@@ -509,8 +527,8 @@ Rectangle {
             todoListModel.clear();
             for (let i = 0; i < todoos.length; ++i) {
                 todoListModel.append({
-                    todoname: todoos[i]
-                });
+                                         todoname: todoos[i]
+                                     });
                 console.log("Элемент списка:", todoos[i])
             }
         }
@@ -528,10 +546,10 @@ Rectangle {
             foldersListModel.clear();
             for (let i = 0; i < folders.length; ++i) {
                 foldersListModel.append({
-                    id: folders[i].id,
-                    foldername: folders[i].name,
-                    itemCount: folders[i].itemCount
-                });
+                                            id: folders[i].id,
+                                            foldername: folders[i].name,
+                                            itemCount: folders[i].itemCount
+                                        });
             }
 
             if (folders.length > 0) {
@@ -561,6 +579,10 @@ Rectangle {
         id: iconModelMood
     }
 
+    ListModel {
+        id: todoListModel
+    }
+
     function loadEntriesForCurrentFilter() {
         if (selectedFolderId === -1) {
             console.log("Папка не выбрана, записи не загружаем");
@@ -569,7 +591,7 @@ Rectangle {
         console.log("Загрузка записей для папки", selectedFolderId,
                     "за", monthSwitchButton.selectedMonth, monthSwitchButton.selectedYear);
         entriesUser.loadUserEntries(selectedFolderId,
-                                   monthSwitchButton.selectedYear,
-                                   monthSwitchButton.selectedMonth);
+                                    monthSwitchButton.selectedYear,
+                                    monthSwitchButton.selectedMonth);
     }
 }

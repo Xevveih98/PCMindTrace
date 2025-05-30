@@ -85,8 +85,6 @@ Rectangle {
                                         color: "#262326"
                                     }
 
-
-
                                     delegate: CustDateIcon {
                                         modelmonth: model
                                         currentMonth: monthGrid.month
@@ -250,6 +248,20 @@ Rectangle {
                     signal monthChanged(string dateString)
 
                     Component.onCompleted: updateDisplay()
+
+
+                    Connections {
+                        target: entriesUser
+                        onEntrySavedSuccess: {
+                            monthSwitchButton.updateDisplay()
+                        }
+                        onEntryDeleted: {
+                            monthSwitchButton.updateDisplay()
+                        }
+                        onEntryChangeSuccess: {
+                            monthSwitchButton.updateDisplay()
+                        }
+                    }
                 }
 
                 Item {
@@ -470,7 +482,7 @@ Rectangle {
                             Layout.alignment: Qt.AlignHCenter
 
                             Column {
-                                height: 28
+                                height: 40
                                 width: parent.width
                                 anchors.bottom: parent.bottom
 
@@ -501,7 +513,7 @@ Rectangle {
 
                         Item {
                             Layout.preferredWidth: parent.width * 0.8
-                            height: 110
+                            height: 130
                             Layout.alignment: Qt.AlignHCenter
 
                             Row {
@@ -575,7 +587,7 @@ Rectangle {
                         Item {
                             id: moodStatsContainer
                             Layout.fillWidth: true
-                            height: 60
+                            height: 50
                             Layout.alignment: Qt.AlignHCenter
 
                             Grid {
@@ -586,7 +598,6 @@ Rectangle {
 
                                 Repeater {
                                     model: 5
-
                                     delegate: Item {
                                         width: 30
                                         height: 54
@@ -667,7 +678,7 @@ Rectangle {
 
                                     Text {
                                         color: "#a1a1a1"
-                                        text: "Любимый день -"
+                                        text: "Самый положительный день -"
                                         font.pixelSize: 12
                                     }
 
@@ -778,14 +789,13 @@ Rectangle {
                         }
                     }
 
-
                     GridView {
                         id: iconsOverlay3
                         width: parent.width
                         height: 28
                         anchors.left: entryWeekPopular.left
                         anchors.bottom: entryWeekPopular.bottom
-                        anchors.leftMargin: 54
+                        anchors.leftMargin: 44
                         anchors.bottomMargin: 6
 
                         cellWidth: 26 + 18

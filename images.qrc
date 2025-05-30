@@ -34,5 +34,7 @@
         <file alias="second.png">assets/images/second.png</file>
         <file alias="nonemo.png">assets/images/nonemo.png</file>
         <file alias="remove.png">assets/images/remove.png</file>
+        <file alias="addtodoos.png">assets/images/addtodoos.png</file>
+        <file alias="addfolders.png">assets/images/addfolders.png</file>
     </qresource>
 </RCC>

@@ -180,4 +180,15 @@ Popup {
         entriesUser.clearDateSearchModel()
         foldersUser.loadFolder();
     }
+
+    Connections {
+        target: entriesUser
+        onEntryDeleted: {
+            managerPopup.close()
+        }
+        onEntryChangeSuccess: {
+            entriesUser.loadUserEntriesByDate(datefromdg);
+            managerPopup.close()
+        }
+    }
 }

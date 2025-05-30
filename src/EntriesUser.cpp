@@ -427,13 +427,19 @@ void EntriesUser::deleteUserEntry(int entryId)
     connect(reply, &QNetworkReply::finished, this, [=]() {
         if (reply->error() == QNetworkReply::NoError) {
             qDebug() << "Entry deleted successfully with ID:" << entryId;
-            if (m_dateSearchModel->removeEntryById(entryId)) {
-                qDebug() << "Entry removed from local model.";
-                emit entryDeleted(entryId);
-            } else {
-                qWarning() << "Entry ID not found in local model.";
+            bool removed = false;
+            if (m_dateSearchModel && m_dateSearchModel->removeEntryById(entryId)) {
+                removed = true;
+            }
+            if (m_entryUserModel && m_entryUserModel->removeEntryById(entryId)) {
+                removed = true;
             }
 
+            if (removed) {
+                emit entryDeleted(entryId);
+            } else {
+                qWarning() << "Entry ID not found in any local model.";
+            }
         } else {
             qWarning() << "Failed to delete entry:" << reply->errorString();
         }
@@ -526,9 +532,10 @@ void EntriesUser::updateEntry(const EntryUser &entry)
 
     QNetworkReply *reply = m_networkUser.post(request, data);
 
-    connect(reply, &QNetworkReply::finished, this, [reply]() {
+    connect(reply, &QNetworkReply::finished, this, [reply, this]() {
         if (reply->error() == QNetworkReply::NoError) {
             qInfo() << "Entry updated successfully.";
+            emit entryChangeSuccess();
         } else {
             qWarning() << "Failed to update entry:" << reply->errorString();
         }
