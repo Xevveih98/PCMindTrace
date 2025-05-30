@@ -27,6 +27,7 @@ QString AppSave::getSavedEmail() const {
 
 void AppSave::saveSwitchState(bool checked) {
     settings.setValue("customSwitchState", checked);
+    settings.sync();
 }
 
 bool AppSave::loadSwitchState() const {
@@ -37,18 +38,26 @@ void AppSave::clearSwitchState() {
     settings.remove("customSwitchState");
 }
 
-void AppSave::savePinCode(const QString pin) {
-    settings.setValue("PinCode", pin);
+void AppSave::savePinCode(const QString &pin) {
+    if (!pin.isEmpty()) {
+        settings.setValue("PinCode", pin);
+        settings.setValue("customSwitchState", true);
+        settings.sync();
+    } else {
+        qWarning() << "Попытка сохранить пустой пинкод.";
+    }
 }
 
 QString AppSave::loadPinCode() const {
-    return settings.value("PinCode", "").toString();
+    return settings.value("PinCode").toString();
+}
+
+bool AppSave::isUserHasPinCode() const {
+    return settings.contains("PinCode") && !settings.value("PinCode").toString().isEmpty();
 }
 
 void AppSave::clearPinCode() {
     settings.remove("PinCode");
-}
-
-bool AppSave::isUserHasPinCode() const {
-    return settings.contains("PinCode");
+    settings.setValue("customSwitchState", false);
+    settings.sync();
 }

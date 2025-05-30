@@ -135,53 +135,35 @@ Rectangle {
                             anchors.right: parent.right
                             anchors.rightMargin: 10
                             anchors.verticalCenter: parent.verticalCenter
-                            property var pinPopup: null
-                            property bool pinSetSuccessfully: false
 
                             onToggled: (value) => {
-                                console.log("Переключатель:", value ? "Включен" : "Выключен")
                                 if (value) {
                                     const component = Qt.createComponent("qrc:/popups/popPinCodeManager.qml");
                                     if (component.status === Component.Ready) {
-                                        if (pinPopup) {
-                                            pinPopup.open();
-                                        } else {
-                                            pinPopup = component.createObject(parent);
-                                            if (pinPopup) {
-                                                pinSetSuccessfully = false;
-                                                pinPopup.open();
-                                                pinPopup.pinCodeSet.connect(() => {
-                                                    pinSetSuccessfully = true;
-                                                    notify.notificationTitle = "PIN-код установлен!"
-                                                    notify.triggerAnimation()
-                                                    pinPopup.close();
-                                                });
+                                        var pinPopup = component.createObject(parent);
+                                        pinPopup.open();
 
-                                                pinPopup.onVisibleChanged.connect(() => {
-                                                    if (!pinPopup.visible) {
-                                                        if (!pinSetSuccessfully) {
-                                                            AppSave.clearPinCode()
-                                                            notify.notificationTitle = "PIN-код отменен"
-                                                            notify.triggerAnimation()
-                                                            mySwitch.checked = false;
-                                                        }
-                                                        pinPopup.destroy();
-                                                        pinPopup = null;
-                                                    }
-                                                });
-                                            } else {
+                                        pinPopup.pinCodeSet.connect(() => {
+                                            mySwitch.checked = true;
+                                            AppSave.saveSwitchState(true);
+                                            pinPopup.close();
+                                            pinPopup.destroy();
+                                        });
+
+                                        pinPopup.onClosed.connect(() => {
+                                            if (!AppSave.isUserHasPinCode()) {
                                                 mySwitch.checked = false;
+                                                AppSave.saveSwitchState(false);
                                             }
-                                        }
+                                            pinPopup.destroy();
+                                        });
                                     } else {
-                                        console.error("Ошибка загрузки компонента:", component.errorString());
                                         mySwitch.checked = false;
                                     }
                                 } else {
-                                    if (pinPopup) {
-                                        pinPopup.close();
-                                        pinPopup = null;
-                                    }
+                                    AppSave.clearPinCode();
+                                    AppSave.saveSwitchState(false);
+                                    mySwitch.checked = false;
                                 }
                             }
                         }

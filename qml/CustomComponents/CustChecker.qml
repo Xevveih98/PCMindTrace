@@ -8,11 +8,11 @@ Item {
     height: 26
     property bool checked: AppSave.loadSwitchState()
     signal toggled(bool checked)
-
-    onCheckedChanged: {
-        AppSave.clearPinCode()
-        AppSave.clearSwitchState()
-        AppSave.saveSwitchState(checked)
+    Connections {
+        target: AppSave
+        function onPinCodeChanged() {
+            checked = AppSave.isUserHasPinCode()
+        }
     }
 
     Rectangle {
@@ -35,7 +35,6 @@ Item {
                 NumberAnimation { duration: 200; easing.type: Easing.OutQuad }
             }
 
-
             Behavior on color {
                 ColorAnimation { duration: 200; easing.type: Easing.InOutQuad }
             }
@@ -44,9 +43,12 @@ Item {
         MouseArea {
             anchors.fill: parent
             onClicked: {
-                root.checked = !root.checked
-                root.toggled(root.checked)
+                root.toggled(!root.checked)
             }
         }
+    }
+
+    Component.onCompleted: {
+        checked = AppSave.isUserHasPinCode()
     }
 }

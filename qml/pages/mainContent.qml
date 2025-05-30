@@ -130,6 +130,6 @@ Item {
     StackView {
         id: stackViewMainContent
         anchors.fill: parent
-        initialItem: "qrc:/pages/Settings.qml"
+        initialItem: "qrc:/pages/Research.qml"
     }
 }

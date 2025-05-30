@@ -21,7 +21,7 @@ public:
     Q_INVOKABLE bool loadSwitchState() const;
     Q_INVOKABLE void clearSwitchState();
 
-    Q_INVOKABLE void savePinCode(const QString pin);
+    Q_INVOKABLE void savePinCode(const QString &pin);
     Q_INVOKABLE QString loadPinCode() const;
     Q_INVOKABLE void clearPinCode();
     Q_INVOKABLE bool isUserHasPinCode() const;
