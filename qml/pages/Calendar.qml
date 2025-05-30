@@ -578,118 +578,38 @@ Rectangle {
                             height: 60
                             Layout.alignment: Qt.AlignHCenter
 
-                            Row {
-                                id: iconRow
+                            Grid {
+                                id: moodGrid
                                 anchors.horizontalCenter: parent.horizontalCenter
+                                columns: 5
                                 spacing: 18
-                                Item {
-                                    width: 30
-                                    height: 54
-                                    Image {
-                                        id: icon1
-                                        width: 30
-                                        height: width
-                                        anchors.horizontalCenter: parent.horizontalCenter
-                                        source: Utils.getIconPathById(iconModelMood, 1)
-                                        fillMode: Image.PreserveAspectFit
-                                    }
-                                    Text {
-                                        id: count1
-                                        color: "#a1a1a1"
-                                        font.bold: true
-                                        font.pixelSize: 14
-                                        anchors.bottom: parent.bottom
-                                        anchors.horizontalCenter: parent.horizontalCenter
-                                        text: "0"
-                                    }
-                                }
-                                Item {
-                                    width: 30
-                                    height: 54
-                                    Image {
-                                        id: icon2
-                                        width: 30
-                                        height: width
-                                        anchors.horizontalCenter: parent.horizontalCenter
-                                        source: Utils.getIconPathById(iconModelMood, 2)
-                                        fillMode: Image.PreserveAspectFit
-                                    }
-                                    Text {
-                                        id: count2
-                                        color: "#a1a1a1"
-                                        font.bold: true
-                                        font.pixelSize: 14
-                                        anchors.bottom: parent.bottom
-                                        anchors.horizontalCenter: parent.horizontalCenter
-                                        text: "0"
-                                    }
-                                }
 
-                                Item {
-                                    width: 30
-                                    height: 54
-                                    Image {
-                                        id: icon3
-                                        width: 30
-                                        height: width
-                                        anchors.horizontalCenter: parent.horizontalCenter
-                                        source: Utils.getIconPathById(iconModelMood, 3)
-                                        fillMode: Image.PreserveAspectFit
-                                    }
-                                    Text {
-                                        id: count3
-                                        color: "#a1a1a1"
-                                        font.bold: true
-                                        font.pixelSize: 14
-                                        anchors.bottom: parent.bottom
-                                        anchors.horizontalCenter: parent.horizontalCenter
-                                        text: "0"
-                                    }
-                                }
+                                Repeater {
+                                    model: 5
 
-                                // MoodId = 4
-                                Item {
-                                    width: 30
-                                    height: 54
-                                    Image {
-                                        id: icon4
+                                    delegate: Item {
                                         width: 30
-                                        height: width
-                                        anchors.horizontalCenter: parent.horizontalCenter
-                                        source: Utils.getIconPathById(iconModelMood, 4)
-                                        fillMode: Image.PreserveAspectFit
-                                    }
-                                    Text {
-                                        id: count4
-                                        color: "#a1a1a1"
-                                        font.bold: true
-                                        font.pixelSize: 14
-                                        anchors.bottom: parent.bottom
-                                        anchors.horizontalCenter: parent.horizontalCenter
-                                        text: "0"
-                                    }
-                                }
+                                        height: 54
 
-                                // MoodId = 5
-                                Item {
-                                    width: 30
-                                    height: 54
-                                    Image {
-                                        id: icon5
-                                        width: 30
-                                        height: width
-                                        anchors.horizontalCenter: parent.horizontalCenter
-                                        source: Utils.getIconPathById(iconModelMood, 5)
-                                        fillMode: Image.PreserveAspectFit
-                                    }
-                                    Text {
-                                        id: count5
-                                        color: "#a1a1a1"
-                                        font.bold: true
-                                        font.pixelSize: 14
-                                        anchors.bottom: parent.bottom
-                                        anchors.horizontalCenter: parent.horizontalCenter
-                                        text: "0"
+                                        property int moodId: index + 1
+                                        property string count: entryCurrentMonthModel.countMood(moodId)
+
+                                        Image {
+                                            width: 30
+                                            height: width
+                                            anchors.horizontalCenter: parent.horizontalCenter
+                                            source: Utils.getIconPathById(iconModelMood, moodId)
+                                            fillMode: Image.PreserveAspectFit
+                                        }
+
+                                        Text {
+                                            color: "#a1a1a1"
+                                            font.bold: true
+                                            font.pixelSize: 14
+                                            anchors.bottom: parent.bottom
+                                            anchors.horizontalCenter: parent.horizontalCenter
+                                            text: parent.count
+                                        }
                                     }
                                 }
                             }
@@ -697,11 +617,12 @@ Rectangle {
                             Connections {
                                 target: entryCurrentMonthModel
                                 onCountChanged: {
-                                    count1.text = entryCurrentMonthModel.countMood(1);
-                                    count2.text = entryCurrentMonthModel.countMood(2);
-                                    count3.text = entryCurrentMonthModel.countMood(3);
-                                    count4.text = entryCurrentMonthModel.countMood(4);
-                                    count5.text = entryCurrentMonthModel.countMood(5);
+                                    for (var i = 0; i < moodGrid.children.length; i++) {
+                                        var item = moodGrid.children[i]
+                                        if (item && item.moodId !== undefined) {
+                                            item.count = entryCurrentMonthModel.countMood(item.moodId)
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -873,7 +794,6 @@ Rectangle {
                         interactive: false
                         flow: GridView.FlowLeftToRight
 
-                        // Индексы топ-3 дней
                         property int bestIndex: -1
                         property int secondIndex: -1
                         property int thirdIndex: -1
@@ -881,8 +801,6 @@ Rectangle {
                         delegate: Image {
                             width: 26
                             height: 26
-
-                            // Проверяем текущий index и подбираем правильный iconId
                             property int iconId: {
                                 if (index === iconsOverlay3.bestIndex) return 1;
                                 if (index === iconsOverlay3.secondIndex) return 2;

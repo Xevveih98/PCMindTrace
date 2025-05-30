@@ -159,6 +159,7 @@ Rectangle {
                     anchors.centerIn: parent
 
                     ListView {
+                        id: tagsListView
                         anchors.fill: parent
                         model: tagsListModel
                         spacing: 6
@@ -181,7 +182,7 @@ Rectangle {
                                         selectedTags.splice(index, 1)
                                     }
                                 }
-                                console.log("Selected selectedActivities:", selectedTags)
+                                console.log("Selected selectedAactivities:", selectedTags)
                             }
                         }
                     }
@@ -213,6 +214,7 @@ Rectangle {
                     anchors.centerIn: parent
 
                     ListView {
+                        id: emotionsListView
                         anchors.fill: parent
                         model: emotionsListModel
                         spacing: 6
@@ -269,6 +271,7 @@ Rectangle {
                     anchors.centerIn: parent
 
                     ListView {
+                        id: activitiesListView
                         anchors.fill: parent
                         model: activitiesListModel
                         spacing: 6
@@ -306,22 +309,28 @@ Rectangle {
 
                 Row {
                     height: 30
-                    width: 240
                     anchors.centerIn: parent
+                    spacing: 50
 
                     Item {
                         width: 120
                         height: 30
 
-
                         Text{
                             color: "#d9d9d9"
                             text: "Очистить"
-                            font.pixelSize: 12
+                            font.pixelSize: 14
                             font.bold: true
-                            Layout.fillWidth: true
-                            horizontalAlignment: Text.AlignHCenter
+                            anchors.centerIn: parent
                         }
+
+                        MouseArea{
+                           anchors.fill: parent
+                           onClicked: {
+                               console.log("Очищаем фильтры")
+                               pageResearchScreen.resetAllFilters()
+                           }
+                       }
                     }
 
                     Item {
@@ -330,21 +339,33 @@ Rectangle {
 
                         Rectangle {
                             anchors.fill: parent
-                            color: "#9A5556"
+                            color: "#AD464B"
+                            radius: 100
                         }
 
                         Text{
                             color: "#d9d9d9"
                             text: "Фильтровать"
-                            font.pixelSize: 12
+                            font.pixelSize: 14
                             font.bold: true
-                            Layout.fillWidth: true
-                            horizontalAlignment: Text.AlignHCenter
+                            anchors.centerIn: parent
+                        }
+
+                        MouseArea{
+                            anchors.fill: parent
+                            onClicked: {
+                                console.log("фильтровать")
+                                entriesUser.loadUserEntriesByTags(selectedTags, selectedEmotions, selectedActivities)
+                            }
                         }
                     }
                 }
             }
 
+            Item {
+                Layout.fillWidth: true
+                Layout.preferredHeight: 10
+            }
 
             Text{
                 id: textag
@@ -352,8 +373,7 @@ Rectangle {
                 text: "Найденные записи"
                 font.pixelSize: 18
                 font.bold: true
-                Layout.fillWidth: true
-                horizontalAlignment: Text.AlignHCenter
+                Layout.alignment: Qt.AlignHCenter
             }
 
             Rectangle {
@@ -471,4 +491,41 @@ Rectangle {
             console.log("Emotions loaded into model:", emotionsListModel.count)
         }
     }
+
+    function resetAllFilters() {
+            // Очищаем списки выбранных элементов
+            selectedTags = []
+            selectedEmotions = []
+            selectedActivities = []
+
+            // Сбрасываем визуальное состояние всех делегатов
+            resetTagsDelegateSelection()
+            resetEmotionsDelegateSelection()
+            resetActivitiesDelegateSelection()
+
+            // Очищаем поле поиска
+            searchbar.text = ""
+            entriesUser.clearSearchModel()
+        }
+
+        function resetTagsDelegateSelection() {
+            for (var i = 0; i < tagsListModel.count; i++) {
+                var item = tagsListView.itemAtIndex(i)
+                if (item) item.qselected = false
+            }
+        }
+
+        function resetEmotionsDelegateSelection() {
+            for (var i = 0; i < emotionsListModel.count; i++) {
+                var item = emotionsListView.itemAtIndex(i)
+                if (item) item.qselected = false
+            }
+        }
+
+        function resetActivitiesDelegateSelection() {
+            for (var i = 0; i < activitiesListModel.count; i++) {
+                var item = activitiesListView.itemAtIndex(i)
+                if (item) item.qselected = false
+            }
+        }
 }
