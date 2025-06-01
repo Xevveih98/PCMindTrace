@@ -21,5 +21,6 @@
         <file alias="popEntryChanger.qml">qml/popups/popEntryChanger.qml</file>
         <file alias="popEntryFeedByDate.qml">qml/popups/popEntryFeedByDate.qml</file>
         <file alias="popPinCodeManager.qml">qml/popups/popPinCodeManager.qml</file>
+        <file alias="popUserChangeProfile.qml">qml/popups/popUserChangeProfile.qml</file>
     </qresource>
 </RCC>

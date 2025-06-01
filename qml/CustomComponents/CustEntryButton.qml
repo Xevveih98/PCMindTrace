@@ -40,13 +40,11 @@ Item {
         width: 120
         height: 72
         background: Rectangle {
-            color: "#262326"
-            radius: 14
-            border.color: "#4D4D4D"
-            border.width: 1
+            color: "#090809"
+            radius: 100
         }
         Overlay.modal: Rectangle {
-            color: "#181718"
+            color: "#090809"
             opacity: 0.3
         }
 

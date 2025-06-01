@@ -17,6 +17,9 @@ public:
     Q_INVOKABLE void saveUser(const QString &login, const QString &email);
     Q_INVOKABLE void clearUser();
 
+    Q_INVOKABLE void saveLogin(const QString &login); // Отдельный метод для логина
+    Q_INVOKABLE void saveEmail(const QString &email);
+
     Q_INVOKABLE void saveSwitchState(bool checked);
     Q_INVOKABLE bool loadSwitchState() const;
     Q_INVOKABLE void clearSwitchState();
@@ -25,6 +28,11 @@ public:
     Q_INVOKABLE QString loadPinCode() const;
     Q_INVOKABLE void clearPinCode();
     Q_INVOKABLE bool isUserHasPinCode() const;
+    void onPinCodeChanged();
+    Q_INVOKABLE void saveAvatarId(int avatarId);
+    Q_INVOKABLE int getSavedAvatarId() const;
+    Q_INVOKABLE void clearAvatarId();
+
 
 private:
     QSettings settings;

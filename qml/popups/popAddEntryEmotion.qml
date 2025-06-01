@@ -2,9 +2,9 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import PCMindTrace 1.0
 import CustomComponents
+import QtQuick.Layouts
 
 Popup {
-
     property var selectedEmotions: []
     signal emotionsConfirmed(var selectedEmotions)
 
@@ -25,116 +25,100 @@ Popup {
         color: "#2D292C"
         radius: 8
     }
-
-    Item {
+    ColumnLayout {
         anchors.fill: parent
 
         Item {
-            width: parent.width * 0.9
-            height: parent.height * 0.93
-            anchors.centerIn: parent
+            Layout.preferredHeight: 10
+            Layout.fillWidth: true
+        }
 
-            Text {
-                id: header
-                text: "Выбор эмоций"
-                color: "#D9D9D9"
-                font.pixelSize: 22
-                font.bold: true
-                wrapMode: Text.Wrap
-                anchors.horizontalCenter: parent.horizontalCenter
-            }
+        Text {
+            text: "Добавить впечатления"
+            color: "#D9D9D9"
+            font.pixelSize: 20
+            font.bold: true
+            wrapMode: Text.Wrap
+            Layout.preferredWidth: parent.width*0.93
+            horizontalAlignment: Text.AlignHCenter
+            Layout.alignment: Qt.AlignHCenter
+        }
 
-            Text {
-                id: text1
-                text: "Выберите эмоции, которые хотите добавить."
-                color: "#D9D9D9"
-                font.pixelSize: 15
-                anchors.top: header.bottom
-                anchors.topMargin: 14
-                wrapMode: Text.Wrap
-                width: parent.width
-                horizontalAlignment: Text.AlignLeft
-            }
+        Text {
+            textFormat: Text.RichText
+            text: "Впечатления помогают отразить <b><font color='#DA446A'>настроение</font></b> записи — выберите те, что лучше всего его передают. Чтобы <b><font color='#DA446A'>удалить</font></b> впечатление, просто нажмите на него."
+            Layout.preferredWidth: parent.width*0.93
+            horizontalAlignment: Text.AlignHCenter
+            Layout.alignment: Qt.AlignHCenter
+            wrapMode: Text.Wrap
+            font.pixelSize: 14
+            color: "#D9D9D9"
+        }
 
-            Text {
-                id: text2
-                text: "Чтобы убрать эмоцию - нажмите на неё."
-                color: "#D9D9D9"
-                font.pixelSize: 15
-                anchors.top: text1.bottom
-                anchors.topMargin: 1
-                wrapMode: Text.Wrap
-                width: parent.width
-                horizontalAlignment: Text.AlignLeft
-            }
+        Item {
+            Layout.fillWidth: true
+            Layout.fillHeight: true
 
-            ListModel {
-                id: emotionListModel
-            }
+            Rectangle {
+                anchors.fill: parent
+                color: "#262326"
 
-            Item {
-                anchors.top: text2.bottom
-                anchors.topMargin: 15
-                width: parent.width
-                height: parent.height * 0.7
-
-                Rectangle {
+                Text {
                     anchors.centerIn: parent
-                    width: parent.width * 1.02
-                    height: parent.height * 1.03
-                    color: "#262326"
-                    radius: 8
+                    text: "Пользовательский список пуст.."
+                    color: "#4d4d4d"
+                    font.pixelSize: 11
+                    font.italic: true
+                    visible: emotionListModel.count === 0
+                }
+            }
 
-                    Text {
-                        anchors.centerIn: parent
-                        text: "Пользовательский список пуст.."
-                        color: "#4d4d4d"
-                        font.pixelSize: 11
-                        font.italic: true
-                        visible: emotionListModel.count === 0
-                    }
+            Item{
+                width: parent.width * 0.97
+                height: parent.height * 0.99
+                anchors.centerIn: parent
 
-                    ScrollView {
-                        id: amascroll
+                Flickable {
+                    width: parent.width
+                    height: parent.height
+                    contentWidth: parent.width
+                    contentHeight: flowContent.implicitHeight
+                    clip: true
+
+                    Flow {
+                        id: flowContent
                         width: parent.width
-                        height: parent.height
-                        z: 1
+                        spacing: 6
 
-                        Flow {
-                            width: amascroll.width
-                            spacing: 6
+                        Repeater {
+                            model: emotionListModel
+                            delegate: CustEmotButn {
+                                id: emoBtn
+                                emotionText: model.emotion
+                                iconPath: Utils.getIconPathById(iconModelEmotion, model.iconId)
+                                buttonWidth: implicitWidth
 
-                            Repeater {
-                                model: emotionListModel
-                                delegate: CustEmotButn {
-                                    id: emoBtn
-                                    emotionText: model.emotion
-                                    iconPath: Utils.getIconPathById(iconModelEmotion, model.iconId)
-                                    buttonWidth: implicitWidth
-                                    buttonHeight: 43
+                                selected: managerPopup.selectedEmotions.some(e => e.id === model.id)
 
-                                    selected: managerPopup.selectedEmotions.some(e => e.id === model.id)
+                                onClicked: {
+                                    let idx = managerPopup.selectedEmotions.findIndex(e => e.id === model.id)
+                                    if (idx === -1) {
+                                        managerPopup.selectedEmotions.push({
+                                            id: model.id,
+                                            emotion: model.emotion,
+                                            iconId: model.iconId
+                                        })
+                                    } else {
+                                        managerPopup.selectedEmotions.splice(idx, 1)
+                                    }
 
-                                    onClicked: {
-                                        let idx = managerPopup.selectedEmotions.findIndex(e => e.id === model.id)
-                                        if (idx === -1) {
-                                            managerPopup.selectedEmotions.push({
-                                                id: model.id,
-                                                emotion: model.emotion,
-                                                iconId: model.iconId
-                                            })
-                                        } else {
-                                            managerPopup.selectedEmotions.splice(idx, 1)
-                                        }
+                                    selected = !selected
 
-                                        selected = !selected
-
-                                        console.log("Обновленные selectedEmotions:")
-                                        for (let i = 0; i < managerPopup.selectedEmotions.length; ++i) {
-                                            console.log("id:", managerPopup.selectedEmotions[i].id,
-                                                        "iconId:", managerPopup.selectedEmotions[i].iconId,
-                                                        "emotion:", managerPopup.selectedEmotions[i].emotion)
-                                        }
+                                    console.log("Обновленные selectedEmotions:")
+                                    for (let i = 0; i < managerPopup.selectedEmotions.length; ++i) {
+                                        console.log("id:", managerPopup.selectedEmotions[i].id,
+                                                    "iconId:", managerPopup.selectedEmotions[i].iconId,
+                                                    "emotion:", managerPopup.selectedEmotions[i].emotion)
                                     }
                                 }
                             }
@@ -148,12 +132,9 @@ Popup {
             id: buttAdmit
             color: "#474448"
             radius: 8
-            width: parent.width
-            height: 50
-            anchors {
-                bottom: parent.bottom
-                horizontalCenter: parent.horizontalCenter
-            }
+            Layout.fillWidth: true
+            Layout.preferredHeight: 40
+            Layout.alignment: Qt.AlignBottom
 
             Text {
                 text: "Подтвердить"
@@ -166,11 +147,20 @@ Popup {
                 anchors.fill: parent
                 onClicked: {
                     emotionsConfirmed(managerPopup.selectedEmotions);
-                    managerPopup.close();
+                    managerPopup.close()
                 }
             }
         }
     }
+
+    ListModel {
+        id: emotionListModel
+    }
+
+    IconModelEmo {
+        id: iconModelEmotion
+    }
+
 
     function setEmotions(emotionArray) {
         emotionListModel.clear();
@@ -179,7 +169,7 @@ Popup {
             emotionListModel.append({
                 id: emotionArray[i].id,
                 emotion: emotionArray[i].emotion,
-                iconId: emotionArray[i].iconId               
+                iconId: emotionArray[i].iconId
             });
         }
     }
@@ -198,9 +188,5 @@ Popup {
         onEmotionLoadedSuccess: function(emotions) {
             loadEmotionsFromServer(emotions);
         }
-    }
-
-    IconModelEmo {
-        id: iconModelEmotion
     }
 }

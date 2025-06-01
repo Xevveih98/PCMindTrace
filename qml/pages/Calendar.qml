@@ -81,7 +81,6 @@ Rectangle {
                                     spacing: 0
                                     background: Rectangle {
                                         anchors.fill: parent
-                                        //radius: 12
                                         color: "#262326"
                                     }
 

@@ -11,9 +11,21 @@ QString AppSave::getSavedLogin() const {
     return settings.value("login").toString().trimmed();
 }
 
-void AppSave::saveUser(const QString &login, const QString &email) {
+void AppSave::saveLogin(const QString &login) {
     settings.setValue("login", login.trimmed());
+    settings.sync();
+}
+
+void AppSave::saveEmail(const QString &email) {
     settings.setValue("email", email.trimmed());
+    settings.sync();
+}
+
+void AppSave::saveUser(const QString &login, const QString &email) {
+    saveLogin(login);
+    if (!email.isEmpty()) {
+        saveEmail(email);
+    }
 }
 
 void AppSave::clearUser() {
@@ -60,4 +72,17 @@ void AppSave::clearPinCode() {
     settings.remove("PinCode");
     settings.setValue("customSwitchState", false);
     settings.sync();
+}
+
+void AppSave::saveAvatarId(int avatarId) {
+    settings.setValue("avatarId", avatarId);
+    settings.sync();
+}
+
+int AppSave::getSavedAvatarId() const {
+    return settings.value("avatarId", 1).toInt();
+}
+
+void AppSave::clearAvatarId() {
+    settings.remove("avatarId");
 }

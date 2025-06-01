@@ -17,9 +17,9 @@ Button {
 
     background: Rectangle {
         radius: 18
-        color: folderButton.isSelected ? "#37262E" : "#1F1B1F"
+        color: folderButton.isSelected ? "#3A162A" : "#1F1B1F"
         border.width: folderButton.isSelected ? 1 : 0
-        border.color: folderButton.isSelected ? "#9A5556" : "transparent"
+        border.color: folderButton.isSelected ? "#DA446A" : "transparent"
     }
 
     contentItem: Text {

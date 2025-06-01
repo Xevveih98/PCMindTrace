@@ -58,9 +58,9 @@ Rectangle {
 
                     CustButtSett {
                         buttonWidth: parent.width
-                        buttonText: "Посмотреть статистику"
+                        buttonText: "Изменить профиль"
                         iconSource: "qrc:/images/DataRecovery.png"
-                        //popupTarget: settingsPopupChangeEmail
+                        popupTarget: "qrc:/popups/popUserChangeProfile.qml"
                     }
                 }
 
@@ -231,6 +231,15 @@ Rectangle {
         onPasswordChangeSuccess: {
             Qt.callLater(function() {
                 notify.notificationTitle = "Удачная смена пароля!"
+                notify.triggerAnimation()
+            })
+        }
+    }
+    Connections {
+        target: authUser
+        onLoginChangeSuccess: {
+            Qt.callLater(function() {
+                notify.notificationTitle = "Удачная смена логина!"
                 notify.triggerAnimation()
             })
         }

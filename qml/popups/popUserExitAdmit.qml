@@ -79,6 +79,7 @@ Popup {
             onClicked: {
                 authUser.logout();
                 exitPopup.close();
+                AppSave.removeValue("onboardingShown")
             }
         }
     }

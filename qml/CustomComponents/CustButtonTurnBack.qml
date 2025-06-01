@@ -5,7 +5,6 @@ Item {
     width: 60
     height: 30
 
-    // Кнопка с фоном, радиусом и текстом "Назад"
     Rectangle {
         width: parent.width
         height: parent.height

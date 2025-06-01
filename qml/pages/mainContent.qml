@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import CustomComponents 1.0
+import PCMindTrace
 
 Item {
     id: mainAuthWindow
@@ -133,3 +134,4 @@ Item {
         initialItem: "qrc:/pages/Home.qml"
     }
 }
+

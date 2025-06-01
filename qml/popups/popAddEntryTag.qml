@@ -1,13 +1,13 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import PCMindTrace 1.0
-import CustomComponents
+import CustomComponents 1.0
+import QtQuick.Layouts
 
 Popup {
-
     property var selectedTags: []
     signal tagsConfirmed(var selectedTags)
-    
+
     id: managerPopup
     width: Screen.width * 0.93
     height: Screen.height * 0.6
@@ -25,84 +25,73 @@ Popup {
         color: "#2D292C"
         radius: 8
     }
+    onOpened: {
+        categoriesUser.loadTags()
+    }
 
-    Item {
+    ColumnLayout {
         anchors.fill: parent
 
         Item {
-            width: parent.width * 0.9
-            height: parent.height * 0.93
-            anchors.centerIn: parent
+            Layout.preferredHeight: 10
+            Layout.fillWidth: true
+        }
 
-            Text {
-                id: header
-                text: "Добавление тегов"
-                color: "#D9D9D9"
-                font.pixelSize: 22
-                font.bold: true
-                wrapMode: Text.Wrap
-                anchors.horizontalCenter: parent.horizontalCenter
-            }
+        Text {
+            text: "Добавить теги"
+            color: "#D9D9D9"
+            font.pixelSize: 20
+            font.bold: true
+            wrapMode: Text.Wrap
+            Layout.preferredWidth: parent.width*0.93
+            horizontalAlignment: Text.AlignHCenter
+            Layout.alignment: Qt.AlignHCenter
+        }
 
-            Text {
-                id: text1
-                text: "Выберите теги, которые хотите добавить."
-                color: "#D9D9D9"
-                font.pixelSize: 15
-                anchors.top: header.bottom
-                anchors.topMargin: 14
-                wrapMode: Text.Wrap
-                width: parent.width
-                horizontalAlignment: Text.AlignLeft
-            }
+        Text {
+            textFormat: Text.RichText
+            text: "Теги помогают <b><font color='#DA446A'>быстро</font></b> находить записи — добавляйте как можно больше релевантных. Чтобы <b><font color='#DA446A'>убрать</font></b> тег, просто нажмите на него."
+            Layout.preferredWidth: parent.width*0.93
+            horizontalAlignment: Text.AlignHCenter
+            Layout.alignment: Qt.AlignHCenter
+            wrapMode: Text.Wrap
+            font.pixelSize: 14
+            color: "#D9D9D9"
+        }
 
-            Text {
-                id: text2
-                text: "Чтобы убрать тег - намите на него."
-                color: "#D9D9D9"
-                font.pixelSize: 15
-                anchors.top: text1.bottom
-                anchors.topMargin: 1
-                wrapMode: Text.Wrap
-                width: parent.width
-                horizontalAlignment: Text.AlignLeft
-            }
+        Item {
+            Layout.fillWidth: true
+            Layout.fillHeight: true
 
-            ListModel {
-                id: tagListModel
-            }
+            Rectangle {
+                anchors.fill: parent
+                color: "#262326"
 
-            Item {
-                anchors.top: text2.bottom
-                anchors.topMargin: 15
-                width: parent.width
-                height: parent.height * 0.7
-
-                Rectangle {
+                Text {
                     anchors.centerIn: parent
-                    width: parent.width * 1.02
-                    height: parent.height * 1.03
-                    color: "#262326"
-                    radius: 8
-
-                    Text {
-                        anchors.centerIn: parent
-                        text: "Пользовательский список пуст.."
-                        color: "#4d4d4d"
-                        font.pixelSize: 11
-                        font.italic: true
-                        visible: tagListModel.count === 0
-                    }
+                    text: "Пользовательский список пуст.."
+                    color: "#4d4d4d"
+                    font.pixelSize: 11
+                    font.italic: true
+                    visible: tagListModel.count === 0
                 }
+            }
 
-                ScrollView {
-                    id: amascroll
+            Item{
+                width: parent.width * 0.97
+                height: parent.height * 0.99
+                anchors.centerIn: parent
+
+                Flickable {
                     width: parent.width
                     height: parent.height
-                    z: 1
+                    contentWidth: parent.width
+                    contentHeight: flowContent.implicitHeight
+                    clip: true
 
                     Flow {
-                        width: amascroll.width
+                        id: flowContent
+                        width: parent.width
                         spacing: 6
 
                         Repeater {
@@ -141,12 +130,9 @@ Popup {
             id: buttAdmit
             color: "#474448"
             radius: 8
-            width: parent.width
-            height: 50
-            anchors {
-                bottom: parent.bottom
-                horizontalCenter: parent.horizontalCenter
-            }
+            Layout.fillWidth: true
+            Layout.preferredHeight: 40
+            Layout.alignment: Qt.AlignBottom
 
             Text {
                 text: "Подтвердить"
@@ -161,9 +147,14 @@ Popup {
                     tagsConfirmed(managerPopup.selectedTags)
                     managerPopup.close()
                 }
-            }            
+            }
         }
     }
+
+    ListModel {
+        id: tagListModel
+    }
+
     function setTags(tagArray) {
         tagListModel.clear();
         for (let i = 0; i < tagArray.length; ++i) {
@@ -174,10 +165,6 @@ Popup {
     function loadTagsFromServer(tags) {
         console.log("Loading tags into model:", tags)
         setTags(tags)
-    }
-
-    onOpened: {
-        categoriesUser.loadTags()
     }
 
     Connections {

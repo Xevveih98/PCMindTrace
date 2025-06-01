@@ -30,8 +30,6 @@ Item {
         height: wrapper.height
         color: "#2D292C"
         radius: 12
-        border.width: 1
-        border.color: "#474448"
 
         Item {
             id: contentRow

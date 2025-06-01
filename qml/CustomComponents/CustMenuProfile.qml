@@ -15,12 +15,9 @@ Item {
 
     Rectangle {
         id: buttonRect
-        width: wrapper.width * 0.93
+        width: wrapper.width
         height: wrapper.height
-        color: "#3E3A40"
-        border.width: 1
-        border.color: "#474448"
-        radius: 20
+        color: "#262326"
         anchors.horizontalCenter: parent.horizontalCenter
 
         MouseArea {
@@ -41,7 +38,7 @@ Item {
 
             Image {
                 id: avatar
-                source: avatarSource
+                source: "qrc:/images/avatar.png"
                 width: 40
                 height: 40
                 anchors.left: parent.left
@@ -87,6 +84,13 @@ Item {
         onEmailChangeSuccess: {
             userName = AppSave.getSavedLogin()
             userEmail = AppSave.getSavedEmail()
+        }
+    }
+
+    Connections {
+        target: authUser
+        onLoginChangeSuccess: {
+            wrapper.userName = AppSave.getSavedLogin()
         }
     }
 }

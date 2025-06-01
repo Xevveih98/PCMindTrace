@@ -37,5 +37,8 @@
         <file alias="addtodoos.png">assets/images/addtodoos.png</file>
         <file alias="addfolders.png">assets/images/addfolders.png</file>
         <file alias="addcategoru.png">assets/images/addcategoru.png</file>
+        <file alias="continueq.png">assets/images/continueq.png</file>
+        <file alias="quitw.png">assets/images/quitw.png</file>
+        <file alias="avatar.png">assets/images/avatar.png</file>
     </qresource>
 </RCC>

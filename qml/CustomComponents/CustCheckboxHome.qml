@@ -6,9 +6,9 @@ Item {
     property alias buttonWidth: wrapper.width
     property alias buttonHeight: wrapper.height
     property color uncheckedColor: "#181718"
-    property color checkedColor: "#37262E"
-    property color uncheckedColorBg: "#474448"
-    property color checkedColorBg: "#9A5556"
+    property color checkedColor: "#3A162A"
+    property color uncheckedColorBg: "transparent"
+    property color checkedColorBg: "#DA446A"
     property color checkboxColorUnchecked: "#686A71"
     property color checkboxColorChecked: "transparent"
     property color textColorUnchecked: "#d9d9d9"
@@ -27,8 +27,8 @@ Item {
         width: parent.width
         height: wrapper.height
         color: checked ? checkedColor : uncheckedColor
-        border.width: 1
-        border.color: checked ? checkedColorBg : uncheckedColorBg
+        border.width: checked ? 1 : 0
+        border.color: checked ?checkedColorBg: uncheckedColorBg
         radius: 5
         anchors.centerIn: parent
 

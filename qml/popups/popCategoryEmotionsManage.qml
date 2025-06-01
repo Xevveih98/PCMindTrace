@@ -201,7 +201,6 @@ Popup {
                                 activityText: model.emotion
                                 iconPath: Utils.getIconPathById(iconModelEmotion, model.iconId)
                                 buttonWidth: implicitWidth
-                                buttonHeight: 43
                                 onClicked: {
                                     categoriesUser.deleteEmotion(model.emotion);
                                     emotionListModel.remove(index);

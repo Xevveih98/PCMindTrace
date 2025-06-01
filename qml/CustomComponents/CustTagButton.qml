@@ -14,10 +14,10 @@ Button {
     focusPolicy: Qt.NoFocus
 
     background: Rectangle {
-        radius: 18
-        color: tagButton.selected ? "#37262E" : "#181718"
-        border.width: 1
-        border.color: tagButton.selected ? "#9A5556" : "#4D4D4D"
+        radius: 100
+        color: tagButton.selected ? "#3A162A" : "#181718"
+        border.width: tagButton.selected ? 1 : 0
+        border.color: tagButton.selected ? "#DA446A" : "transparent"
     }
 
     contentItem: Text {

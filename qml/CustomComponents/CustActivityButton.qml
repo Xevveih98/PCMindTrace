@@ -7,22 +7,22 @@ Button {
     property string activityText: "Default"
     property string iconPath: ""
     property alias buttonWidth: activityButton.width
-    property alias buttonHeight: activityButton.height
     property bool selected: false
 
+    height: 40
     padding: 0
     hoverEnabled: false
     focusPolicy: Qt.NoFocus
 
     background: Rectangle {
-        radius: 18
-        color: activityButton.selected ? "#37262E" : "#181718"
-        border.width: 1
-        border.color: activityButton.selected ? "#9A5556" : "#4D4D4D"
+        radius: 100
+        color: activityButton.selected ? "#3A162A" : "#181718"
+        border.width: activityButton.selected ? 1 : 0
+        border.color: activityButton.selected ? "#DA446A" : "transparent"
     }
 
     contentItem: Row {
-        spacing: 5
+        spacing: 8
         anchors.centerIn: parent
         height: parent.height
 
@@ -42,7 +42,7 @@ Button {
             text: activityText
             color: "#d9d9d9"
             font.pixelSize: 12
-            verticalAlignment: Text.AlignVCenter
+            anchors.verticalCenter: parent.verticalCenter
         }
     }
 

@@ -7,22 +7,22 @@ Button {
     property string emotionText: "Happiness"
     property string iconPath: "images/happy_icon.png"
     property alias buttonWidth: emotionButton.width
-    property alias buttonHeight: emotionButton.height
     property bool selected: false
 
+    height: 40
     padding: 0
     hoverEnabled: false
     focusPolicy: Qt.NoFocus
 
     background: Rectangle {
-        radius: 18
-        color: emotionButton.selected ? "#37262E" : "#181718"
-        border.width: 1
-        border.color: emotionButton.selected ? "#9A5556" : "#4D4D4D"
+        radius: 100
+        color: emotionButton.selected ? "#3A162A" : "#181718"
+        border.width: emotionButton.selected ? 1 : 0
+        border.color: emotionButton.selected ? "#DA446A" : "transparent"
     }
 
     contentItem: Row {
-        spacing: 5
+        spacing: 8
         anchors.centerIn: parent
         height: parent.height
 
@@ -42,7 +42,7 @@ Button {
             text: emotionText
             color: "#d9d9d9"
             font.pixelSize: 12
-            verticalAlignment: Text.AlignVCenter
+            anchors.verticalCenter: parent.verticalCenter
         }
     }
 

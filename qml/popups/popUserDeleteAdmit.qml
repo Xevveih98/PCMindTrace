@@ -78,6 +78,7 @@ Popup {
             onClicked: {
                 authUser.deleteUser();
                 exitPopup.close();
+                AppSave.removeValue("onboardingShown")
             }
         }
     }

@@ -130,7 +130,6 @@ Popup {
                 hasEmptyError = Utils.validateEmptyField(regNewPass) || hasEmptyError;
                 hasEmptyError = Utils.validateEmptyField(regNewPassCheck) || hasEmptyError;
                 if (!hasEmptyError) {
-                    hasFormatError = Utils.validateEmailField(regOldPass) || hasFormatError;
                     hasFormatError = Utils.validatePasswordField(regNewPass) || hasFormatError;
                     hasFormatError = Utils.validatePasswordMatch(regNewPass, regNewPassCheck) || hasFormatError;
                 }

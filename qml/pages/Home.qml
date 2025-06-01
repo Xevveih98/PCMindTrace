@@ -43,8 +43,6 @@ Rectangle {
 
                     Rectangle {
                         color: "#090809"
-                        border.color: "#363636"
-                        border.width: 1
                         radius: 8
                         anchors.fill: parent
 

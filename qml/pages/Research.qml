@@ -224,7 +224,6 @@ Rectangle {
                             emotionText: model.emotion
                             iconPath: Utils.getIconPathById(iconModelEmotion, model.iconId)
                             buttonWidth: implicitWidth
-                            buttonHeight: 40
                             selected: qselected
                             property bool qselected: false
                             onClicked: {
@@ -281,7 +280,6 @@ Rectangle {
                             activityText: model.activity
                             iconPath: Utils.getIconPathById(iconModelActivity, model.iconId)
                             buttonWidth: implicitWidth
-                            buttonHeight: 40
                             selected: qselected
                             property bool qselected: false
                             onClicked: {

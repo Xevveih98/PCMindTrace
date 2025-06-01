@@ -2,9 +2,9 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import PCMindTrace 1.0
 import CustomComponents
+import QtQuick.Layouts
 
 Popup {
-
     property var selectedActivities: []
     signal activitiesConfirmed(var selectedActivities)
 
@@ -25,84 +25,69 @@ Popup {
         color: "#2D292C"
         radius: 8
     }
-
-    Item {
+    ColumnLayout {
         anchors.fill: parent
 
         Item {
-            width: parent.width * 0.9
-            height: parent.height * 0.93
-            anchors.centerIn: parent
+            Layout.preferredHeight: 10
+            Layout.fillWidth: true
+        }
 
-            Text {
-                id: header
-                text: "Выбор активностей"
-                color: "#D9D9D9"
-                font.pixelSize: 22
-                font.bold: true
-                wrapMode: Text.Wrap
-                anchors.horizontalCenter: parent.horizontalCenter
-            }
+        Text {
+            text: "Добавить события"
+            color: "#D9D9D9"
+            font.pixelSize: 20
+            font.bold: true
+            wrapMode: Text.Wrap
+            Layout.preferredWidth: parent.width*0.93
+            horizontalAlignment: Text.AlignHCenter
+            Layout.alignment: Qt.AlignHCenter
+        }
 
-            Text {
-                id: text1
-                text: "Выберите активности, которые хотите добавить."
-                color: "#D9D9D9"
-                font.pixelSize: 15
-                anchors.top: header.bottom
-                anchors.topMargin: 14
-                wrapMode: Text.Wrap
-                width: parent.width
-                horizontalAlignment: Text.AlignLeft
-            }
+        Text {
+            textFormat: Text.RichText
+            text: "Добавьте события, чтобы показать, <b><font color='#DA446A'>как прошёл ваш день</font></b>. Нажмите на событие повторно, чтобы <b><font color='#DA446A'>удалить</font></b> его."
+            Layout.preferredWidth: parent.width*0.93
+            horizontalAlignment: Text.AlignHCenter
+            Layout.alignment: Qt.AlignHCenter
+            wrapMode: Text.Wrap
+            font.pixelSize: 14
+            color: "#D9D9D9"
+        }
 
-            Text {
-                id: text2
-                text: "Чтобы убрать активность - нажмите на неё."
-                color: "#D9D9D9"
-                font.pixelSize: 15
-                anchors.top: text1.bottom
-                anchors.topMargin: 1
-                wrapMode: Text.Wrap
-                width: parent.width
-                horizontalAlignment: Text.AlignLeft
-            }
+        Item {
+            Layout.fillWidth: true
+            Layout.fillHeight: true
 
-            ListModel {
-                id: activityListModel
-            }
+            Rectangle {
+                anchors.fill: parent
+                color: "#262326"
 
-            Item {
-                anchors.top: text2.bottom
-                anchors.topMargin: 15
-                width: parent.width
-                height: parent.height * 0.66
-
-                Rectangle {
+                Text {
                     anchors.centerIn: parent
-                    width: parent.width * 1.02
-                    height: parent.height * 1.03
-                    color: "#262326"
-                    radius: 8
-
-                    Text {
-                        anchors.centerIn: parent
-                        text: "Пользовательский список пуст.."
-                        color: "#4d4d4d"
-                        font.pixelSize: 11
-                        font.italic: true
-                        visible: activityListModel.count === 0
-                    }
+                    text: "Пользовательский список пуст.."
+                    color: "#4d4d4d"
+                    font.pixelSize: 11
+                    font.italic: true
+                    visible: activityListModel.count === 0
                 }
+            }
 
-                ScrollView {
-                    id: amascroll
+            Item{
+                width: parent.width * 0.97
+                height: parent.height * 0.99
+                anchors.centerIn: parent
+
+                Flickable {
                     width: parent.width
                     height: parent.height
-                    z: 1
+                    contentWidth: parent.width
+                    contentHeight: flowContent.implicitHeight
+                    clip: true
 
                     Flow {
-                        width: amascroll.width
+                        id: flowContent
+                        width: parent.width
                         spacing: 6
 
                         Repeater {
@@ -112,7 +97,6 @@ Popup {
                                 activityText: model.activity
                                 iconPath: Utils.getIconPathById(iconModelActivity, model.iconId)
                                 buttonWidth: implicitWidth
-                                buttonHeight: 43
                                 selected: managerPopup.selectedActivities.some(a => a.id === model.id)
                                 onClicked: {
                                     let idx = managerPopup.selectedActivities.findIndex(a => a.id === model.id)
@@ -147,12 +131,9 @@ Popup {
             id: buttAdmit
             color: "#474448"
             radius: 8
-            width: parent.width
-            height: 50
-            anchors {
-                bottom: parent.bottom
-                horizontalCenter: parent.horizontalCenter
-            }
+            Layout.fillWidth: true
+            Layout.preferredHeight: 40
+            Layout.alignment: Qt.AlignBottom
 
             Text {
                 text: "Подтвердить"
@@ -170,6 +151,17 @@ Popup {
             }
         }
     }
+
+    ListModel {
+        id: activityListModel
+    }
+
+
+
+    IconModelAct {
+        id: iconModelActivity
+    }
+
 
     function setActivities(activityArray) {
         activityListModel.clear();
@@ -197,9 +189,5 @@ Popup {
         onActivityLoadedSuccess: function(activities) {
             loadActivitiesFromServer(activities);
         }
-    }
-
-    IconModelAct {
-        id: iconModelActivity
     }
 }

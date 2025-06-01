@@ -201,7 +201,6 @@ Popup {
                                 activityText: model.activity
                                 iconPath: Utils.getIconPathById(iconModelActivity, model.iconId)
                                 buttonWidth: implicitWidth
-                                buttonHeight: 43
                                 onClicked: {
                                     categoriesUser.deleteActivity(model.activity);
                                     activityListModel.remove(index);
@@ -240,6 +239,7 @@ Popup {
     IconModelAct {
         id: iconModelActivity
     }
+
     ListModel {
         id: activityListModel
     }

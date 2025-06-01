@@ -19,6 +19,8 @@ AuthUser::AuthUser(QObject *parent)
             onPasswordRecoverReply(reply);
         } else if (endpoint.path().contains("/changemail")) {
             onEmailChangeReply(reply);
+        } else if (endpoint.path().contains("/changelogin")) {
+            onLoginChangeReply(reply);
         } else {
             qWarning() << "Unhandled endpoint in CategoriesManager:" << endpoint.toString();
         }
@@ -371,7 +373,76 @@ void AuthUser::onEmailChangeReply(QNetworkReply *reply)
     reply->deleteLater();
 }
 
-//---------- ds
+void AuthUser::changeLogin(const QString &newlogin)
+{
+    AppSave appSave;
+    QString savedLogin = appSave.getSavedLogin();
+
+    qDebug() << "changelogin called with:";
+    qDebug() << "  login:" << savedLogin;
+    qDebug() << "  newLogin:" << newlogin.trimmed();
+
+    QUrl serverUrl = AppConfig::apiUrl("/changelogin");
+    QNetworkRequest request(serverUrl);
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+
+    QJsonObject json;
+    json["login"] = savedLogin;
+    json["newlogin"] = newlogin.trimmed();
+
+    QJsonDocument doc(json);
+    QByteArray data = doc.toJson();
+
+    QNetworkReply *reply = m_networkManager.post(request, data);
+}
+
+void AuthUser::onLoginChangeReply(QNetworkReply *reply)
+{
+    qDebug() << "Обработка ответа на запрос смены email.";
+
+    QString path = reply->request().url().path();
+
+    if (!path.contains("/changelogin")) {
+        qWarning() << "Неизвестный путь в onLoginChangeReply:" << path;
+        reply->deleteLater();
+        return;
+    }
+
+    if (reply->error() != QNetworkReply::NoError) {
+        qWarning() << "Ошибка сети при смене email:" << reply->errorString();
+        emit loginChangeFailed(reply->errorString());
+        reply->deleteLater();
+        return;
+    }
+
+    QByteArray responseData = reply->readAll();
+    qDebug() << "Ответ сервера на смену email:" << responseData;
+
+    if (responseData.isEmpty()) {
+        qWarning() << "Пустой ответ от сервера при смене email.";
+        emit loginChangeFailed(reply->errorString());
+        reply->deleteLater();
+        return;
+    }
+
+    QJsonParseError parseError;
+    QJsonDocument jsonDoc = QJsonDocument::fromJson(responseData, &parseError);
+    QJsonObject json = jsonDoc.object();
+    QString newlogin = json.value("newlogin").toString().trimmed();
+
+    if (newlogin.isEmpty()) {
+        qWarning() << "Отсутствует поле email в ответе сервера при смене email.";
+        emit emailChangeFailed(reply->errorString());
+        reply->deleteLater();
+        return;
+    }
+
+    AppSave appSave;
+    appSave.saveLogin(newlogin);
+    emit loginChangeSuccess();
+
+    reply->deleteLater();
+}
 
 void AuthUser::logout()
 {
@@ -381,7 +452,6 @@ void AuthUser::logout()
     emit logoutSuccess();
 }
 
-// ----------- Общий метод отправки (используется для регистрации) -----------
 void AuthUser::sendToServer(const QJsonDocument &jsonDoc, const QUrl &url)
 {
     qDebug() << "sendToServer called.";
