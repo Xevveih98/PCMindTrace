@@ -195,7 +195,7 @@ Rectangle {
 
                     CustButtSett {
                         buttonWidth: parent.width
-                        buttonText: "Редактировать эмоции"
+                        buttonText: "Редактировать впечатления"
                         iconSource: "qrc:/images/DataRecovery.png"
                         popupTarget: "qrc:/popups/popCategoryEmotionsManage.qml"
                     }

@@ -40,5 +40,6 @@
         <file alias="continueq.png">assets/images/continueq.png</file>
         <file alias="quitw.png">assets/images/quitw.png</file>
         <file alias="avatar.png">assets/images/avatar.png</file>
+        <file alias="spravka.png">assets/images/spravka.png</file>
     </qresource>
 </RCC>

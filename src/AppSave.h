@@ -32,6 +32,9 @@ public:
     Q_INVOKABLE void saveAvatarId(int avatarId);
     Q_INVOKABLE int getSavedAvatarId() const;
     Q_INVOKABLE void clearAvatarId();
+    Q_INVOKABLE void setValue(const QString &key, const QVariant &value);
+    Q_INVOKABLE QVariant value(const QString &key, const QVariant &defaultValue = QVariant());
+    Q_INVOKABLE void removeValue(const QString &key);
 
 
 private:

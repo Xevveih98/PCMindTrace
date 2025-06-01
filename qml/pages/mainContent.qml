@@ -116,9 +116,62 @@ Item {
                                     Text {
                                         text: model.title
                                         verticalAlignment: Text.AlignVCenter
-                                        color: isSelected ? "#6EADE9" : "#d9d9d9"
+                                        color: isSelected ? "#EA5878" : "#d9d9d9"
                                         font.pixelSize: 16
                                     }
+                                }
+                            }
+                        }
+                    }
+
+                    Rectangle {
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: 1
+                        color: "#3A3A3A"
+                        Layout.leftMargin: 15
+                        Layout.rightMargin: 15
+                    }
+
+                    Item {
+                        Layout.fillWidth: true
+                        Layout.leftMargin: 15
+                        height: 32
+
+                        MouseArea {
+                            anchors.fill: parent
+                            onClicked: {
+                                var component = Qt.createComponent("qrc:/popups/popOnBoarding.qml");
+                                if (component.status === Component.Ready) {
+                                    var popup = component.createObject(parent);
+                                    if (popup) {
+                                        popup.open();
+                                    } else {
+                                        console.error("Не удалось создать объект попапа.");
+                                    }
+                                } else if (component.status === Component.Error) {
+                                    console.error("Ошибка при загрузке компонента: " + component.errorString());
+                                } else {
+                                    console.log("Компонент еще не готов.");
+                                }
+                                sideMenu.close()
+                            }
+
+                            Row {
+                                width: parent.width
+                                spacing: 15
+
+                                Image {
+                                    source: "qrc:/images/spravka.png"
+                                    width: 20
+                                    height: 20
+                                    fillMode: Image.PreserveAspectFit
+                                }
+
+                                Text {
+                                    text: "Справка"
+                                    verticalAlignment: Text.AlignVCenter
+                                    color: "#d9d9d9"
+                                    font.pixelSize: 16
                                 }
                             }
                         }
@@ -132,6 +185,25 @@ Item {
         id: stackViewMainContent
         anchors.fill: parent
         initialItem: "qrc:/pages/Home.qml"
+    }
+
+    Component.onCompleted: {
+        if (!AppSave.value("onboardingShown", false)) {
+            var component = Qt.createComponent("qrc:/popups/popOnBoarding.qml");
+            if (component.status === Component.Ready) {
+                var popup = component.createObject(parent);
+                if (popup) {
+                    popup.open();
+                } else {
+                    console.error("Не удалось создать объект попапа.");
+                }
+            } else if (component.status === Component.Error) {
+                console.error("Ошибка при загрузке компонента: " + component.errorString());
+            } else {
+                console.log("Компонент еще не готов.");
+            }
+            AppSave.setValue("onboardingShown", true)
+        }
     }
 }
 
