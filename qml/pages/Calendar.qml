@@ -243,6 +243,7 @@ Rectangle {
 
                         monthChanged(monthKeyCurrent + "-01");
                         computeUser.loadEntriesByMonth(monthKeyLast, monthKeyCurrent);
+                        foldersUser.loadFolder();
                     }
                     signal monthChanged(string dateString)
 
@@ -916,6 +917,7 @@ Rectangle {
                             activityItems: model.activities
                             emotionItems: model.emotions
                             entryId: model.id
+                            foldersList: pageCalendarScreen.folderu
                         }
                         visible: entriesUser.dateSearchModel.count > 0
                     }
@@ -954,6 +956,21 @@ Rectangle {
         }
     }
 
+
+    property var folderu: []
+
+    Connections {
+        target: foldersUser
+        onFoldersLoadedSuccess: function(folders) {
+            console.log("Данные загружены:", folders);
+            folderu = folders;
+        }
+
+        onClearFolderList: {
+            folderu = [];
+        }
+    }
+
     Connections {
         target: entryCurrentMonthModel
         onCountChanged: {
@@ -973,4 +990,5 @@ Rectangle {
         ListElement { iconId: 2; path: "qrc:/images/second.png" }
         ListElement { iconId: 3; path: "qrc:/images/third.png" }
     }
+
 }

@@ -407,6 +407,7 @@ Rectangle {
                             tagItems: model.tags
                             activityItems: model.activities
                             emotionItems: model.emotions
+                            foldersList: pageResearchScreen.folderu
                         }
                         visible: entriesUser.searchModel.count > 0
                     }
@@ -452,6 +453,22 @@ Rectangle {
         categoriesUser.loadTags()
         categoriesUser.loadActivity()
         categoriesUser.loadEmotion()
+        foldersUser.loadFolder();
+    }
+
+
+    property var folderu: []
+
+    Connections {
+        target: foldersUser
+        onFoldersLoadedSuccess: function(folders) {
+            console.log("Данные загружены:", folders);
+            folderu = folders;
+        }
+
+        onClearFolderList: {
+            folderu = [];
+        }
     }
 
     Connections {
